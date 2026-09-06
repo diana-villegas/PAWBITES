@@ -1,7 +1,7 @@
 # ESTADO — PawBites
-Última actualización: 2026-09-01 | Sesión actual: 4
+Última actualización: 2026-09-06 | Sesión actual: 6
 
-⏸️ CHECKPOINT — Última acción completada: código del onboarding (6 preguntas reales) + loading "construyendo el plato" + paywall + login (/entrar, 3 estados) escrito y probado a mano en el navegador (tsc ✓ build ✓ flujo funciona, cálculo real correcto) — TODAVÍA SIN veredicto del revisor-visual, así que NO se declaran "listas" todavía. Screenshots guardados como docs/revisiones/onboarding-375.png y docs/revisiones/paywall-375.png. Revisor-visual corriendo en segundo plano. / Siguiente acción exacta: leer docs/revisiones/onboarding-veredicto.md y docs/revisiones/paywall-veredicto.md al retomar; corregir lo que señalen y re-lanzar el revisor si hace falta; cuando ambos digan "Veredicto: LISTA", cerrar la Sesión 4 con el usuario y preguntar si seguimos con la Sesión 5 (app interna).
+⏸️ CHECKPOINT — Sesiones 1-5 cerradas (landing, onboarding, paywall, login, app interna — todas verificadas). Sesión 6 (integraciones reales) EN CURSO: esquema Supabase + RLS, clientes, middleware de sesión, login real con magic link, endpoint de migración anónimo→cuenta, todo escrito y con tsc/build limpios. Repo git inicializado, primer commit hecho. **Bloqueado en: el usuario todavía no ha creado el proyecto de Supabase** — sin eso no se puede verificar nada de la Sesión 6 contra una base de datos real. Siguiente acción exacta: guiar al usuario para crear el proyecto de Supabase y poner las variables en `.env.local` (nunca pedirle que las pegue en el chat); correr `supabase/migrations/0001_init.sql`; verificar login real end-to-end; recién después conectar `Hoy/Plan/Lista/Perfil` a Supabase (hoy leen de localStorage).
 
 ## Qué es esta app (3 líneas máximo)
 Calculadora y planificador de porciones en gramos para pasar a un perro de concentrado a comida real (BARF o cocinada), con plan de transición de 14 días y lista de compras automática. Suscripción mensual/anual con 3 días de prueba gratis.
@@ -91,10 +91,7 @@ Calculadora y planificador de porciones en gramos para pasar a un perro de conce
 - Sesión 4 — Onboarding (6 preguntas + perfil acumulado), paywall y login: los 3 con Veredicto LISTA (onboarding 37/40·18/20 tras 11 rondas, paywall 37/40·18/20·19/20, login construido) — cerrada 2026-09-05
 - Sesión 5 — App interna: Hoy (protagonista, Veredicto LISTA 36/40·17/20 tras 4 rondas), Plan, Lista y Perfil (secundarias, verificadas a mano) — estado simulado en localStorage (`lib/appData.ts`), listo para migrar a Supabase en Sesión 6 — cerrada 2026-09-05
 
-## Sesión en progreso 🔧
-(ninguna — Sesión 5 cerrada, lista para arrancar Sesión 6 con el OK del usuario)
-
-### Detalle de Sesión 5 (referencia)
+### Detalle de Sesión 5 (referencia, cerrada)
 Las 4 secciones construidas y verificadas (tsc ✓ build ✓):
 - `app/app/layout.tsx` — shell con nav inferior (Hoy/Plan/Lista/Perfil), ícono+label en acento cuando está activo.
 - `app/app/page.tsx` — **"Hoy" (protagonista): Veredicto LISTA — usabilidad 36/40, craft 17/20 (4 rondas).** Tarjeta héroe del plato (dispositivo satélite de landing/paywall, con gesto de swipe además de botón), racha con label explícito y pulso al marcar, card fusionada de "plan de transición + lista de compras" (evita saturar la primera vista), aviso y reintento si falla el guardado local. 3 defectos menores aceptados sin nueva ronda (no bajan el gate): el swipe no dice feedback visual mientras se arrastra, el chip de racha parece tappable sin serlo, y las transiciones entre pestañas del nav no tienen animación — pulir en Sesión 7 (testing/pulido) si hay tiempo.
@@ -122,7 +119,27 @@ Sesión 5 lista para cerrarse con el usuario — falta solo su confirmación par
 Ronda 7: 30/40, 14/20 — NO LISTA. El vacío del tercio inferior solo se movió, no se llenó; más 4 hallazgos nuevos. Los 5 corregidos: (1) disclaimer del veterinario extendido a las 4 pantallas de pregunta + se agregó `IngredientesBand` (el dispositivo ownable ya aprobado en landing) debajo de la tarjeta de perfil — llena el espacio con contenido real de marca; (2) radio del icon-chip `rounded-lg`→`rounded-xl` (consistente con el resto de la app); (3) chip no-seleccionado baja a opacity 0.45 durante la pausa de auto-avance; (4) X de salida agregada al header del funnel; (5) resuelto junto con el punto 1. Recapturado `docs/revisiones/onboarding-375.png`. Ronda 8: 32/40, 13/20 — NO LISTA (la sesión se cortó a mitad pero el veredicto sí se guardó). 4 defectos, los 4 corregidos: (1-2) tarjeta de perfil pasó de blanco/shadow a fondo hundido con tinte — ahora se distingue de los chips tocables; (3) en pantalla "frecuencia" se quitó `IngredientesBand` (ya se había repetido 3 veces) para que el perfil completo + el disclaimer quepan sin scroll — igual en "dieta" (pantallas de 2 opciones muestran perfil solo, no perfil+banda); (4) ícono de "Cocinada en casa" cambiado de `Dog` (duplicado) a `ChefHat`. Verificado a mano en el navegador (screenshots de dieta y frecuencia): profundidad clara, sin scroll, íconos distintos. Ronda 9: 27/40, 14/20 — pero el defecto #1 (overflow) fue un ARTEFACTO: el screenshot se capturó con un viewport de escritorio mal redimensionado, no 375×812 real. Los otros 2 defectos reales sí corregidos: (2) ícono de "Cada 15 días" cambiado a `Boxes` (antes duplicaba `Package`); (3) `ChipOpcion` ahora envuelve su ícono en el mismo contenedor circular que `PerfilAcumulado` (antes iban sueltos, tratamiento inconsistente). Defectos 4-5 de la ronda 9 (sin "puedes cambiarlo luego", sin atajos de teclado) quedan aceptados a propósito — funnel 100% táctil para LATAM/Android, impacto bajo. Ronda 10: 31/40, 14/20 — NO LISTA. 2 defectos reales corregidos: (1) chip "Cada 15 días — menos viajes al súper" envolvía a 2 líneas y quedaba más alto que "Cada 7 días" → texto acortado a "Cada 15 días — menos viajes" (ya cabe en 1 línea, misma altura); (2) "Cocinada en casa" usaba ChefHat en PerfilAcumulado pero Dog en el ChipOpcion de la pregunta → unificado a ChefHat en ambos. También: ícono de la fila base del perfil cambiado de Dog a Weight (antes casi idéntico al PawPrint de "Adulto"). **Ronda 11: usabilidad 37/40, craft 18/20 — Veredicto: LISTA, fidelidad FIEL.** ✅ Con esto, las 4 pantallas de Sesión 4 (landing, onboarding, paywall, login) están todas construidas y verificadas. Defectos de bajo impacto aceptados a propósito y documentados (sin confirmación al salir con la X, sin atajos de teclado — funnel 100% táctil).
 
 ## Pendientes del usuario (acciones que el usuario debe hacer)
-- [ ] Ninguna acción tuya todavía — se te avisará cuando haya que crear cuentas (Supabase, Hotmart, Vercel, dominio)
+- [ ] Crear el proyecto de Supabase (Sesión 6, EN CURSO) — ver instrucciones en el mensaje de cierre de esta sesión
+- [ ] Cuenta de GitHub para subir el código (Sesión 6)
+- [ ] Cuenta de Vercel para publicar la app (Sesión 6)
+- [ ] Cuenta de Hotmart para vender (Sesión 6, más adelante)
+- [ ] Dominio propio + cuenta de Resend para los correos (Sesión 6, más adelante)
+
+## Sesión en progreso 🔧
+Sesión 6 — Integraciones reales y seguridad. Hecho hasta ahora (código, sin necesitar credenciales todavía):
+- `supabase/migrations/0001_init.sql` — esquema completo: `profiles`, `dogs`, `shopping_list_items`, RLS con el patrón de alto rendimiento `(select auth.uid())`, índices en FKs, trigger que crea el `profile` automáticamente al nacer un `auth.users`.
+- `lib/supabase/{client,server,admin,middleware}.ts` — los 3 clientes (browser/server/admin) + el middleware que refresca la sesión (patrón canónico de 26-AUTH-MODERNO, copiado tal cual).
+- `proxy.ts` (antes `middleware.ts` — Next 16 renombró la convención) — protege `/app`, deja público el resto del funnel.
+- `app/entrar/page.tsx` — login real conectado a `supabase.auth.signInWithOtp` (antes era una simulación). `shouldCreateUser: false` (solo entra quien ya compró). Mensaje anti-enumeración: mismo "revisa tu correo" exista o no la cuenta.
+- `app/auth/callback/route.ts` — recibe el magic link, crea la sesión real.
+- `app/api/onboarding/migrate/route.ts` — migra el estado anónimo del onboarding a la tabla `dogs` la primera vez que alguien entra logueado (validado con zod, `user_id` siempre del JWT).
+- `app/app/layout.tsx` — dispara la migración automáticamente al entrar a `/app`.
+- `lib/env.ts` — validación fail-closed de variables de entorno con zod.
+- `.env.example` commiteado (valores de ejemplo, ningún secreto real).
+- Repo git inicializado y primer commit hecho (407 archivos, `.env*` confirmado en `.gitignore` antes de commitear).
+- Token semántico `--error` agregado a `tokens.css` (faltaba, lo pedía el login para mostrar fallos reales).
+
+**Bloqueado hasta que el usuario cree las cuentas — no puedo verificar nada de lo anterior contra una base de datos real todavía.** Al retomar: pedir/confirmar que `.env.local` tiene las variables de Supabase, correr la migración SQL en el proyecto real, y recién ahí conectar las 4 pantallas de la app interna (`Hoy/Plan/Lista/Perfil`) para que lean de Supabase en vez de localStorage — ese último paso es SIEMPRE el último de la secuencia (datos/RLS → auth → endpoints → UI conectada, 12-FLUJO-AGENTICO), no antes.
 
 ## Notas para la próxima sesión
 - El usuario aportó un insight de producto real y valioso: batch cooking de 14-15 días le come espacio de congelador — por eso la app deja elegir 7 o 15 días de preparación. Mantener esta lógica visible en el onboarding y en el "Plan/Calendario".
