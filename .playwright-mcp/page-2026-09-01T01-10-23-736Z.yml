@@ -1,0 +1,18 @@
+- generic [ref=f7e1]:
+  - main [ref=f7e2]:
+    - generic [ref=f7e3]:
+      - link "PawBites" [ref=f7e4] [cursor=pointer]:
+        - /url: /
+      - heading "Entra a tu plan" [level=1] [ref=f7e6]
+      - paragraph [ref=f7e7]: Para guardarlo y verlo en cualquier dispositivo — sin contraseñas.
+      - generic [ref=f7e8]:
+        - textbox "tu@correo.com" [active] [ref=f7e9]: dueña@ejemplo.com
+        - button "Enviarme mi enlace de acceso" [ref=f7e10]
+        - button "Continuar con Google" [ref=f7e11]
+      - paragraph [ref=f7e12]: "Sin contraseñas: te llegará un enlace de un solo uso.¿Compraste PawBites? Usa el correo de tu compra."
+      - paragraph [ref=f7e13]:
+        - text: ¿Compraste y no te llega el acceso?
+        - link "Escríbenos" [ref=f7e14] [cursor=pointer]:
+          - /url: mailto:hola@pawbites.app
+  - button "Open Next.js Dev Tools" [ref=f7e20] [cursor=pointer]
+  - alert [ref=f7e24]

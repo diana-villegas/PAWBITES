@@ -1,0 +1,61 @@
+- generic [active] [ref=f6e1]:
+  - main [ref=f6e2]:
+    - generic [ref=f6e158]:
+      - link "Cerrar" [ref=f6e160] [cursor=pointer]:
+        - /url: /
+      - heading "El Plato Exacto de Luna ya está listo" [level=1] [ref=f6e164]
+      - paragraph [ref=f6e165]: Hecho con su peso, su edad y su actividad.
+      - generic [ref=f6e166]:
+        - paragraph [ref=f6e167]: 15 kg · hoy
+        - paragraph [ref=f6e168]: 375g totales
+      - generic [ref=f6e169]:
+        - generic [ref=f6e170]:
+          - paragraph [ref=f6e172]: 263g
+          - paragraph [ref=f6e173]: Carne
+        - generic [ref=f6e174]:
+          - paragraph [ref=f6e176]: 38g
+          - paragraph [ref=f6e177]: Hueso
+        - generic [ref=f6e178]:
+          - paragraph [ref=f6e180]: 38g
+          - paragraph [ref=f6e181]: Vísceras
+        - generic [ref=f6e182]:
+          - paragraph [ref=f6e184]: 38g
+          - paragraph [ref=f6e185]: Vegetales
+      - list [ref=f6e186]:
+        - listitem [ref=f6e187]: Plan de transición de 14 días, sin diarreas por ir muy rápido
+        - listitem [ref=f6e191]: Lista del súper cada 15 días, lista para marcar
+        - listitem [ref=f6e195]: Sustituto de ingredientes si algo no lo consigues
+      - generic [ref=f6e199]:
+        - generic [ref=f6e204]:
+          - paragraph [ref=f6e205]: Hoy
+          - paragraph [ref=f6e206]: El plato de Luna, sin límites
+        - generic [ref=f6e211]:
+          - paragraph [ref=f6e212]: Día 2
+          - paragraph [ref=f6e213]: Te avisamos por correo antes de cualquier cobro
+        - generic [ref=f6e217]:
+          - paragraph [ref=f6e218]: Día 3
+          - paragraph [ref=f6e219]: "1er cobro: $2.50/mes · cancela antes sin costo"
+      - generic [ref=f6e220]:
+        - generic [ref=f6e221]: Más popular
+        - generic [ref=f6e222]:
+          - generic [ref=f6e223]:
+            - generic [ref=f6e224]: Anual
+            - generic [ref=f6e225]: 6 meses gratis
+          - paragraph [ref=f6e226]: $2.50/mes
+          - paragraph [ref=f6e227]: Se cobra $29.99/año
+      - generic [ref=f6e229]:
+        - generic [ref=f6e230]: Mensual
+        - generic [ref=f6e231]: $4.99/mes
+      - generic [ref=f6e232]:
+        - link "Empezar mis 3 días gratis" [ref=f6e233] [cursor=pointer]:
+          - /url: /entrar
+        - paragraph [ref=f6e234]: Hoy no pagas nada · te avisamos antes del cobro · cancela en 1 tap
+      - generic [ref=f6e235]:
+        - link "Ahora no" [ref=f6e236] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f6e237]: ·
+        - link "Restaurar compra" [ref=f6e238] [cursor=pointer]:
+          - /url: /entrar
+      - generic [ref=f6e239]: Pago seguro con Hotmart · Garantía de 7 días
+  - button "Open Next.js Dev Tools" [ref=f6e34] [cursor=pointer]
+  - alert [ref=f6e38]

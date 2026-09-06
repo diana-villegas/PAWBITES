@@ -1,0 +1,11 @@
+- generic [ref=f6e1]:
+  - main [ref=f6e2]:
+    - generic [ref=f6e137]:
+      - generic [ref=f6e138]:
+        - heading "¿Cada cuánto vas a preparar su comida?" [level=1] [ref=f6e139]
+        - paragraph [ref=f6e140]: Elige según el espacio que tengas en tu congelador.
+      - generic [ref=f6e141]:
+        - button "Cada 7 días — menos espacio" [ref=f6e142]
+        - button "Cada 15 días — menos viajes al súper" [active] [ref=f6e148]
+  - button "Open Next.js Dev Tools" [ref=f6e34] [cursor=pointer]
+  - alert [ref=f6e38]

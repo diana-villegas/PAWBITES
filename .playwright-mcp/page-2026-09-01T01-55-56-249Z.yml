@@ -1,0 +1,13 @@
+- generic [active] [ref=f5e1]:
+  - main [ref=f5e2]:
+    - generic [ref=f5e3]:
+      - button "Atrás" [ref=f5e30]
+      - paragraph [ref=f5e10]: PawBites
+    - generic [ref=f5e120]:
+      - generic [ref=f5e121]:
+        - heading "¿Cruda o cocinada?" [level=1] [ref=f5e122]
+        - paragraph [ref=f5e123]: Elige el tipo de comida real que le darás.
+      - generic [ref=f5e124]:
+        - button "Cruda (carne sin cocinar)" [disabled] [ref=f5e125]
+        - button "Cocinada en casa" [disabled] [ref=f5e130]
+  - alert [ref=f5e29]

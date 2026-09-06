@@ -1,0 +1,18 @@
+- generic [active] [ref=f7e1]:
+  - main [ref=f7e2]:
+    - generic [ref=f7e3]:
+      - link "PawBites" [ref=f7e4] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f7e27]:
+        - heading "Revisa tu correo" [level=1] [ref=f7e32]
+        - paragraph [ref=f7e33]:
+          - text: Te enviamos el enlace a
+          - strong [ref=f7e34]: duena@ejemplo.com
+          - text: . Ábrelo en este mismo dispositivo.
+        - button "Reenviar en 56s" [disabled] [ref=f7e35]
+      - paragraph [ref=f7e13]:
+        - text: ¿Compraste y no te llega el acceso?
+        - link "Escríbenos" [ref=f7e14] [cursor=pointer]:
+          - /url: mailto:hola@pawbites.app
+  - button "Open Next.js Dev Tools" [ref=f7e20] [cursor=pointer]
+  - alert [ref=f7e24]

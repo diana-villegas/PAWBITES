@@ -1,0 +1,64 @@
+- generic [active] [ref=f5e1]:
+  - main [ref=f5e2]:
+    - generic [ref=f5e174]:
+      - link "Cerrar" [ref=f5e176] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f5e180]:
+        - heading "El Plato Exacto de Luna ya está listo" [level=1] [ref=f5e181]
+        - paragraph [ref=f5e182]: Hecho con su peso, su edad y su actividad.
+        - generic [ref=f5e183]:
+          - paragraph [ref=f5e184]: 15 kg · hoy
+          - paragraph [ref=f5e185]: 375g totales
+        - generic [ref=f5e186]:
+          - generic [ref=f5e187]:
+            - paragraph [ref=f5e192]: 263g
+            - paragraph [ref=f5e193]: Carne
+          - generic [ref=f5e194]:
+            - paragraph [ref=f5e198]: 38g
+            - paragraph [ref=f5e199]: Hueso
+          - generic [ref=f5e200]:
+            - paragraph [ref=f5e205]: 38g
+            - paragraph [ref=f5e206]: Vísceras
+          - generic [ref=f5e207]:
+            - paragraph [ref=f5e212]: 38g
+            - paragraph [ref=f5e213]: Vegetales
+        - paragraph [ref=f5e214]: Nada de adivinar cantidades ni arriesgarte a una diarrea por un mal cálculo.
+        - list [ref=f5e215]:
+          - listitem [ref=f5e216]: Plan de transición de 14 días, sin diarreas por ir muy rápido
+          - listitem [ref=f5e220]: Lista del súper cada 15 días, lista para marcar
+          - listitem [ref=f5e224]: Sustituto de ingredientes si algo no lo consigues
+        - paragraph [ref=f5e228]: Menos que una consulta con nutricionista veterinario ($80+) o la comida precocinada ($150+/mes).
+        - generic [ref=f5e229]:
+          - generic [ref=f5e234]:
+            - paragraph [ref=f5e235]: Hoy
+            - paragraph [ref=f5e236]: El plato de Luna, sin límites
+          - generic [ref=f5e241]:
+            - paragraph [ref=f5e242]: Día 2
+            - paragraph [ref=f5e243]: Te avisamos por correo antes de cualquier cobro
+          - generic [ref=f5e247]:
+            - paragraph [ref=f5e248]: Día 3
+            - paragraph [ref=f5e249]: "1er cobro: $2.50/mes · cancela antes sin costo"
+        - generic [ref=f5e250]:
+          - generic [ref=f5e251]: Más popular
+          - button "Anual 6 meses gratis $2.50/mes Se cobra $29.99/año" [pressed] [ref=f5e252]:
+            - generic [ref=f5e253]:
+              - generic [ref=f5e254]: Anual
+              - generic [ref=f5e258]: 6 meses gratis
+            - paragraph [ref=f5e259]: $2.50/mes
+            - paragraph [ref=f5e260]: Se cobra $29.99/año
+        - button "Mensual $4.99/mes" [ref=f5e261]:
+          - generic [ref=f5e262]:
+            - generic [ref=f5e263]: Mensual
+            - generic [ref=f5e265]: $4.99/mes
+        - generic [ref=f5e266]:
+          - link "Empezar mis 3 días gratis" [ref=f5e267] [cursor=pointer]:
+            - /url: /entrar
+          - paragraph [ref=f5e268]: Hoy no pagas nada · te avisamos antes del cobro · cancela en 1 tap
+        - generic [ref=f5e269]:
+          - link "Ahora no" [ref=f5e270] [cursor=pointer]:
+            - /url: /
+          - generic [ref=f5e271]: ·
+          - link "Restaurar compra" [ref=f5e272] [cursor=pointer]:
+            - /url: /entrar
+        - generic [ref=f5e273]: Pago seguro con Hotmart · Garantía de 7 días
+  - alert [ref=f5e29]

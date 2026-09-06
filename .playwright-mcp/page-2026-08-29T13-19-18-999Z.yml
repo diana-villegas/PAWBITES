@@ -1,0 +1,295 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - link "Saltar al contenido" [ref=e3] [cursor=pointer]:
+      - /url: "#hero"
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - link "PawBites" [ref=e7] [cursor=pointer]:
+          - /url: /
+        - navigation [ref=e9]:
+          - link "Ver precios" [ref=e10] [cursor=pointer]:
+            - /url: "#oferta"
+          - link "Entrar" [ref=e11] [cursor=pointer]:
+            - /url: /entrar
+      - generic [ref=e12]:
+        - heading "El plato exacto de tu perro, en gramos, hoy mismo" [level=1] [ref=e13]
+        - paragraph [ref=e14]:
+          - text: El Plato Exacto calcula sus porciones y arma
+          - strong [ref=e15]: la lista del súper
+          - text: por ti
+        - link "Calcular el plato de mi perro" [ref=e17] [cursor=pointer]:
+          - /url: /onboarding
+        - generic [ref=e18]: Garantía del Primer Plato — Hotmart, 7 días
+        - generic [ref=e21]:
+          - paragraph [ref=e22]: Así calcula el Plato Exacto — ejemplo real de la fórmula
+          - generic [ref=e23]:
+            - paragraph [ref=e24]: Hoy · Labrador · 22 kg
+            - paragraph [ref=e25]: 0g totales
+          - generic [ref=e26]:
+            - generic [ref=e27]:
+              - paragraph [ref=e29]: 0g
+              - paragraph [ref=e30]: Pollo
+            - generic [ref=e31]:
+              - paragraph [ref=e33]: 0g
+              - paragraph [ref=e34]: Hígado
+            - generic [ref=e35]:
+              - paragraph [ref=e37]: 0g
+              - paragraph [ref=e38]: Zanahoria
+            - generic [ref=e39]:
+              - paragraph [ref=e41]: 0g
+              - paragraph [ref=e42]: Hueso
+    - region "El problema" [ref=e43]:
+      - generic [ref=e45]:
+        - heading "¿Te suena?" [level=2] [ref=e46]
+        - list [ref=e47]:
+          - listitem [ref=e48]:
+            - paragraph [ref=e54]: ¿Se te complica calcular los gramos exactos que necesita tu perro?
+          - listitem [ref=e55]:
+            - paragraph [ref=e60]: ¿Te da miedo hacerlo mal y que le falte algo importante?
+          - listitem [ref=e61]:
+            - paragraph [ref=e76]: ¿Preparas comida para varios días y ya no cabe en el congelador?
+          - listitem [ref=e77]:
+            - paragraph [ref=e82]: ¿Buscaste tablas y calculadoras y terminaste con 15 pestañas sin respuesta clara?
+    - region "El costo de seguir igual" [ref=e83]:
+      - generic [ref=e85]:
+        - generic [ref=e86]:
+          - paragraph [ref=e87]:
+            - text: Cada semana que sigues
+            - strong [ref=e88]: calculando a ojo
+            - text: es una semana más de miedo a equivocarte.
+          - paragraph [ref=e89]: "Y si preparas en batch, cada 15 días se repite lo mismo: el congelador no da más."
+          - paragraph [ref=e90]: Mientras tanto, tu perro sigue comiendo lo que ya no querías seguir dándole.
+        - generic [ref=e91]:
+          - generic [ref=e92]:
+            - paragraph [ref=e93]: Hoy
+            - paragraph [ref=e94]: Calculas a ojo, dudas de las cantidades, y el concentrado sigue en el plato.
+          - generic [ref=e95]:
+            - paragraph [ref=e96]: En un mes, si nada cambia
+            - paragraph [ref=e97]: Sigues postergando el cambio — con la misma duda de siempre.
+    - region "Cómo funciona" [ref=e98]:
+      - generic [ref=e100]:
+        - generic [ref=e101]:
+          - paragraph [ref=e102]: EL MECANISMO
+          - heading "El plato de tu perro, calculado por ti" [level=2] [ref=e103]
+        - generic [ref=e104]: el Plato Exacto
+        - paragraph [ref=e107]:
+          - text: No es que te falte disciplina — es que las calculadoras que probaste son para expertos.
+          - strong [ref=e108]: El Plato Exacto
+          - text: hace el cálculo por ti, en 3 clics.
+        - list [ref=e109]:
+          - listitem [ref=e110]:
+            - generic [ref=e111]: "01"
+            - generic [ref=e112]:
+              - heading "Cuéntanos de tu perro" [level=3] [ref=e113]
+              - paragraph [ref=e114]: Peso, edad, actividad y su tipo de dieta.
+          - listitem [ref=e115]:
+            - generic [ref=e116]: "02"
+            - generic [ref=e117]:
+              - heading "El Plato Exacto calcula" [level=3] [ref=e118]
+              - paragraph [ref=e119]: Gramos por proteína, hueso, víscera y verdura.
+          - listitem [ref=e120]:
+            - generic [ref=e121]: "03"
+            - generic [ref=e122]:
+              - heading "Recibes todo listo" [level=3] [ref=e123]
+              - paragraph [ref=e124]: El plato de hoy y la lista del súper de la semana.
+        - generic [ref=e125]:
+          - generic [ref=e126]:
+            - paragraph [ref=e127]: Antes
+            - paragraph [ref=e128]: Hojas de cálculo, tablas confusas y miedo a equivocarte.
+          - generic [ref=e129]:
+            - paragraph [ref=e130]: Con PawBites
+            - paragraph [ref=e131]: El plato exacto de tu perro, listo en menos de 3 minutos.
+    - region "Grupos del plato" [ref=e132]:
+      - generic [ref=e134]:
+        - paragraph [ref=e135]: Los 4 grupos que arma el Plato Exacto
+        - generic [ref=e136]:
+          - generic [ref=e137]:
+            - paragraph [ref=e139]: 220g
+            - paragraph [ref=e140]: Pollo
+          - generic [ref=e141]:
+            - paragraph [ref=e143]: 45g
+            - paragraph [ref=e144]: Hígado
+          - generic [ref=e145]:
+            - paragraph [ref=e147]: 60g
+            - paragraph [ref=e148]: Zanahoria
+          - generic [ref=e149]:
+            - paragraph [ref=e151]: 55g
+            - paragraph [ref=e152]: Hueso
+    - region "La app por dentro" [ref=e153]:
+      - generic [ref=e155]:
+        - generic [ref=e156]:
+          - paragraph [ref=e157]: ASÍ SE VE POR DENTRO
+          - heading "Tu día a día con PawBites" [level=2] [ref=e158]
+        - generic [ref=e159]:
+          - generic [ref=e160]:
+            - generic [ref=e161]:
+              - generic [ref=e162]: Hoy
+              - paragraph [ref=e165]: El plato de hoy, en gramos
+            - generic [ref=e166]:
+              - generic [ref=e167]: Plan
+              - paragraph [ref=e170]: Tu plan de transición de 14 días
+            - generic [ref=e171]:
+              - generic [ref=e172]: Compras
+              - paragraph [ref=e175]: La lista del súper, lista para marcar
+            - generic [ref=e176]:
+              - generic [ref=e177]: Perfil
+              - paragraph [ref=e180]: El perfil de tu perro
+          - generic [ref=e181]:
+            - 'button "Ir a: El plato de hoy, en gramos" [ref=e182]'
+            - 'button "Ir a: Tu plan de transición de 14 días" [ref=e184]'
+            - 'button "Ir a: La lista del súper, lista para marcar" [ref=e186]'
+            - 'button "Ir a: El perfil de tu perro" [ref=e188]'
+        - link "Calcular el plato de mi perro" [ref=e191] [cursor=pointer]:
+          - /url: /onboarding
+    - region "Lo que incluye cada plan" [ref=e192]:
+      - generic [ref=e194]:
+        - paragraph [ref=e195]: El mismo cálculo por categorías, en cada plan
+        - generic [ref=e196]:
+          - generic [ref=e197]:
+            - paragraph [ref=e199]: 220g
+            - paragraph [ref=e200]: Pollo
+          - generic [ref=e201]:
+            - paragraph [ref=e203]: 45g
+            - paragraph [ref=e204]: Hígado
+          - generic [ref=e205]:
+            - paragraph [ref=e207]: 60g
+            - paragraph [ref=e208]: Zanahoria
+          - generic [ref=e209]:
+            - paragraph [ref=e211]: 55g
+            - paragraph [ref=e212]: Hueso
+    - region "Planes y precios" [ref=e213]:
+      - generic [ref=e215]:
+        - generic [ref=e216]:
+          - paragraph [ref=e217]: LA OFERTA
+          - heading "Empieza gratis. Sigue por $0.10 al día" [level=2] [ref=e218]
+        - generic [ref=e219]:
+          - list [ref=e220]:
+            - listitem [ref=e221]:
+              - generic [ref=e222]: PawBites Pro con el Plato Exacto (12 meses)
+              - generic [ref=e227]: $60
+            - listitem [ref=e228]:
+              - generic [ref=e229]: Plan de transición de 14 días guiado
+              - generic [ref=e234]: $19
+            - listitem [ref=e235]:
+              - generic [ref=e236]: Sustitutor de ingredientes sin complicarte
+              - generic [ref=e241]: $15
+          - generic [ref=e242]:
+            - paragraph [ref=e243]: "Valor total: $94"
+            - paragraph [ref=e244]: "Hoy: $2.50/mes (se cobra $29.99/año)"
+        - generic [ref=e245]:
+          - generic [ref=e246]:
+            - generic [ref=e247]: MÁS POPULAR
+            - generic [ref=e249]:
+              - generic [ref=e250]:
+                - heading "Anual" [level=3] [ref=e251]
+                - generic [ref=e252]: 3 días gratis
+              - generic [ref=e255]:
+                - generic [ref=e256]:
+                  - paragraph [ref=e257]:
+                    - generic [ref=e258]: $2.50
+                    - generic [ref=e259]: /mes
+                  - paragraph [ref=e260]: menos de $0.10 al día
+                - paragraph [ref=e261]: Se cobra $29.99/año
+                - paragraph [ref=e262]: 6 meses gratis
+              - list [ref=e263]:
+                - listitem [ref=e264]:
+                  - generic [ref=e268]: El plato exacto de tu perro cada día
+                - listitem [ref=e269]:
+                  - generic [ref=e273]: Plan de transición de 14 días
+                - listitem [ref=e274]:
+                  - generic [ref=e278]: Lista del súper automática
+                - listitem [ref=e279]:
+                  - generic [ref=e283]: Elige preparar cada 7 o 15 días
+              - link "Empezar mis 3 días gratis" [ref=e285] [cursor=pointer]:
+                - /url: /onboarding
+          - generic [ref=e286]:
+            - generic [ref=e287]:
+              - heading "Mensual" [level=3] [ref=e288]
+              - generic [ref=e289]: 3 días gratis
+            - paragraph [ref=e294]:
+              - generic [ref=e295]: $4.99
+              - generic [ref=e296]: /mes
+            - list [ref=e297]:
+              - listitem [ref=e298]:
+                - generic [ref=e302]: El plato exacto de tu perro cada día
+              - listitem [ref=e303]:
+                - generic [ref=e307]: Plan de transición de 14 días
+              - listitem [ref=e308]:
+                - generic [ref=e312]: Lista del súper automática
+              - listitem [ref=e313]:
+                - generic [ref=e317]: Cancelas cuando quieras
+            - link "Elegir mensual" [ref=e318] [cursor=pointer]:
+              - /url: /onboarding
+    - region "Garantía" [ref=e319]:
+      - generic [ref=e324]:
+        - heading "la Garantía del Primer Plato" [level=2] [ref=e329]
+        - paragraph [ref=e330]:
+          - text: Si en tus primeros 7 días el Plato Exacto no te da el desglose correcto para tu perro, escribes un correo y te devolvemos todo.
+          - strong [ref=e331]: Sin preguntas.
+        - paragraph [ref=e332]: Respaldada por la garantía Hotmart de 7 días
+    - region "Preguntas frecuentes" [ref=e336]:
+      - generic [ref=e338]:
+        - generic [ref=e339]:
+          - paragraph [ref=e340]: PREGUNTAS
+          - heading "Lo que quizá te estás preguntando" [level=2] [ref=e341]
+        - list [ref=e342]:
+          - listitem [ref=e343]:
+            - button "¿Necesito saber de nutrición canina?" [expanded] [ref=e344]
+            - region "¿Necesito saber de nutrición canina?" [ref=e348]:
+              - paragraph [ref=e349]:
+                - text: "No: el Plato Exacto hace el cálculo por ti. Tú solo"
+                - strong [ref=e350]: ingresas el peso y la actividad
+                - text: de tu perro.
+          - listitem [ref=e351]:
+            - button "¿Y si no consigo un ingrediente?" [ref=e352]
+            - region "¿Y si no consigo un ingrediente?":
+              - paragraph [ref=e356]: "Usa el sustitutor rápido: cambias hígado por otra víscera equivalente en un toque."
+          - listitem [ref=e357]:
+            - button "¿Es caro comparado con el concentrado?" [ref=e358]
+            - region "¿Es caro comparado con el concentrado?":
+              - paragraph [ref=e362]: Cuesta menos de $0.10 al día — mucho menos que un nutricionista veterinario o la comida precocinada premium.
+          - listitem [ref=e363]:
+            - button "¿Qué pasa si mi perro tiene una condición médica?" [ref=e364]
+            - region "¿Qué pasa si mi perro tiene una condición médica?":
+              - paragraph [ref=e368]:
+                - text: PawBites da recomendaciones para perros sanos. Con condiciones previas,
+                - strong [ref=e369]: consulta siempre a tu veterinario
+                - text: antes de cambiar su dieta.
+          - listitem [ref=e370]:
+            - button "¿Puedo pagar de forma segura?" [ref=e371]
+            - region "¿Puedo pagar de forma segura?":
+              - paragraph [ref=e375]: Pagas por Hotmart — tarjeta o el método disponible en tu país. Cancelas cuando quieras.
+    - region "Empieza hoy" [ref=e376]:
+      - generic [ref=e377]:
+        - heading "Imagina el plato de tu perro, ya resuelto" [level=2] [ref=e378]
+        - paragraph [ref=e379]: Abres la app, ves el plato de hoy en gramos, y sigues con tu día — sin dudas, sin Excel.
+        - link "Calcular el plato de mi perro" [ref=e381] [cursor=pointer]:
+          - /url: /onboarding
+        - paragraph [ref=e382]: Garantía del Primer Plato · 3 días gratis
+        - paragraph [ref=e383]: "Recuerda: PawBites calcula el plato exacto de tu perro y arma tu lista del súper con el Plato Exacto. Hoy entras con 3 días gratis y la Garantía del Primer Plato."
+    - contentinfo [ref=e384]:
+      - generic [ref=e385]:
+        - generic [ref=e386]:
+          - paragraph [ref=e387]: PawBites
+          - navigation "Enlaces legales" [ref=e389]:
+            - list [ref=e390]:
+              - listitem [ref=e391]:
+                - link "Privacidad" [ref=e392] [cursor=pointer]:
+                  - /url: /privacidad
+              - listitem [ref=e393]:
+                - generic [ref=e394]: ·
+                - link "Términos y Condiciones" [ref=e395] [cursor=pointer]:
+                  - /url: /terminos
+              - listitem [ref=e396]:
+                - generic [ref=e397]: ·
+                - link "Reembolsos" [ref=e398] [cursor=pointer]:
+                  - /url: /reembolsos
+              - listitem [ref=e399]:
+                - generic [ref=e400]: ·
+                - link "Aviso Nutricional" [ref=e401] [cursor=pointer]:
+                  - /url: /aviso-nutricional
+        - paragraph [ref=e402]:
+          - text: © 2026 PawBites ·
+          - link "hola@pawbites.app" [ref=e403] [cursor=pointer]:
+            - /url: mailto:hola@pawbites.app
+  - button "Open Next.js Dev Tools" [ref=e409] [cursor=pointer]

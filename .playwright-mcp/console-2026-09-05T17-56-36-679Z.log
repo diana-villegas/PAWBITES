@@ -1,0 +1,3 @@
+[     121ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/app/plan?_rsc=R0tRxeXOP7hmQRIY:0
+[     121ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/app/lista?_rsc=R0tRxeXOP7hmQRIY:0
+[     122ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/app/perfil?_rsc=R0tRxeXOP7hmQRIY:0

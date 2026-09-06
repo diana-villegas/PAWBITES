@@ -1,0 +1,46 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - generic [ref=f4e5]:
+      - generic [ref=f4e6]:
+        - generic [ref=f4e7]:
+          - paragraph [ref=f4e8]: Hoy
+          - heading "El plato de Luna" [level=1] [ref=f4e9]
+        - generic [ref=f4e10]: "Racha: 2 sem"
+      - generic [ref=f4e15]:
+        - generic [ref=f4e16]:
+          - paragraph [ref=f4e17]: Día 1 de 14 · 15 kg
+          - paragraph [ref=f4e18]: "-23g totales"
+          - paragraph [ref=f4e19]: 25% comida real · 75% concentrado hoy
+        - generic [ref=f4e20]:
+          - generic [ref=f4e21]:
+            - paragraph [ref=f4e26]: "-17g"
+            - paragraph [ref=f4e27]: Carne
+          - generic [ref=f4e28]:
+            - paragraph [ref=f4e33]: "-2g"
+            - paragraph [ref=f4e34]: Vísceras
+          - generic [ref=f4e35]:
+            - paragraph [ref=f4e40]: "-3g"
+            - paragraph [ref=f4e41]: Vegetales
+      - button "Ya lo preparé" [ref=f4e43]
+      - generic [ref=f4e45]:
+        - generic [ref=f4e46]:
+          - paragraph [ref=f4e47]: Tu plan de transición
+          - link "Ver calendario" [ref=f4e48] [cursor=pointer]:
+            - /url: /app/plan
+        - paragraph [ref=f4e53]: Día 1 de 14 — faltan 13 días para comida 100% real
+      - link "Lista de compras Preparas cada 15 días — revisa antes de tu próxima tanda" [ref=f4e55] [cursor=pointer]:
+        - /url: /app/lista
+        - generic [ref=f4e63]:
+          - generic [ref=f4e64]: Lista de compras
+          - generic [ref=f4e65]: Preparas cada 15 días — revisa antes de tu próxima tanda
+    - navigation "Navegación principal" [ref=f4e68]:
+      - generic [ref=f4e69]:
+        - link "Hoy" [ref=f4e70] [cursor=pointer]:
+          - /url: /app
+        - link "Plan" [ref=f4e76] [cursor=pointer]:
+          - /url: /app/plan
+        - link "Lista" [ref=f4e81] [cursor=pointer]:
+          - /url: /app/lista
+        - link "Perfil" [ref=f4e90] [cursor=pointer]:
+          - /url: /app/perfil
+  - alert [ref=f4e98]

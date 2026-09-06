@@ -1,0 +1,33 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e2]:
+    - generic [ref=f2e5]:
+      - heading "Luna" [level=1] [ref=f2e12]
+      - generic [ref=f2e13]:
+        - generic [ref=f2e14]:
+          - generic [ref=f2e15]: Peso
+          - generic [ref=f2e16]: 15 kg
+        - generic [ref=f2e17]:
+          - generic [ref=f2e18]: Edad
+          - generic [ref=f2e19]: Adulto (1 a 7 años)
+        - generic [ref=f2e20]:
+          - generic [ref=f2e21]: Actividad
+          - generic [ref=f2e22]: Activo — paseos largos a diario
+        - generic [ref=f2e23]:
+          - generic [ref=f2e24]: Dieta
+          - generic [ref=f2e25]: Cocinada en casa
+        - generic [ref=f2e26]:
+          - generic [ref=f2e27]: Preparación
+          - generic [ref=f2e28]: Cada 15 días
+      - paragraph [ref=f2e33]: Guía general para perros sanos — no reemplaza a tu veterinario.
+      - button "Cerrar sesión" [ref=f2e34]
+    - navigation "Navegación principal" [ref=f2e38]:
+      - generic [ref=f2e39]:
+        - link "Hoy" [ref=f2e40] [cursor=pointer]:
+          - /url: /app
+        - link "Plan" [ref=f2e46] [cursor=pointer]:
+          - /url: /app/plan
+        - link "Lista" [ref=f2e51] [cursor=pointer]:
+          - /url: /app/lista
+        - link "Perfil" [ref=f2e60] [cursor=pointer]:
+          - /url: /app/perfil
+  - alert [ref=f2e68]

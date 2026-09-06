@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PawBites — Elige la dirección visual de tu app (ronda 2, fiel a tu referencia)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --page-bg:#1C1712; --page-fg:#F1EAE2; }
+  * { box-sizing: border-box; }
+  html,body { margin:0; padding:0; }
+  body {
+    background:
+      radial-gradient(1100px 600px at 15% -10%, rgba(255,140,100,.12), transparent 60%),
+      radial-gradient(900px 500px at 90% 10%, rgba(140,120,220,.10), transparent 55%),
+      var(--page-bg);
+    color: var(--page-fg); font-family:'Nunito',sans-serif; padding:48px 24px 96px;
+  }
+  .page-header { max-width:1100px; margin:0 auto 12px; text-align:center; }
+  .page-header .tag { display:inline-block; font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#FFB199; background:rgba(255,107,74,.14); border:1px solid rgba(255,107,74,.3); padding:5px 14px; border-radius:999px; margin-bottom:14px; }
+  .page-header h1 { font-family:'Baloo 2',sans-serif; font-size:30px; font-weight:700; letter-spacing:-0.01em; margin:0 0 10px; }
+  .page-header p { font-size:15px; color:#C9BEB2; margin:0 0 20px; max-width: 640px; margin-left:auto; margin-right:auto; }
+  .exits { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; font-size:13px; color:#B9AC9E; margin-bottom: 8px;}
+  .exits span { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); padding:6px 12px; border-radius:999px; }
+
+  .board { max-width:1180px; margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr); gap:32px; }
+  @media (max-width:980px){ .board{ grid-template-columns:1fr; max-width:460px; } }
+
+  .option { display:flex; flex-direction:column; gap:16px; }
+  .option-label { display:flex; align-items:baseline; gap:10px; }
+  .option-label .letter { font-family:'Nunito',sans-serif; font-weight:800; font-size:13px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); padding:4px 10px; border-radius:999px; letter-spacing:.04em; }
+  .option-label .name { font-family:'Baloo 2',sans-serif; font-size:17px; font-weight:600; }
+
+  .phone { width:100%; max-width:375px; margin:0 auto; border-radius:42px; padding:12px; background:linear-gradient(160deg,#2a2a2e,#131315); box-shadow:0 30px 60px rgba(0,0,0,.45),0 2px 0 rgba(255,255,255,.04) inset; }
+  .phone-screen { position:relative; overflow:hidden; border-radius:32px; height:720px; display:flex; flex-direction:column; background:#FBF6EF; color:#1B2A3D; }
+  .notch { position:absolute; top:8px; left:50%; transform:translateX(-50%); width:90px; height:22px; background:#0b0b0c; border-radius:14px; z-index:5; }
+  .statusbar { display:flex; justify-content:space-between; align-items:center; padding:14px 22px 4px; font-size:13px; font-weight:700; font-variant-numeric:tabular-nums; position:relative; z-index:3; }
+  .statusbar .battery { width:20px; height:10px; border:1.4px solid currentColor; border-radius:2px; position:relative; opacity:.9;}
+  .statusbar .battery::after { content:''; position:absolute; right:-3px; top:2.5px; width:2px; height:5px; background:currentColor; border-radius:1px; }
+
+  .content { flex:1; overflow:hidden; padding:6px 18px 0; display:flex; flex-direction:column; gap:14px; position:relative; z-index:2; }
+
+  .bottomnav { display:flex; justify-content:space-around; align-items:center; padding:9px 8px 20px; background:#FFFFFF; border-top:1px solid rgba(27,42,61,.08); position:relative; z-index:3; }
+  .navitem { display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10px; font-weight:700; color:#9AA5B4; }
+  .navitem.active { color:#FF6B4A; }
+  .navitem svg { width:20px; height:20px; }
+
+  /* soft-3D icon chip (claymorphism approx, ver 54) */
+  .icon-3d { width:40px; height:40px; border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .icon-3d svg { width:19px; height:19px; color:#fff; }
+  .icon-3d.green { background:linear-gradient(145deg,#7BC98F,#4FAE6E); box-shadow: inset 0 1px 2px rgba(255,255,255,.5), inset 0 -2px 3px rgba(0,0,0,.15), 0 4px 10px rgba(79,174,110,.35); }
+  .icon-3d.blue  { background:linear-gradient(145deg,#6FACE8,#4A90D9); box-shadow: inset 0 1px 2px rgba(255,255,255,.5), inset 0 -2px 3px rgba(0,0,0,.15), 0 4px 10px rgba(74,144,217,.35); }
+  .icon-3d.purple{ background:linear-gradient(145deg,#A99BEE,#8B7FD9); box-shadow: inset 0 1px 2px rgba(255,255,255,.5), inset 0 -2px 3px rgba(0,0,0,.15), 0 4px 10px rgba(139,127,217,.35); }
+  .icon-3d.yellow{ background:linear-gradient(145deg,#F3CB6A,#E8B93D); box-shadow: inset 0 1px 2px rgba(255,255,255,.5), inset 0 -2px 3px rgba(0,0,0,.15), 0 4px 10px rgba(232,185,61,.35); }
+  .icon-3d.coral { background:linear-gradient(145deg,#FF8B6E,#FF6B4A); box-shadow: inset 0 1px 2px rgba(255,255,255,.5), inset 0 -2px 3px rgba(0,0,0,.15), 0 4px 10px rgba(255,107,74,.4); }
+
+  .greeting { font-size:13px; font-weight:700; color:#7C8798; margin:0; }
+  .dogname { font-family:'Baloo 2',sans-serif; font-size:24px; font-weight:700; margin:2px 0 0; line-height:1.15; }
+
+  .card { background:#fff; border-radius:22px; box-shadow:0 1px 0 rgba(255,255,255,.7) inset, 0 2px 4px rgba(27,42,61,.04), 0 10px 24px rgba(27,42,61,.07); }
+
+  .plate-card { padding:18px; position:relative; overflow:hidden; }
+  .plate-card .top { display:flex; justify-content:space-between; align-items:flex-start; }
+  .plate-card .lab { font-size:11.5px; font-weight:700; color:#7C8798; margin:0 0 4px; }
+  .plate-card .w { font-family:'Baloo 2',sans-serif; font-size:34px; font-weight:700; color:#1B2A3D; font-variant-numeric:tabular-nums; margin:0; line-height:1; }
+  .plate-card .w small { font-size:14px; font-weight:600; color:#7C8798; }
+  .chip-pill { display:inline-flex; align-items:center; gap:6px; background:#FFE7DF; color:#D9502F; font-size:11.5px; font-weight:800; padding:6px 11px; border-radius:999px; }
+
+  .macro-row { display:flex; gap:8px; margin-top:14px; }
+  .macro { flex:1; border-radius:14px; padding:9px 6px; text-align:center; }
+  .macro .g { font-family:'Baloo 2',sans-serif; font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; display:block; }
+  .macro .l { font-size:9.5px; font-weight:700; opacity:.85; display:block; margin-top:2px; }
+  .macro.green{ background:#E1F4E5; color:#2F7D48; } .macro.blue{ background:#E1EEFB; color:#2C6BAE; }
+  .macro.purple{ background:#EAE6FB; color:#5F51BE; } .macro.yellow{ background:#FDF3DA; color:#9A7818; }
+
+  .row { display:flex; align-items:center; gap:12px; padding:12px 14px; }
+  .row .txt { flex:1; } .row .t1 { font-size:13px; font-weight:800; margin:0; color:#1B2A3D; }
+  .row .t2 { font-size:11px; font-weight:600; color:#7C8798; margin:2px 0 0; }
+  .check { width:22px; height:22px; border-radius:999px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .check.done { background:#4FAE6E; } .check.pending { border:2px solid #E1E5EB; }
+  .check svg { width:12px; height:12px; color:#fff; }
+
+  .cta-btn { border:none; border-radius:999px; padding:14px; font-family:'Nunito',sans-serif; font-size:14px; font-weight:800; text-align:center; cursor:pointer; width:100%; background:linear-gradient(180deg,#FF8B6E,#FF6B4A); color:#fff; box-shadow:0 4px 14px rgba(255,107,74,.4), inset 0 1px 0 rgba(255,255,255,.25); }
+
+  .quick-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  .quick-item { display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .quick-item span { font-size:10px; font-weight:700; color:#4C5A6B; text-align:center; }
+
+  /* landing hero mini */
+  .hero-mini { border-radius:22px; padding:28px 22px; background:#fff; box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 10px 26px rgba(27,42,61,.08); position:relative; }
+  .hero-mini .kicker { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; color:#FF6B4A; margin:0 0 10px; }
+  .hero-mini h2 { font-family:'Baloo 2',sans-serif; font-size:23px; line-height:1.2; margin:0 0 10px; color:#1B2A3D; font-weight:700; }
+  .hero-mini p { font-size:13.5px; line-height:1.5; margin:0 0 16px; color:#5C6878; max-width:34ch; }
+  .hero-mini .cta { display:inline-flex; align-items:center; gap:8px; border:none; border-radius:999px; padding:12px 18px; font-size:13.5px; font-weight:800; cursor:pointer; background:linear-gradient(180deg,#FF8B6E,#FF6B4A); color:#fff; box-shadow:0 4px 12px rgba(255,107,74,.35); }
+  .squiggle { display:inline-block; }
+
+  .desc { font-size:13px; line-height:1.5; color:#C9BEB2; margin:2px 4px 0; }
+  .swatches { display:flex; gap:6px; margin:2px 4px; }
+  .swatches span { width:22px; height:22px; border-radius:7px; border:1px solid rgba(255,255,255,.15); }
+  .specimen { margin:2px 4px; font-size:15px; }
+  .specimen .d { display:block; font-size:19px; margin-bottom:2px; font-family:'Baloo 2',sans-serif; font-weight:700; color:#fff; }
+  .hypothesis { font-size:12px; color:#9C8F82; margin:4px 4px 0; font-style:italic; }
+
+  /* ============ OPTION A — Panorama del día ============ */
+  .content-a .plate-card { background:linear-gradient(155deg,#FFF3EE,#fff); border:1px solid rgba(255,107,74,.12); }
+
+  /* ============ OPTION B — Satélites alrededor del plato ============ */
+  .satellite-wrap { position:relative; padding: 6px 0 10px; }
+  .satellite-row { display:flex; gap:10px; overflow:visible; }
+  .sat-card { flex:1; background:#fff; border-radius:16px; padding:10px 6px; text-align:center; box-shadow:0 6px 16px rgba(27,42,61,.08); }
+  .sat-card:nth-child(1){ transform: rotate(-3deg); } .sat-card:nth-child(2){ transform: rotate(2deg); margin-top:6px;}
+  .sat-card:nth-child(3){ transform: rotate(-2deg);} .sat-card:nth-child(4){ transform: rotate(3deg); margin-top:6px;}
+  .sat-card .icon-3d { margin: 0 auto 6px; }
+  .sat-card span { font-size:10px; font-weight:800; color:#4C5A6B; }
+  .sat-card b { display:block; font-family:'Baloo 2',sans-serif; font-size:13px; color:#1B2A3D; }
+
+  /* ============ OPTION C — Carrusel de tarjetas ============ */
+  .carousel { display:flex; gap:12px; overflow:visible; margin: 0 -18px 0 0; padding-right: 40px;}
+  .carousel-card { min-width: 240px; border-radius:24px; padding:18px; position:relative; }
+  .carousel-card.hero { background:linear-gradient(160deg,#FF8B6E,#FF6B4A); color:#fff; }
+  .carousel-card.peek { background:#fff; opacity:.9; box-shadow:0 6px 16px rgba(27,42,61,.06); display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px; color:#1B2A3D; }
+  .mascot { width: 74px; height:74px; border-radius: 22px; background:rgba(255,255,255,.22); display:flex; align-items:center; justify-content:center; margin-bottom:10px;}
+  .mascot svg{ width:42px; height:42px; color:#fff; }
+  .timeline-row { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:14px; background:#fff; box-shadow:0 4px 10px rgba(27,42,61,.05); border-left:4px solid var(--tl-color); }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <span class="tag">Ronda 2 · fiel a tu referencia</span>
+  <h1>PawBites, con la calidez de tus referencias</h1>
+  <p>Tomé lo mejor de tus 3 imágenes — fondo claro y cálido, ilustración amigable, checklist a colores por categoría, tipografía redondeada — y lo apliqué a la pantalla real de PawBites (el plato de tu perro) y al inicio de la venta. Las 3 comparten la misma paleta y tipografía; varían en cómo se organiza la pantalla.</p>
+  <div class="exits">
+    <span>1 · elige A, B o C</span>
+    <span>2 · combina lo mejor</span>
+    <span>3 · pide otras 3</span>
+    <span>4 · ajusta un detalle</span>
+  </div>
+</div>
+
+<div class="board">
+
+  <!-- ================= OPTION A — Panorama del día ================= -->
+  <div class="option">
+    <div class="option-label"><span class="letter">A</span><span class="name">Panorama del día</span></div>
+
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>▂▄▆█ ᛜ <span class="battery"></span></span></div>
+        <div class="content content-a">
+          <div>
+            <p class="greeting">¡Hola, buenas tardes!</p>
+            <p class="dogname">Aquí tienes el plato de Luna</p>
+          </div>
+
+          <div class="card plate-card">
+            <div class="top">
+              <div>
+                <p class="lab">Hoy · Labrador · 22 kg</p>
+                <p class="w">380<small>g totales</small></p>
+              </div>
+              <span class="chip-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="12" height="12"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                Día 2 de 3
+              </span>
+            </div>
+            <div class="macro-row">
+              <div class="macro green"><span class="g">220g</span><span class="l">POLLO</span></div>
+              <div class="macro purple"><span class="g">45g</span><span class="l">HÍGADO</span></div>
+              <div class="macro yellow"><span class="g">60g</span><span class="l">ZANAH.</span></div>
+              <div class="macro blue"><span class="g">55g</span><span class="l">HUESO</span></div>
+            </div>
+          </div>
+
+          <div class="quick-grid">
+            <div class="quick-item"><div class="icon-3d coral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M9 2h6M12 6v3"/></svg></div><span>Plato</span></div>
+            <div class="quick-item"><div class="icon-3d blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 10h18"/></svg></div><span>Plan</span></div>
+            <div class="quick-item"><div class="icon-3d green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7h15l-1.5 9.5a2 2 0 0 1-2 1.5H8a2 2 0 0 1-2-1.5L4.2 3.5H2"/></svg></div><span>Compras</span></div>
+            <div class="quick-item"><div class="icon-3d purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg></div><span>Perfil</span></div>
+          </div>
+
+          <div class="card" style="padding:6px;">
+            <div class="row"><div class="icon-3d green" style="width:32px;height:32px;border-radius:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="15" height="15"><circle cx="12" cy="13" r="8"/></svg></div><div class="txt"><p class="t1">Plato de hoy preparado</p><p class="t2">380g · 08:00 a. m.</p></div><div class="check done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg></div></div>
+            <div class="row"><div class="icon-3d blue" style="width:32px;height:32px;border-radius:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="15" height="15"><rect x="3" y="4" width="18" height="17" rx="3"/></svg></div><div class="txt"><p class="t1">Transición · día 4 de 14</p><p class="t2">75% real · 25% concentrado</p></div><div class="check pending"></div></div>
+          </div>
+
+          <button class="cta-btn">Preparar comida de la semana</button>
+        </div>
+        <div class="bottomnav">
+          <div class="navitem active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M9 2h6M12 6v3"/></svg>Hoy</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 10h18"/></svg>Plan</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7h15l-1.5 9.5a2 2 0 0 1-2 1.5H8a2 2 0 0 1-2-1.5L4.2 3.5H2"/></svg>Compras</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>Perfil</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-mini">
+      <p class="kicker">Comida real, sin adivinar</p>
+      <h2>Todo lo esencial del plato de tu perro, a la vista</h2>
+      <p>Peso, edad y actividad → su plato desglosado por color y la lista del súper, listos en minutos.</p>
+      <button class="cta">Calcula el plato de tu perro →</button>
+    </div>
+
+    <p class="desc">Estructura tipo "panorama del día" (como tu 3ª imagen): saludo, plato del día, accesos rápidos a color y checklist con marca de hecho/pendiente.</p>
+    <div class="swatches"><span style="background:#FBF6EF"></span><span style="background:#FF6B4A"></span><span style="background:#4FAE6E"></span><span style="background:#8B7FD9"></span><span style="background:#1B2A3D"></span></div>
+    <div class="specimen"><span class="d">Aquí tienes el plato de Luna</span><span style="font-family:'Nunito',sans-serif; color:#C9BEB2;">Nunito — cuerpo</span></div>
+    <p class="hypothesis">Hipótesis: el resumen tipo "todo a la vista" reduce la ansiedad de "¿ya hice todo lo de hoy?" — el mismo trabajo emocional de tu referencia.</p>
+  </div>
+
+  <!-- ================= OPTION B — Satélites alrededor del plato ================= -->
+  <div class="option">
+    <div class="option-label"><span class="letter">B</span><span class="name">Satélites alrededor del plato</span></div>
+
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>▂▄▆█ ᛜ <span class="battery"></span></span></div>
+        <div class="content">
+          <div>
+            <p class="greeting">¡Hola, buenas tardes!</p>
+            <p class="dogname">El plato de Luna</p>
+          </div>
+
+          <div class="card plate-card" style="background:linear-gradient(160deg,#FF8B6E,#FF6B4A); color:#fff;">
+            <p class="lab" style="color:rgba(255,255,255,.85);">HOY · LABRADOR · 22 KG</p>
+            <p class="w" style="color:#fff;">380<small style="color:rgba(255,255,255,.8);">g totales</small></p>
+          </div>
+
+          <div class="satellite-wrap">
+            <div class="satellite-row">
+              <div class="sat-card"><div class="icon-3d green" style="width:32px;height:32px;border-radius:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="15" height="15"><circle cx="12" cy="13" r="8"/></svg></div><b>220g</b><span>Pollo</span></div>
+              <div class="sat-card"><div class="icon-3d purple" style="width:32px;height:32px;border-radius:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="15" height="15"><path d="M12 2v20M2 12h20"/></svg></div><b>45g</b><span>Hígado</span></div>
+              <div class="sat-card"><div class="icon-3d yellow" style="width:32px;height:32px;border-radius:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="15" height="15"><circle cx="12" cy="12" r="9"/></svg></div><b>60g</b><span>Zanahoria</span></div>
+              <div class="sat-card"><div class="icon-3d blue" style="width:32px;height:32px;border-radius:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="15" height="15"><path d="M4 12h16M4 12a2 2 0 1 1 4 0M20 12a2 2 0 1 0-4 0"/></svg></div><b>55g</b><span>Hueso</span></div>
+            </div>
+          </div>
+
+          <div class="card" style="padding:6px;">
+            <div class="row"><div class="icon-3d coral" style="width:32px;height:32px;border-radius:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="15" height="15"><path d="M20 6 9 17l-5-5"/></svg></div><div class="txt"><p class="t1">3 semanas preparando comida real</p><p class="t2">Racha activa · sigue así</p></div></div>
+            <div class="row"><div class="icon-3d blue" style="width:32px;height:32px;border-radius:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="15" height="15"><rect x="3" y="4" width="18" height="17" rx="3"/></svg></div><div class="txt"><p class="t1">Transición · día 4 de 14</p><p class="t2">75% real · 25% concentrado</p></div></div>
+          </div>
+
+          <button class="cta-btn">Preparar comida de la semana</button>
+        </div>
+        <div class="bottomnav">
+          <div class="navitem active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M9 2h6M12 6v3"/></svg>Hoy</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 10h18"/></svg>Plan</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7h15l-1.5 9.5a2 2 0 0 1-2 1.5H8a2 2 0 0 1-2-1.5L4.2 3.5H2"/></svg>Compras</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>Perfil</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-mini">
+      <p class="kicker">Comida real, sin adivinar</p>
+      <h2>El plato de tu perro <span class="squiggle">✿</span> desglosado por color</h2>
+      <p>Cada ingrediente con su propio color, como en tu carrito del súper: fácil de reconocer de un vistazo.</p>
+      <button class="cta">Calcula el plato de tu perro →</button>
+    </div>
+
+    <p class="desc">Estructura tipo "satélites" (como tu 2ª imagen): el plato al centro y cada ingrediente flota alrededor con su propio ícono y color — igual que tus tarjetas de Comida/Paseo/Medicina.</p>
+    <div class="swatches"><span style="background:#FBF6EF"></span><span style="background:#FF6B4A"></span><span style="background:#4A90D9"></span><span style="background:#E8B93D"></span><span style="background:#1B2A3D"></span></div>
+    <div class="specimen"><span class="d">El plato de Luna</span><span style="font-family:'Nunito',sans-serif; color:#C9BEB2;">Nunito — cuerpo</span></div>
+    <p class="hypothesis">Hipótesis: el color por ingrediente hace el plato instantáneamente "leíble" incluso para quien nunca calculó una dieta — copia la lógica de tus tarjetas satélite.</p>
+  </div>
+
+  <!-- ================= OPTION C — Carrusel de tarjetas ================= -->
+  <div class="option">
+    <div class="option-label"><span class="letter">C</span><span class="name">Carrusel de tarjetas</span></div>
+
+    <div class="phone">
+      <div class="phone-screen" style="overflow:visible; border-radius:32px;">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>▂▄▆█ ᛜ <span class="battery"></span></span></div>
+        <div class="content" style="overflow:visible;">
+          <div>
+            <p class="greeting">¡Hola, buenas tardes!</p>
+            <p class="dogname">Luna</p>
+          </div>
+
+          <div class="carousel">
+            <div class="carousel-card hero">
+              <div class="mascot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M9 2h6M12 6v3M9 13h.01M15 13h.01"/></svg></div>
+              <p class="lab" style="color:rgba(255,255,255,.85);">HOY · 22 KG</p>
+              <p class="w" style="color:#fff;">380<small style="color:rgba(255,255,255,.8);">g</small></p>
+              <p style="font-size:12px; margin:10px 0 0; color:rgba(255,255,255,.9); font-weight:700;">Pollo 220g · Hígado 45g · Zanahoria 60g · Hueso 55g</p>
+            </div>
+            <div class="carousel-card peek">
+              <div class="icon-3d blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="18" height="18"><rect x="3" y="4" width="18" height="17" rx="3"/></svg></div>
+              <b style="font-family:'Baloo 2',sans-serif; font-size:14px;">Plan 14 días</b>
+              <span style="font-size:11px; color:#7C8798; font-weight:700;">Día 4 en curso</span>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:2px;">
+            <div class="timeline-row" style="--tl-color:#4FAE6E;"><div class="icon-3d green" style="width:30px;height:30px;border-radius:9px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="14" height="14"><circle cx="12" cy="13" r="8"/></svg></div><div class="txt"><p class="t1">Comida servida</p><p class="t2">08:00 a. m.</p></div></div>
+            <div class="timeline-row" style="--tl-color:#E8B93D;"><div class="icon-3d yellow" style="width:30px;height:30px;border-radius:9px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="14" height="14"><path d="M6 7h15l-1.5 9.5a2 2 0 0 1-2 1.5H8a2 2 0 0 1-2-1.5L4.2 3.5H2"/></svg></div><div class="txt"><p class="t1">Lista del súper</p><p class="t2">Faltan 3 días para vencer</p></div></div>
+            <div class="timeline-row" style="--tl-color:#8B7FD9;"><div class="icon-3d purple" style="width:30px;height:30px;border-radius:9px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" width="14" height="14"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg></div><div class="txt"><p class="t1">Perfil de Luna</p><p class="t2">Actualizado hace 3 días</p></div></div>
+          </div>
+
+          <button class="cta-btn">Preparar comida de la semana</button>
+        </div>
+        <div class="bottomnav">
+          <div class="navitem active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M9 2h6M12 6v3"/></svg>Hoy</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 10h18"/></svg>Plan</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7h15l-1.5 9.5a2 2 0 0 1-2 1.5H8a2 2 0 0 1-2-1.5L4.2 3.5H2"/></svg>Compras</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>Perfil</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-mini">
+      <p class="kicker">Comida real, sin adivinar</p>
+      <h2>Desliza y ve todo el cuidado de tu perro en un vistazo</h2>
+      <p>El plato de hoy, el plan de transición y su perfil — una tarjeta a la vez, fácil de recorrer.</p>
+      <button class="cta">Calcula el plato de tu perro →</button>
+    </div>
+
+    <p class="desc">Estructura tipo "carrusel" (como tu 1ª imagen): tarjetas que se deslizan, con la mascota de Luna protagonista y una línea de tiempo con color por tipo de evento.</p>
+    <div class="swatches"><span style="background:#FBF6EF"></span><span style="background:#FF6B4A"></span><span style="background:#8B7FD9"></span><span style="background:#4A90D9"></span><span style="background:#1B2A3D"></span></div>
+    <div class="specimen"><span class="d">Luna</span><span style="font-family:'Nunito',sans-serif; color:#C9BEB2;">Nunito — cuerpo</span></div>
+    <p class="hypothesis">Hipótesis: la mascota (silueta de perro) + el carrusel hacen la app sentirse "sobre MI perro", igual que tu referencia con las ilustraciones de perritos.</p>
+  </div>
+
+</div>
+
+</body>
+</html>

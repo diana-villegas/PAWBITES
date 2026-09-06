@@ -1,0 +1,61 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e165]:
+      - link "Cerrar" [ref=e167] [cursor=pointer]:
+        - /url: /
+      - generic [ref=e171]:
+        - heading "El Plato Exacto de Luna ya está listo" [level=1] [ref=e172]
+        - paragraph [ref=e173]: Hecho con su peso, su edad y su actividad.
+        - generic [ref=e174]:
+          - paragraph [ref=e175]: 7 kg · hoy
+          - paragraph [ref=e176]: 175g totales
+        - generic [ref=e177]:
+          - generic [ref=e178]:
+            - paragraph [ref=e180]: 131g
+            - paragraph [ref=e181]: Carne
+          - generic [ref=e182]:
+            - paragraph [ref=e184]: 18g
+            - paragraph [ref=e185]: Vísceras
+          - generic [ref=e186]:
+            - paragraph [ref=e188]: 26g
+            - paragraph [ref=e189]: Vegetales
+        - list [ref=e190]:
+          - listitem [ref=e191]: Plan de transición de 14 días, sin diarreas por ir muy rápido
+          - listitem [ref=e195]: Lista del súper cada 7 días, lista para marcar
+          - listitem [ref=e199]: Sustituto de ingredientes si algo no lo consigues
+        - paragraph [ref=e203]: Menos que una consulta con nutricionista veterinario ($80+) o la comida precocinada ($150+/mes).
+        - generic [ref=e204]:
+          - generic [ref=e209]:
+            - paragraph [ref=e210]: Hoy
+            - paragraph [ref=e211]: El plato de Luna, sin límites
+          - generic [ref=e216]:
+            - paragraph [ref=e217]: Día 2
+            - paragraph [ref=e218]: Te avisamos por correo antes de cualquier cobro
+          - generic [ref=e222]:
+            - paragraph [ref=e223]: Día 3
+            - paragraph [ref=e224]: "1er cobro: $2.50/mes · cancela antes sin costo"
+        - generic [ref=e225]:
+          - generic [ref=e226]: Más popular
+          - button "Anual 6 meses gratis $2.50/mes Se cobra $29.99/año" [pressed] [ref=e227]:
+            - generic [ref=e228]:
+              - generic [ref=e229]: Anual
+              - generic [ref=e230]: 6 meses gratis
+            - paragraph [ref=e231]: $2.50/mes
+            - paragraph [ref=e232]: Se cobra $29.99/año
+        - button "Mensual $4.99/mes" [ref=e233]:
+          - generic [ref=e234]:
+            - generic [ref=e235]: Mensual
+            - generic [ref=e236]: $4.99/mes
+        - generic [ref=e237]:
+          - link "Empezar mis 3 días gratis" [ref=e238] [cursor=pointer]:
+            - /url: /entrar
+          - paragraph [ref=e239]: Hoy no pagas nada · te avisamos antes del cobro · cancela en 1 tap
+        - generic [ref=e240]:
+          - link "Ahora no" [ref=e241] [cursor=pointer]:
+            - /url: /
+          - generic [ref=e242]: ·
+          - link "Restaurar compra" [ref=e243] [cursor=pointer]:
+            - /url: /entrar
+        - generic [ref=e244]: Pago seguro con Hotmart · Garantía de 7 días
+  - button "Open Next.js Dev Tools" [ref=e34] [cursor=pointer]
+  - alert [ref=e38]

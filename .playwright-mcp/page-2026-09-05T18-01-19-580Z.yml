@@ -1,0 +1,45 @@
+- generic [active] [ref=f5e1]:
+  - generic [ref=f5e2]:
+    - generic [ref=f5e5]:
+      - generic [ref=f5e6]:
+        - paragraph [ref=f5e7]: Plan
+        - heading "Transición de Luna" [level=1] [ref=f5e8]
+        - paragraph [ref=f5e9]: 14 días de croquetas a comida real, sin diarreas por ir muy rápido.
+      - generic [ref=f5e10]:
+        - paragraph [ref=f5e11]: Días 1–3 · 25% real · 75% concentrado
+        - generic [ref=f5e12]:
+          - generic [ref=f5e13]: "1"
+          - generic [ref=f5e14]: "2"
+          - generic [ref=f5e15]: "3"
+      - generic [ref=f5e16]:
+        - paragraph [ref=f5e17]: Días 4–7 · 50% real · 50% concentrado
+        - generic [ref=f5e18]:
+          - generic [ref=f5e19]: "4"
+          - generic [ref=f5e20]: "5"
+          - generic [ref=f5e21]: "6"
+          - generic [ref=f5e22]: "7"
+      - generic [ref=f5e23]:
+        - paragraph [ref=f5e24]: Días 8–11 · 75% real · 25% concentrado
+        - generic [ref=f5e25]:
+          - generic [ref=f5e26]: "8"
+          - generic [ref=f5e27]: "9"
+          - generic [ref=f5e28]: "10"
+          - generic [ref=f5e29]: "11"
+      - generic [ref=f5e30]:
+        - paragraph [ref=f5e31]: Días 12–14 · 100% comida real
+        - generic [ref=f5e32]:
+          - generic [ref=f5e33]: "12"
+          - generic [ref=f5e34]: "13"
+          - generic [ref=f5e35]: "14"
+      - paragraph [ref=f5e36]: Guía general para perros sanos — no reemplaza a tu veterinario
+    - navigation "Navegación principal" [ref=f5e37]:
+      - generic [ref=f5e38]:
+        - link "Hoy" [ref=f5e39] [cursor=pointer]:
+          - /url: /app
+        - link "Plan" [ref=f5e45] [cursor=pointer]:
+          - /url: /app/plan
+        - link "Lista" [ref=f5e50] [cursor=pointer]:
+          - /url: /app/lista
+        - link "Perfil" [ref=f5e59] [cursor=pointer]:
+          - /url: /app/perfil
+  - alert [ref=f5e67]

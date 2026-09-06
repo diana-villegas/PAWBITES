@@ -1,0 +1,14 @@
+- generic [ref=f11e1]:
+  - main [ref=f11e2]:
+    - generic [ref=f11e3]:
+      - button "Atrás" [ref=f11e39]
+      - paragraph [ref=f11e10]: PawBites
+    - generic [ref=f11e128]:
+      - generic [ref=f11e129]:
+        - heading "¿Cruda o cocinada?" [level=1] [ref=f11e130]
+        - paragraph [ref=f11e131]: Elige el tipo de comida real que le darás.
+      - generic [ref=f11e132]:
+        - button "Cruda (carne sin cocinar)" [active] [ref=f11e133]
+        - button "Cocinada en casa" [ref=f11e138]
+  - button "Open Next.js Dev Tools" [ref=f11e34] [cursor=pointer]
+  - alert [ref=f11e38]

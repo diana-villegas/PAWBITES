@@ -1,0 +1,18 @@
+- generic [ref=f5e1]:
+  - main [ref=f5e2]:
+    - generic [ref=f5e3]:
+      - button "Atrás" [ref=f5e30]
+      - paragraph [ref=f5e10]: PawBites
+    - generic [ref=f5e34]:
+      - heading "¿Cuánto pesa Luna?" [level=1] [ref=f5e35]
+      - paragraph [ref=f5e36]: Es el dato que más cambia su plato.
+      - generic [ref=f5e37]:
+        - paragraph [ref=f5e38]: KILOGRAMOS
+        - paragraph [ref=f5e39]: "15"
+        - slider "Peso en kilogramos" [ref=f5e40]: "15"
+        - generic [ref=f5e41]:
+          - generic [ref=f5e42]: 1 kg
+          - generic [ref=f5e43]: 80 kg
+        - paragraph [ref=f5e44]: Raza mediana
+      - button "Fijar el peso de Luna" [active] [ref=f5e52]
+  - alert [ref=f5e29]

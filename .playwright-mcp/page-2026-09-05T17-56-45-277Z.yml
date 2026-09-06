@@ -1,0 +1,39 @@
+- generic [active] [ref=f2e1]:
+  - generic [ref=f2e2]:
+    - generic [ref=f2e5]:
+      - generic [ref=f2e6]:
+        - generic [ref=f2e7]:
+          - paragraph [ref=f2e8]: Hoy
+          - heading "El plato de Luna" [level=1] [ref=f2e9]
+        - generic [ref=f2e10]: 2 sem
+      - generic [ref=f2e15]:
+        - generic [ref=f2e16]:
+          - paragraph [ref=f2e17]: Día 1 de 14 · 15 kg
+          - paragraph [ref=f2e18]: "-18g totales"
+          - paragraph [ref=f2e19]: 25% comida real · 75% concentrado hoy
+        - generic [ref=f2e20]:
+          - generic [ref=f2e21]:
+            - paragraph [ref=f2e26]: "-13g"
+            - paragraph [ref=f2e27]: Carne
+          - generic [ref=f2e28]:
+            - paragraph [ref=f2e33]: "-2g"
+            - paragraph [ref=f2e34]: Vísceras
+          - generic [ref=f2e35]:
+            - paragraph [ref=f2e40]: "-2g"
+            - paragraph [ref=f2e41]: Vegetales
+      - button "Ya lo preparé" [ref=f2e43]
+      - paragraph [ref=f2e46]:
+        - text: Preparas cada
+        - generic [ref=f2e47]: 15 días
+        - text: — revisa la lista del súper antes de tu próxima tanda.
+    - navigation "Navegación principal" [ref=f2e48]:
+      - generic [ref=f2e49]:
+        - link "Hoy" [ref=f2e50] [cursor=pointer]:
+          - /url: /app
+        - link "Plan" [ref=f2e56] [cursor=pointer]:
+          - /url: /app/plan
+        - link "Lista" [ref=f2e61] [cursor=pointer]:
+          - /url: /app/lista
+        - link "Perfil" [ref=f2e70] [cursor=pointer]:
+          - /url: /app/perfil
+  - alert [ref=f2e78]

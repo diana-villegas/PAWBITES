@@ -1,0 +1,15 @@
+- generic [ref=f11e1]:
+  - main [ref=f11e2]:
+    - generic [ref=f11e3]:
+      - button "Atrás" [ref=f11e39]
+      - paragraph [ref=f11e10]: PawBites
+    - generic [ref=f11e100]:
+      - generic [ref=f11e101]:
+        - heading "¿Qué tan activo es Luna?" [level=1] [ref=f11e102]
+        - paragraph [ref=f11e103]: Esto ajusta la cantidad total del plato.
+      - generic [ref=f11e104]:
+        - button "Tranquilo — paseos cortos" [ref=f11e105]
+        - button "Activo — paseos largos a diario" [active] [ref=f11e109]
+        - button "Muy activo — corre o hace deporte" [ref=f11e113]
+  - button "Open Next.js Dev Tools" [ref=f11e34] [cursor=pointer]
+  - alert [ref=f11e38]

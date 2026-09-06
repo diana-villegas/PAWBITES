@@ -1,0 +1,59 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]: "Combinación confirmada: A + B"
+    - heading "PawBites — dirección final" [level=1] [ref=e4]
+    - paragraph [ref=e5]: El "panorama del día" de la A (saludo, accesos rápidos, checklist) con el plato-hero en degradé coral y los ingredientes satélite de la B.
+  - generic [ref=e6]:
+    - generic [ref=e8]:
+      - generic [ref=e10]:
+        - generic [ref=e11]: 9:41
+        - generic [ref=e12]: ▂▄▆█ ᛜ
+      - generic [ref=e14]:
+        - generic [ref=e15]:
+          - paragraph [ref=e16]: ¡Hola, buenas tardes!
+          - paragraph [ref=e17]: Aquí tienes el plato de Luna
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - paragraph [ref=e21]: HOY · LABRADOR · 22 KG
+            - paragraph [ref=e22]: 380g totales
+          - generic [ref=e23]: Día 2 de 3
+        - generic [ref=e28]:
+          - generic [ref=e29]:
+            - generic [ref=e33]: 220g
+            - text: Pollo
+          - generic [ref=e34]:
+            - generic [ref=e38]: 45g
+            - text: Hígado
+          - generic [ref=e39]:
+            - generic [ref=e43]: 60g
+            - text: Zanahoria
+          - generic [ref=e44]:
+            - generic [ref=e48]: 55g
+            - text: Hueso
+        - generic [ref=e49]:
+          - generic [ref=e50]: Plato
+          - generic [ref=e56]: Plan
+          - generic [ref=e61]: Compras
+          - generic [ref=e66]: Perfil
+        - generic [ref=e72]:
+          - generic [ref=e77]:
+            - paragraph [ref=e78]: Plato de hoy preparado
+            - paragraph [ref=e79]: 380g · 08:00 a. m.
+          - generic [ref=e87]:
+            - paragraph [ref=e88]: Transición · día 4 de 14
+            - paragraph [ref=e89]: 75% real · 25% concentrado
+        - button "Preparar comida de la semana" [ref=e91] [cursor=pointer]
+      - generic [ref=e92]:
+        - generic [ref=e93]: Hoy
+        - generic [ref=e97]: Plan
+        - generic [ref=e100]: Compras
+        - generic [ref=e103]: Perfil
+    - generic [ref=e107]:
+      - paragraph [ref=e108]: Comida real, sin adivinar
+      - heading "Todo el plato de tu perro, desglosado por color" [level=2] [ref=e109]
+      - paragraph [ref=e110]: Peso, edad y actividad → su plato exacto, ingrediente por ingrediente, y la lista del súper lista en minutos.
+      - button "Calcula el plato de tu perro →" [ref=e111] [cursor=pointer]
+    - paragraph [ref=e112]: ¿Es esto lo que imaginabas? Si sí, la dejamos como la dirección definitiva de PawBites y seguimos con la página de ventas.
+  - generic [ref=e113]:
+    - generic [ref=e114]: ✅ confirmar esta combinación
+    - generic [ref=e115]: ✏️ un ajuste más

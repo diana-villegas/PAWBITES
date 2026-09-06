@@ -1,0 +1,14 @@
+- generic [ref=f5e1]:
+  - main [ref=f5e2]:
+    - generic [ref=f5e3]:
+      - button "Atrás" [ref=f5e30]
+      - paragraph [ref=f5e10]: PawBites
+    - generic [ref=f5e76]:
+      - generic [ref=f5e77]:
+        - heading "No es que te falte disciplina" [level=1] [ref=f5e84]
+        - paragraph [ref=f5e85]:
+          - text: Las calculadoras que existen son para expertos en nutrición — por eso las dejaste a la mitad. El
+          - strong [ref=f5e86]: Plato Exacto
+          - text: "hace el cálculo por ti: solo necesita lo que ya sabes de Luna."
+      - button "Continuar" [active] [ref=f5e88]
+  - alert [ref=f5e29]

@@ -1,0 +1,11 @@
+[     181ms] Error: Minified React error #310; visit https://react.dev/errors/310 for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at aT (http://localhost:3001/_next/static/chunks/3byuobrkyz9bj.js:1:80606)
+    at aI (http://localhost:3001/_next/static/chunks/3byuobrkyz9bj.js:1:81695)
+    at Object.useState (http://localhost:3001/_next/static/chunks/3byuobrkyz9bj.js:1:93944)
+    at r.useState (http://localhost:3001/_next/static/chunks/1u5zan5bs9a7v.js:31:19114)
+    at http://localhost:3001/_next/static/chunks/0m-zq-553pqwp.js:9:2689
+    at d (http://localhost:3001/_next/static/chunks/0m-zq-553pqwp.js:9:3781)
+    at http://localhost:3001/_next/static/chunks/0m-zq-553pqwp.js:1:3053
+    at aS (http://localhost:3001/_next/static/chunks/3byuobrkyz9bj.js:1:79321)
+    at o1 (http://localhost:3001/_next/static/chunks/3byuobrkyz9bj.js:1:99614)
+    at id (http://localhost:3001/_next/static/chunks/3byuobrkyz9bj.js:1:111303)

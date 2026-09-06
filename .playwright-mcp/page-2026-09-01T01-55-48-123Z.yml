@@ -1,0 +1,14 @@
+- generic [active] [ref=f5e1]:
+  - main [ref=f5e2]:
+    - generic [ref=f5e3]:
+      - button "Atrás" [ref=f5e30]
+      - paragraph [ref=f5e10]: PawBites
+    - generic [ref=f5e91]:
+      - generic [ref=f5e92]:
+        - heading "¿Qué tan activo es Luna?" [level=1] [ref=f5e93]
+        - paragraph [ref=f5e94]: Esto ajusta la cantidad total del plato.
+      - generic [ref=f5e95]:
+        - button "Tranquilo — paseos cortos" [disabled] [ref=f5e96]
+        - button "Activo — paseos largos a diario" [disabled] [ref=f5e100]
+        - button "Muy activo — corre o hace deporte" [disabled] [ref=f5e105]
+  - alert [ref=f5e29]

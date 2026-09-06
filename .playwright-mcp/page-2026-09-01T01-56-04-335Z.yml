@@ -1,0 +1,10 @@
+- generic [active] [ref=f5e1]:
+  - main [ref=f5e2]:
+    - generic [ref=f5e147]:
+      - generic [ref=f5e148]:
+        - heading "¿Cada cuánto vas a preparar su comida?" [level=1] [ref=f5e149]
+        - paragraph [ref=f5e150]: Elige según el espacio que tengas en tu congelador.
+      - generic [ref=f5e151]:
+        - button "Cada 7 días — menos espacio" [disabled] [ref=f5e152]
+        - button "Cada 15 días — menos viajes al súper" [disabled] [ref=f5e158]
+  - alert [ref=f5e29]

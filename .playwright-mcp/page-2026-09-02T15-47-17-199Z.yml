@@ -1,0 +1,17 @@
+- generic [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - link "Volver al inicio" [ref=e5] [cursor=pointer]:
+          - /url: /
+        - link "Salir del cuestionario" [ref=e10] [cursor=pointer]:
+          - /url: /
+      - paragraph [ref=e14]: PawBites
+    - generic [ref=e16]:
+      - heading "¿Cómo se llama tu perro?" [level=1] [ref=e17]
+      - paragraph [ref=e18]: Vamos a armarle su plato exacto, con su nombre.
+      - generic [ref=e19]:
+        - textbox "Ej. Luna" [active] [ref=e20]
+        - button "Continuar" [disabled] [ref=e28]
+    - paragraph [ref=e29]: Guía general para perros sanos — no reemplaza a tu veterinario
+  - alert [ref=e33]

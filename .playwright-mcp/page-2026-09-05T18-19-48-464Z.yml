@@ -1,0 +1,48 @@
+- generic [active] [ref=f5e1]:
+  - generic [ref=f5e2]:
+    - generic [ref=f5e5]:
+      - generic [ref=f5e6]:
+        - generic [ref=f5e7]:
+          - paragraph [ref=f5e8]: Hoy
+          - heading "El plato de Luna" [level=1] [ref=f5e9]
+        - generic [ref=f5e10]: "Racha: 2 sem"
+      - generic [ref=f5e15]:
+        - generic [ref=f5e16]:
+          - paragraph [ref=f5e17]: Día 1 de 14 · 15 kg
+          - paragraph [ref=f5e18]: "-14g totales"
+          - paragraph [ref=f5e19]: 25% comida real · 75% concentrado hoy
+          - paragraph [ref=f5e20]: ‹‹ Desliza o toca abajo para marcarlo preparado
+        - generic [ref=f5e21]:
+          - generic [ref=f5e22]:
+            - paragraph [ref=f5e27]: "-9g"
+            - paragraph [ref=f5e28]: Carne
+          - generic [ref=f5e29]:
+            - paragraph [ref=f5e34]: "-1g"
+            - paragraph [ref=f5e35]: Vísceras
+          - generic [ref=f5e36]:
+            - paragraph [ref=f5e41]: "-2g"
+            - paragraph [ref=f5e42]: Vegetales
+      - button "Ya lo preparé" [ref=f5e44]
+      - generic [ref=f5e46]:
+        - generic [ref=f5e47]:
+          - generic [ref=f5e48]:
+            - paragraph [ref=f5e49]: Tu plan de transición
+            - link "Ver calendario" [ref=f5e50] [cursor=pointer]:
+              - /url: /app/plan
+          - paragraph [ref=f5e55]: Día 1 de 14 — faltan 13 días para comida 100% real
+        - link "Lista de compras Preparas cada 15 días — revisa antes de tu próxima tanda" [ref=f5e56] [cursor=pointer]:
+          - /url: /app/lista
+          - generic [ref=f5e64]:
+            - generic [ref=f5e65]: Lista de compras
+            - generic [ref=f5e66]: Preparas cada 15 días — revisa antes de tu próxima tanda
+    - navigation "Navegación principal" [ref=f5e69]:
+      - generic [ref=f5e70]:
+        - link "Hoy" [ref=f5e71] [cursor=pointer]:
+          - /url: /app
+        - link "Plan" [ref=f5e77] [cursor=pointer]:
+          - /url: /app/plan
+        - link "Lista" [ref=f5e82] [cursor=pointer]:
+          - /url: /app/lista
+        - link "Perfil" [ref=f5e91] [cursor=pointer]:
+          - /url: /app/perfil
+  - alert [ref=f5e99]

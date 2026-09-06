@@ -1,0 +1,15 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e3]:
+      - button "Atrás" [ref=e39]
+      - paragraph [ref=e10]: PawBites
+    - generic [ref=e64]:
+      - generic [ref=e65]:
+        - heading "¿Qué edad tiene Luna?" [level=1] [ref=e66]
+        - paragraph [ref=e67]: Los cachorros y los senior comen distinto.
+      - generic [ref=e68]:
+        - button "Cachorro (menos de 1 año)" [ref=e69]
+        - button "Adulto (1 a 7 años)" [ref=e71]
+        - button "Senior (7 años o más)" [ref=e73]
+  - button "Open Next.js Dev Tools" [ref=e34] [cursor=pointer]
+  - alert [ref=e38]

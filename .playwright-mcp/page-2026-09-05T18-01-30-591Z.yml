@@ -1,0 +1,32 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - paragraph [ref=e7]: Lista
+        - heading "Tu tanda de 15 días" [level=1] [ref=e8]
+        - paragraph [ref=e9]: Cantidades para Luna — marca lo que ya compraste.
+      - generic [ref=e10]:
+        - button "Carne (pollo, res o similar) 4.2 kg" [ref=e11]:
+          - generic [ref=e16]:
+            - generic [ref=e17]: Carne (pollo, res o similar)
+            - generic [ref=e18]: 4.2 kg
+        - button "Vísceras (hígado, riñón) 570 g" [ref=e20]:
+          - generic [ref=e25]:
+            - generic [ref=e26]: Vísceras (hígado, riñón)
+            - generic [ref=e27]: 570 g
+        - button "Vegetales (zanahoria, calabaza) 840 g" [ref=e29]:
+          - generic [ref=e34]:
+            - generic [ref=e35]: Vegetales (zanahoria, calabaza)
+            - generic [ref=e36]: 840 g
+      - paragraph [ref=e39]: 0 de 3 comprados
+    - navigation "Navegación principal" [ref=e40]:
+      - generic [ref=e41]:
+        - link "Hoy" [ref=e42] [cursor=pointer]:
+          - /url: /app
+        - link "Plan" [ref=e48] [cursor=pointer]:
+          - /url: /app/plan
+        - link "Lista" [ref=e53] [cursor=pointer]:
+          - /url: /app/lista
+        - link "Perfil" [ref=e62] [cursor=pointer]:
+          - /url: /app/perfil
+  - alert [ref=e70]

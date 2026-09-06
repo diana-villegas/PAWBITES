@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PawBites — Elige la dirección visual de tu app</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Figtree:wght@400;500;600;700;800&family=Atkinson+Hyperlegible:wght@400;700&family=Gantari:wght@400;500;600;700;800&family=Chivo:wght@400;500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page-bg: #14100D;
+    --page-fg: #F1EAE2;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background:
+      radial-gradient(1100px 600px at 15% -10%, rgba(200,140,90,.14), transparent 60%),
+      radial-gradient(900px 500px at 90% 10%, rgba(90,140,120,.10), transparent 55%),
+      var(--page-bg);
+    color: var(--page-fg);
+    font-family: 'Figtree', sans-serif;
+    padding: 48px 24px 96px;
+  }
+  .page-header { max-width: 1100px; margin: 0 auto 40px; text-align: center; }
+  .page-header h1 { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 10px; }
+  .page-header p { font-size: 15px; color: #C9BEB2; margin: 0 0 20px; }
+  .exits { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; font-size: 13px; color: #B9AC9E; }
+  .exits span { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); padding: 6px 12px; border-radius: 999px; }
+
+  .board { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+  @media (max-width: 980px) { .board { grid-template-columns: 1fr; max-width: 460px; } }
+
+  .option { display: flex; flex-direction: column; gap: 16px; }
+  .option-label { display: flex; align-items: baseline; gap: 10px; }
+  .option-label .letter {
+    font-family: 'Figtree', sans-serif; font-weight: 800; font-size: 13px;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1);
+    padding: 4px 10px; border-radius: 999px; letter-spacing: .04em;
+  }
+  .option-label .name { font-size: 17px; font-weight: 700; }
+
+  /* ===== PHONE CHASSIS ===== */
+  .phone {
+    width: 100%; max-width: 375px; margin: 0 auto;
+    border-radius: 42px; padding: 12px;
+    background: linear-gradient(160deg, #2a2a2e, #131315);
+    box-shadow: 0 30px 60px rgba(0,0,0,.45), 0 2px 0 rgba(255,255,255,.04) inset;
+  }
+  .phone-screen {
+    position: relative; overflow: hidden; border-radius: 32px; height: 700px;
+    display: flex; flex-direction: column;
+  }
+  .statusbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 22px 4px; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums;
+    position: relative; z-index: 3;
+  }
+  .notch { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 90px; height: 22px; background: #0b0b0c; border-radius: 14px; z-index: 4; }
+  .statusbar .icons { display: flex; gap: 5px; align-items: center; }
+  .statusbar .battery { width: 20px; height: 10px; border: 1.4px solid currentColor; border-radius: 2px; position: relative; opacity: .9;}
+  .statusbar .battery::after { content:''; position:absolute; right:-3px; top:2.5px; width:2px; height:5px; background:currentColor; border-radius:1px; }
+
+  .content { flex: 1; overflow: hidden; padding: 8px 18px 0; display: flex; flex-direction: column; gap: 16px; position: relative; z-index: 2; }
+  .bottomnav {
+    display: flex; justify-content: space-around; align-items: center;
+    padding: 10px 8px calc(10px + 10px); position: relative; z-index: 3;
+  }
+  .navitem { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 600; }
+  .navitem svg { width: 20px; height: 20px; }
+
+  .icon-chip { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .icon-chip svg { width: 20px; height: 20px; }
+
+  .trial-pill { align-self: flex-start; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px; }
+
+  .greeting { font-size: 13px; font-weight: 600; opacity: .8; margin: 0; }
+  .dogname { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; margin: 2px 0 0; line-height: 1.1; }
+
+  .hero-card { border-radius: 24px; padding: 18px; position: relative; overflow: hidden; }
+  .hero-card .label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; opacity: .75; margin: 0 0 6px; }
+  .hero-card .weight { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1; margin: 0; }
+  .hero-card .weight small { font-size: 16px; font-weight: 700; opacity: .7; }
+  .macro-row { display: flex; gap: 8px; margin-top: 14px; }
+  .macro { flex: 1; border-radius: 14px; padding: 10px 8px; text-align: center; }
+  .macro .g { font-size: 17px; font-weight: 800; font-variant-numeric: tabular-nums; display: block; }
+  .macro .l { font-size: 10px; font-weight: 600; opacity: .8; display: block; margin-top: 2px; }
+
+  .row-card { border-radius: 18px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
+  .row-card .txt { flex: 1; }
+  .row-card .t1 { font-size: 13px; font-weight: 700; margin: 0; }
+  .row-card .t2 { font-size: 11.5px; opacity: .7; margin: 2px 0 0; }
+
+  .cta-btn { border: none; border-radius: 16px; padding: 14px; font-size: 14px; font-weight: 700; text-align: center; cursor: pointer; width: 100%; }
+
+  /* ===== LANDING HERO CARD ===== */
+  .hero-mini { border-radius: 20px; padding: 28px 22px; position: relative; overflow: hidden; }
+  .hero-mini .kicker { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; opacity: .8; margin: 0 0 10px; }
+  .hero-mini h2 { font-size: 24px; line-height: 1.15; margin: 0 0 10px; letter-spacing: -0.01em; }
+  .hero-mini p { font-size: 13.5px; line-height: 1.5; margin: 0 0 16px; opacity: .85; max-width: 34ch; }
+  .hero-mini .cta { display: inline-flex; align-items: center; gap: 8px; border: none; border-radius: 12px; padding: 12px 18px; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+
+  .desc { font-size: 13px; line-height: 1.5; color: #C9BEB2; margin: 2px 4px 0; }
+  .swatches { display: flex; gap: 6px; margin: 2px 4px; }
+  .swatches span { width: 22px; height: 22px; border-radius: 7px; border: 1px solid rgba(255,255,255,.15); }
+  .specimen { margin: 2px 4px; font-size: 15px; }
+  .specimen .d { display: block; font-size: 19px; margin-bottom: 2px; }
+  .hypothesis { font-size: 12px; color: #9C8F82; margin: 4px 4px 0; font-style: italic; }
+
+  /* ============ OPTION A — LA CÁLIDA DE MERCADO (terracota mediterránea) ============ */
+  .option-a { --bg:#F8F1E9; --surf:#FDF8F1; --surf2:#F3E7D8; --tx:#3A2E26; --tx2:#8A7A6C; --acc:#C0562F; --acc2:#E0794F; --acctext:#FFF8F3; --ok:#5F7248; --line: rgba(58,46,38,.12); }
+  .option-a .phone-screen { background: var(--bg); color: var(--tx); font-family: 'Figtree', sans-serif; }
+  .option-a .phone-screen::before {
+    content:''; position:absolute; inset:0; z-index:1; opacity:.5;
+    background-image: radial-gradient(rgba(58,46,38,.09) 1px, transparent 1px);
+    background-size: 13px 13px;
+  }
+  .option-a .notch { background: #FDF8F1; box-shadow: 0 0 0 6px #F8F1E9; }
+  .option-a .dogname, .option-a .hero-mini h2 { font-family: 'Marcellus', serif; }
+  .option-a .trial-pill { background: var(--surf2); color: var(--acc); border: 1px solid var(--line); }
+  .option-a .hero-card { background: linear-gradient(165deg, var(--acc2), var(--acc)); color: var(--acctext);
+    box-shadow: 0 1px 0 rgba(255,255,255,.25) inset, 0 10px 26px rgba(192,86,47,.35); }
+  .option-a .hero-card .label { color: rgba(255,248,243,.85); }
+  .option-a .macro { background: rgba(255,255,255,.14); color: var(--acctext); }
+  .option-a .row-card { background: var(--surf); border: 1px solid var(--line);
+    box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 1px 2px rgba(58,46,38,.05), 0 8px 20px rgba(58,46,38,.06); }
+  .option-a .row-card .t2 { color: var(--tx2); }
+  .option-a .icon-chip { background: color-mix(in oklab, var(--acc) 12%, transparent); color: var(--acc); }
+  .option-a .icon-chip.ok { background: color-mix(in oklab, var(--ok) 14%, transparent); color: var(--ok); }
+  .option-a .cta-btn { background: linear-gradient(180deg, var(--acc2), var(--acc)); color: var(--acctext);
+    box-shadow: 0 2px 10px rgba(192,86,47,.4), inset 0 1px 0 rgba(255,255,255,.25); }
+  .option-a .bottomnav { background: var(--surf); border-top: 1px solid var(--line); }
+  .option-a .navitem { color: var(--tx2); }
+  .option-a .navitem.active { color: var(--acc); }
+  .option-a .statusbar { color: var(--tx); }
+  .option-a .hero-mini { background: linear-gradient(160deg, #EFDFCB, #F8F1E9); color: var(--tx); border: 1px solid var(--line); }
+  .option-a .hero-mini .kicker { color: var(--acc); }
+  .option-a .hero-mini .cta { background: linear-gradient(180deg, var(--acc2), var(--acc)); color: var(--acctext); box-shadow: 0 2px 10px rgba(192,86,47,.35); }
+  .option-a .grams-word { background: var(--acc); color: var(--acctext); padding: .02em .28em; border-radius: 6px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+
+  /* ============ OPTION B — LA CLÍNICA DE CONFIANZA (clínica humana) ============ */
+  .option-b { --bg:#F4F7F6; --surf:#FDFEFD; --surf2:#E4EFEC; --tx:#22302C; --tx2:#5C6E68; --acc:#0F766E; --acc2:#14968C; --acctext:#F4FBFA; --line: rgba(34,48,44,.10); }
+  .option-b .phone-screen { background: var(--bg); color: var(--tx); font-family: 'Atkinson Hyperlegible', sans-serif; }
+  .option-b .phone-screen::before {
+    content:''; position:absolute; inset:0; z-index:1;
+    background: radial-gradient(480px 260px at 50% -8%, rgba(15,118,110,.10), transparent 65%);
+  }
+  .option-b .notch { background: #FDFEFD; box-shadow: 0 0 0 6px #F4F7F6; }
+  .option-b .dogname, .option-b .hero-mini h2 { font-family: 'Gantari', sans-serif; font-weight: 800; }
+  .option-b .trial-pill { background: var(--surf2); color: var(--acc); border: 1px solid var(--line); }
+  .option-b .hero-card { background: var(--surf); border: 1px solid var(--line);
+    box-shadow: 0 1px 0 rgba(255,255,255,.8) inset, 0 10px 24px rgba(15,118,110,.08); }
+  .option-b .hero-card .label { color: var(--acc); }
+  .option-b .hero-card .weight { color: var(--tx); }
+  .option-b .macro { background: var(--surf2); color: var(--tx); border: 1px solid var(--line); }
+  .option-b .row-card { background: var(--surf); border: 1px solid var(--line);
+    box-shadow: 0 1px 2px rgba(34,48,44,.05), 0 8px 18px rgba(34,48,44,.05); }
+  .option-b .row-card .t2 { color: var(--tx2); }
+  .option-b .icon-chip { background: color-mix(in oklab, var(--acc) 12%, transparent); color: var(--acc); }
+  .option-b .icon-chip.ok { background: color-mix(in oklab, var(--acc) 20%, transparent); color: var(--acc); }
+  .option-b .cta-btn { background: linear-gradient(180deg, var(--acc2), var(--acc)); color: var(--acctext);
+    box-shadow: 0 2px 10px rgba(15,118,110,.35), inset 0 1px 0 rgba(255,255,255,.2); }
+  .option-b .bottomnav { background: var(--surf); border-top: 1px solid var(--line); }
+  .option-b .navitem { color: var(--tx2); }
+  .option-b .navitem.active { color: var(--acc); }
+  .option-b .statusbar { color: var(--tx); }
+  .option-b .hero-mini { background: var(--surf); color: var(--tx); border: 1px solid var(--line); box-shadow: 0 10px 26px rgba(15,118,110,.08); }
+  .option-b .hero-mini .kicker { color: var(--acc); }
+  .option-b .hero-mini .cta { background: linear-gradient(180deg, var(--acc2), var(--acc)); color: var(--acctext); box-shadow: 0 2px 10px rgba(15,118,110,.3); }
+  .option-b .grams-word { color: var(--acc); font-weight: 800; }
+  .option-b .underline-mark { background: linear-gradient(transparent 65%, color-mix(in oklab, var(--acc) 28%, transparent) 65%); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+
+  /* ============ OPTION C — LA NATURAL DE CAMPO (salvia técnica) ============ */
+  .option-c { --bg:#EFF2ED; --surf:#F9FBF7; --surf2:#E3EBDD; --tx:#242B24; --tx2:#6B7568; --acc:#3D6B4F; --acc2:#4E8863; --acctext:#F3FAF5; --hito:#D97E00; --line: rgba(36,43,36,.10); }
+  .option-c .phone-screen { background: var(--bg); color: var(--tx); font-family: 'Hanken Grotesk', sans-serif; }
+  .option-c .phone-screen::before {
+    content:''; position:absolute; inset:0; z-index:1; opacity:.6;
+    background-image:
+      linear-gradient(rgba(36,43,36,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(36,43,36,.05) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  .option-c .notch { background: #F9FBF7; box-shadow: 0 0 0 6px #EFF2ED; }
+  .option-c .dogname, .option-c .hero-mini h2 { font-family: 'Chivo', sans-serif; font-weight: 800; letter-spacing: -0.01em; }
+  .option-c .trial-pill { background: var(--surf2); color: var(--acc); border: 1px solid var(--line); }
+  .option-c .hero-card { background: linear-gradient(160deg, var(--acc2), var(--acc)); color: var(--acctext);
+    box-shadow: 0 1px 0 rgba(255,255,255,.22) inset, 0 10px 26px rgba(61,107,79,.32); }
+  .option-c .hero-card .label { color: rgba(243,250,245,.85); }
+  .option-c .macro { background: rgba(255,255,255,.15); color: var(--acctext); }
+  .option-c .row-card { background: var(--surf); border: 1px solid var(--line);
+    box-shadow: 0 1px 0 rgba(255,255,255,.7) inset, 0 8px 18px rgba(36,43,36,.06); }
+  .option-c .row-card .t2 { color: var(--tx2); }
+  .option-c .icon-chip { background: color-mix(in oklab, var(--acc) 13%, transparent); color: var(--acc); }
+  .option-c .icon-chip.ok { background: color-mix(in oklab, var(--hito) 16%, transparent); color: var(--hito); }
+  .option-c .cta-btn { background: linear-gradient(180deg, var(--acc2), var(--acc)); color: var(--acctext);
+    box-shadow: 0 2px 10px rgba(61,107,79,.35), inset 0 1px 0 rgba(255,255,255,.2); }
+  .option-c .bottomnav { background: var(--surf); border-top: 1px solid var(--line); }
+  .option-c .navitem { color: var(--tx2); }
+  .option-c .navitem.active { color: var(--acc); }
+  .option-c .statusbar { color: var(--tx); }
+  .option-c .hero-mini { background: var(--surf); color: var(--tx); border: 1px solid var(--line); }
+  .option-c .hero-mini .kicker { color: var(--hito); }
+  .option-c .hero-mini .cta { background: linear-gradient(180deg, var(--acc2), var(--acc)); color: var(--acctext); box-shadow: 0 2px 10px rgba(61,107,79,.3); }
+  .option-c .grams-word { color: var(--hito); font-weight: 800; }
+  .option-c .tick { height: 5px; border-radius: 3px; background-image: repeating-linear-gradient(90deg, var(--acc) 0 6px, transparent 6px 10px); opacity:.55; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Elige la dirección visual de PawBites</h1>
+  <p>Las tres muestran la misma pantalla — "Hoy" con el plato de Luna — y el inicio de la página de ventas.</p>
+  <div class="exits">
+    <span>1 · elige A, B o C</span>
+    <span>2 · combina lo mejor</span>
+    <span>3 · pide otras 3</span>
+    <span>4 · ajusta un detalle</span>
+  </div>
+</div>
+
+<div class="board">
+
+  <!-- ================= OPTION A ================= -->
+  <div class="option option-a">
+    <div class="option-label"><span class="letter">A</span><span class="name">La cálida de mercado</span></div>
+
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="statusbar">
+          <span>9:41</span>
+          <span class="icons">▂▄▆█ ᛜ <span class="battery"></span></span>
+        </div>
+        <div class="content">
+          <div class="trial-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            Día 2 de 3 de prueba
+          </div>
+          <div>
+            <p class="greeting">Hola, buenas tardes</p>
+            <p class="dogname">El plato de Luna</p>
+          </div>
+          <div class="hero-card">
+            <p class="label">Hoy · Labrador · 22 kg</p>
+            <p class="weight">380<small>g totales</small></p>
+            <div class="macro-row">
+              <div class="macro"><span class="g">220g</span><span class="l">Pollo</span></div>
+              <div class="macro"><span class="g">45g</span><span class="l">Hígado</span></div>
+              <div class="macro"><span class="g">60g</span><span class="l">Zanahoria</span></div>
+              <div class="macro"><span class="g">55g</span><span class="l">Hueso</span></div>
+            </div>
+          </div>
+          <div class="row-card">
+            <div class="icon-chip ok">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <div class="txt"><p class="t1">3 semanas preparando comida real</p><p class="t2">Racha activa · sigue así</p></div>
+          </div>
+          <div class="row-card">
+            <div class="icon-chip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+            </div>
+            <div class="txt"><p class="t1">Día 4 de tu transición de 14 días</p><p class="t2">75% comida real · 25% concentrado</p></div>
+          </div>
+          <button class="cta-btn">Preparar comida de esta semana</button>
+        </div>
+        <div class="bottomnav">
+          <div class="navitem active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M9 2h6M12 6v3"/></svg>Hoy</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 10h18"/></svg>Plan</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7h15l-1.5 9.5a2 2 0 0 1-2 1.5H8a2 2 0 0 1-2-1.5L4.2 3.5H2"/><circle cx="9" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>Compras</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>Perfil</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-mini">
+      <p class="kicker">Comida real, sin adivinar</p>
+      <h2>El <span class="grams-word">plato exacto</span> de tu perro, en gramos, hoy mismo</h2>
+      <p>Peso, edad y actividad de tu perro → su plato desglosado y la lista del súper, en minutos.</p>
+      <button class="cta">Calcula el plato de tu perro →</button>
+    </div>
+
+    <p class="desc">Fusión de GiveMeRaw (categorías de ingredientes) + el mundo de la cocina y el mercado. Serif cálida con carácter editorial, papel kraft de fondo, botón con textura de barro cocido.</p>
+    <div class="swatches"><span style="background:#F8F1E9"></span><span style="background:#C0562F"></span><span style="background:#E0794F"></span><span style="background:#5F7248"></span><span style="background:#3A2E26"></span></div>
+    <div class="specimen"><span class="d" style="font-family:'Marcellus',serif;">El plato de Luna</span><span style="font-family:'Figtree',sans-serif; color:#C9BEB2;">Figtree — cuerpo</span></div>
+    <p class="hypothesis">Hipótesis: la calidez de mercado le habla a quien YA cocina para su perro — se siente casero, no clínico ni frío.</p>
+  </div>
+
+  <!-- ================= OPTION B ================= -->
+  <div class="option option-b">
+    <div class="option-label"><span class="letter">B</span><span class="name">La clínica de confianza</span></div>
+
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="statusbar">
+          <span>9:41</span>
+          <span class="icons">▂▄▆█ ᛜ <span class="battery"></span></span>
+        </div>
+        <div class="content">
+          <div class="trial-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            Día 2 de 3 de prueba
+          </div>
+          <div>
+            <p class="greeting">Hola, buenas tardes</p>
+            <p class="dogname">El plato de Luna</p>
+          </div>
+          <div class="hero-card">
+            <p class="label">Hoy · Labrador · 22 kg</p>
+            <p class="weight">380<small>g totales</small></p>
+            <div class="macro-row">
+              <div class="macro"><span class="g">220g</span><span class="l">Pollo</span></div>
+              <div class="macro"><span class="g">45g</span><span class="l">Hígado</span></div>
+              <div class="macro"><span class="g">60g</span><span class="l">Zanahoria</span></div>
+              <div class="macro"><span class="g">55g</span><span class="l">Hueso</span></div>
+            </div>
+          </div>
+          <div class="row-card">
+            <div class="icon-chip ok">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <div class="txt"><p class="t1">3 semanas preparando comida real</p><p class="t2">Racha activa · sigue así</p></div>
+          </div>
+          <div class="row-card">
+            <div class="icon-chip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+            </div>
+            <div class="txt"><p class="t1">Día 4 de tu transición de 14 días</p><p class="t2">75% comida real · 25% concentrado</p></div>
+          </div>
+          <button class="cta-btn">Preparar comida de esta semana</button>
+        </div>
+        <div class="bottomnav">
+          <div class="navitem active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M9 2h6M12 6v3"/></svg>Hoy</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 10h18"/></svg>Plan</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7h15l-1.5 9.5a2 2 0 0 1-2 1.5H8a2 2 0 0 1-2-1.5L4.2 3.5H2"/><circle cx="9" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>Compras</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>Perfil</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-mini">
+      <p class="kicker">Comida real, sin adivinar</p>
+      <h2>El <span class="underline-mark">plato exacto</span> de tu perro, en gramos, hoy mismo</h2>
+      <p>Peso, edad y actividad de tu perro → su plato desglosado y la lista del súper, en minutos.</p>
+      <button class="cta">Calcula el plato de tu perro →</button>
+    </div>
+
+    <p class="desc">Dirección "Clínica humana" adaptada a mascotas: teal sobrio, tipografía de máxima legibilidad (Atkinson Hyperlegible), duotone suave. Habla con la autoridad de "esto está calculado bien", sin frialdad de hospital.</p>
+    <div class="swatches"><span style="background:#F4F7F6"></span><span style="background:#0F766E"></span><span style="background:#14968C"></span><span style="background:#E4EFEC"></span><span style="background:#22302C"></span></div>
+    <div class="specimen"><span class="d" style="font-family:'Gantari',sans-serif; font-weight:800;">El plato de Luna</span><span style="font-family:'Atkinson Hyperlegible',sans-serif; color:#9fb3ac;">Atkinson Hyperlegible — cuerpo</span></div>
+    <p class="hypothesis">Hipótesis: calma el dolor #1 ("miedo a hacerlo mal") con un registro de precisión clínica — tranquiliza sin sonar a hospital.</p>
+  </div>
+
+  <!-- ================= OPTION C ================= -->
+  <div class="option option-c">
+    <div class="option-label"><span class="letter">C</span><span class="name">La natural de campo</span></div>
+
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="statusbar">
+          <span>9:41</span>
+          <span class="icons">▂▄▆█ ᛜ <span class="battery"></span></span>
+        </div>
+        <div class="content">
+          <div class="trial-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            Día 2 de 3 de prueba
+          </div>
+          <div>
+            <p class="greeting">Hola, buenas tardes</p>
+            <p class="dogname">El plato de Luna</p>
+          </div>
+          <div class="hero-card">
+            <p class="label">Hoy · Labrador · 22 kg</p>
+            <p class="weight">380<small>g totales</small></p>
+            <div class="macro-row">
+              <div class="macro"><span class="g">220g</span><span class="l">Pollo</span></div>
+              <div class="macro"><span class="g">45g</span><span class="l">Hígado</span></div>
+              <div class="macro"><span class="g">60g</span><span class="l">Zanahoria</span></div>
+              <div class="macro"><span class="g">55g</span><span class="l">Hueso</span></div>
+            </div>
+          </div>
+          <div class="row-card">
+            <div class="icon-chip ok">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <div class="txt"><p class="t1">3 semanas preparando comida real</p><p class="t2">Racha activa · sigue así</p><div class="tick"></div></div>
+          </div>
+          <div class="row-card">
+            <div class="icon-chip">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+            </div>
+            <div class="txt"><p class="t1">Día 4 de tu transición de 14 días</p><p class="t2">75% comida real · 25% concentrado</p></div>
+          </div>
+          <button class="cta-btn">Preparar comida de esta semana</button>
+        </div>
+        <div class="bottomnav">
+          <div class="navitem active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M9 2h6M12 6v3"/></svg>Hoy</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 10h18"/></svg>Plan</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7h15l-1.5 9.5a2 2 0 0 1-2 1.5H8a2 2 0 0 1-2-1.5L4.2 3.5H2"/><circle cx="9" cy="21" r="1"/><circle cx="18" cy="21" r="1"/></svg>Compras</div>
+          <div class="navitem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>Perfil</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-mini">
+      <p class="kicker">Comida real, sin adivinar</p>
+      <h2>El <span class="grams-word">plato exacto</span> de tu perro, en gramos, hoy mismo</h2>
+      <p>Peso, edad y actividad de tu perro → su plato desglosado y la lista del súper, en minutos.</p>
+      <button class="cta">Calcula el plato de tu perro →</button>
+    </div>
+
+    <p class="desc">Fusión de Cal AI (claridad de datos, resultado inmediato) + "Salvia técnica": verde natural con grid sutil de campo, Chivo geométrica + Hanken Grotesk. La más "app de salud/datos", enérgica y positiva.</p>
+    <div class="swatches"><span style="background:#EFF2ED"></span><span style="background:#3D6B4F"></span><span style="background:#4E8863"></span><span style="background:#D97E00"></span><span style="background:#242B24"></span></div>
+    <div class="specimen"><span class="d" style="font-family:'Chivo',sans-serif; font-weight:800;">El plato de Luna</span><span style="font-family:'Hanken Grotesk',sans-serif; color:#a9b6a3;">Hanken Grotesk — cuerpo</span></div>
+    <p class="hypothesis">Hipótesis: el verde-salud + grid técnico comunica "esto está bien calculado, de verdad" a quien viene de apps tipo Cal AI/MyFitnessPal para sí mismo.</p>
+  </div>
+
+</div>
+
+</body>
+</html>

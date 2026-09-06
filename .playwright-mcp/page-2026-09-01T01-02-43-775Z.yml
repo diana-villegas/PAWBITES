@@ -1,0 +1,14 @@
+- generic [ref=f3e1]:
+  - main [ref=f3e2]:
+    - generic [ref=f3e3]:
+      - link "Volver al inicio" [ref=f3e5] [cursor=pointer]:
+        - /url: /
+      - paragraph [ref=f3e10]: PawBites
+    - generic [ref=f3e12]:
+      - heading "¿Cómo se llama tu perro?" [level=1] [ref=f3e13]
+      - paragraph [ref=f3e14]: Vamos a armarle su plato exacto, con su nombre.
+      - generic [ref=f3e15]:
+        - textbox "Ej. Luna" [active] [ref=f3e16]
+        - button "Continuar" [disabled] [ref=f3e24]
+    - paragraph [ref=f3e25]: Guía general para perros sanos — no reemplaza a tu veterinario
+  - button "Open Next.js Dev Tools" [ref=f3e34] [cursor=pointer]
