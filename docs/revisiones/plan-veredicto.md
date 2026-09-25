@@ -1,0 +1,9 @@
+# VEREDICTO revisor-visual — Plan
+Fecha: 2026-09-12 00:00
+Screenshot: docs/revisiones/plan-375.png
+Usabilidad: 32/40
+Craft: 15/20
+Copy (si vende): N-A
+Fidelidad (si hubo referencia): N-A
+Veredicto: NO LISTA
+Top defectos: 1. [Vista al cargar la pantalla] La leyenda de estados (Registrado/Hoy/Pendiente) y el header quedan fuera de la primera vista porque el auto-scroll lleva directo al nodo "hoy" — un usuario nuevo nunca ve qué significan los colores/formas antes de decidir qué tocar → agregar una mini-leyenda persistente o hacer que los nodos sean autoexplicativos sin depender del header (heurísticas 6 y 10, defecto repetido desde ronda 18, aún sin resolver). 2. [Nodo "hoy", día 5] El acento (#C0431D) usado para "hoy" comparte familia de rojo/naranja con --warning/--error de calidad de heces; el círculo grande y pulsante de "hoy" se lee como una alerta/problema, no como una invitación a registrar, sobre todo junto al nodo amarillo de "blanda" al lado → diferenciar "hoy" con un ícono propio (no solo número) en vez de depender del hue ambiguo. 3. [Tarjeta de fase visible, días 1-3 completados] Cinco colores distintos compitiendo en una sola vista (verde check, gris uppercase, barra verde, círculo dorado con alerta, círculo rojo grande) sin agrupación visual más allá de la línea punteada → colapsar la fase ya completada en un resumen "3/3" en vez de 3 nodos a tamaño completo. 4. [Chips "Día X" sobre el sendero punteado] El pill rotado se superpone visualmente con la línea punteada detrás en los nodos completados, generando ruido óptico menor → revisar z-index/espaciado para que el sendero no cruce visualmente el chip. 5. [Nodo día 4, "blanda"] El estado registrado se comunica solo por color+ícono dentro de un círculo pequeño, sin badge de texto en el nodo mismo — a simple vista es difícil distinguir "blanda" de otros estados sin leer el texto de abajo → añadir diferenciación por forma/texto, no solo color.
