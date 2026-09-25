@@ -26,6 +26,20 @@ export const runtime = 'nodejs'; // node:crypto + raw body — no Edge
 const REPLAY_WINDOW_MS = 5 * 60 * 1000;
 const DIA = 24 * 60 * 60 * 1000;
 
+/** Solo los NOMBRES de los campos del mensaje (nunca los valores, así no hay datos
+ * personales): sirve para ver dónde puso Hotmart cada dato cuando un aviso no se lee. */
+function formaDelPayload(valor: unknown, ruta = '', profundidad = 0, salida: string[] = []): string {
+  if (profundidad > 4 || salida.length >= 45) return salida.join(' ').slice(0, 900);
+  if (valor && typeof valor === 'object' && !Array.isArray(valor)) {
+    for (const [k, v] of Object.entries(valor as Record<string, unknown>)) {
+      const r = ruta ? `${ruta}.${k}` : k;
+      if (v && typeof v === 'object' && !Array.isArray(v)) formaDelPayload(v, r, profundidad + 1, salida);
+      else salida.push(r);
+    }
+  }
+  return salida.join(' ').slice(0, 900);
+}
+
 /** Deja lista la cuenta de auth (y su fila de profiles, que crea el trigger). Hotmart manda
  * varios avisos a la vez por cada compra: si dos intentan crear la misma cuenta, uno choca.
  * En vez de fallar, se vuelve a mirar si la cuenta ya existe (la creó el otro) y se reintenta
@@ -79,13 +93,19 @@ export async function POST(req: NextRequest) {
     payload.event_id ??
     payload.data?.purchase?.transaction ??
     `${event}:${payload.data?.buyer?.email}:${ts ?? ''}`;
-  const email: string | undefined = (payload.data?.buyer?.email ?? payload.email)?.toString().trim().toLowerCase();
-  const nombre: string | undefined = payload.data?.buyer?.name;
-  const subscriberCode: string | undefined = payload.data?.subscription?.subscriber?.code;
+  // El comprador vive en data.buyer en los avisos de compra, y en data.subscriber (o
+  // dentro de data.subscription) en los de suscripción (cancelación, cambio de plan).
+  const persona = payload.data?.buyer ?? payload.data?.subscriber ?? payload.data?.subscription?.subscriber ?? payload.data?.user;
+  const email: string | undefined = (persona?.email ?? payload.email)?.toString().trim().toLowerCase();
+  const nombre: string | undefined = persona?.name;
+  const subscriberCode: string | undefined =
+    payload.data?.subscription?.subscriber?.code ?? payload.data?.subscriber?.code;
   const offerCode: string | undefined = payload.data?.purchase?.offer?.code ?? payload.data?.offer?.code;
 
   if (!email) {
-    await admin.from('webhook_log').insert({ event_id: eventId, type: event, result: 'error' });
+    await admin
+      .from('webhook_log')
+      .insert({ event_id: eventId, type: event, result: 'error', detail: `sin email · ${formaDelPayload(payload)}` });
     return NextResponse.json({ error: 'no email in payload' }, { status: 400 });
   }
 
@@ -122,7 +142,9 @@ export async function POST(req: NextRequest) {
   if (!isKnownEvent) {
     // Evento que no nos interesa — 200 para que Hotmart no reintente, pero se deja
     // constancia (así se ve qué está llegando de verdad).
-    await admin.from('webhook_log').insert({ event_id: eventId, type: event, result: 'ignored' });
+    await admin
+      .from('webhook_log')
+      .insert({ event_id: eventId, type: event, result: 'ignored', detail: formaDelPayload(payload) });
     return NextResponse.json({ received: true, ignored: event });
   }
 
