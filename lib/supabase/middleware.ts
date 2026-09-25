@@ -8,7 +8,10 @@ import { NextResponse, type NextRequest } from 'next/server';
 // Rutas públicas del funnel (modelo onboarding-first anónimo — 02C): el usuario
 // recorre / → /onboarding → /paywall → /entrar SIN sesión. Redirigir a /entrar a
 // todo anónimo rompería el funnel de venta completo. Solo /app exige sesión.
-const PUBLIC_PATHS = ['/', '/onboarding', '/entrar', '/auth', '/terminos', '/privacidad', '/reembolsos', '/aviso-nutricional'];
+// /api/webhooks, /api/cron y /api/email NO llevan sesión de usuario: se autentican
+// solos (hottok de Hotmart, CRON_SECRET, token firmado de baja). Sin esta excepción
+// el portero les devolvía 401 antes de llegar al handler y Hotmart nunca entraba.
+const PUBLIC_PATHS = ['/', '/onboarding', '/entrar', '/auth', '/terminos', '/privacidad', '/reembolsos', '/aviso-nutricional', '/api/webhooks', '/api/cron', '/api/email'];
 
 function esRutaPublica(path: string): boolean {
   return PUBLIC_PATHS.some((p) => path === p || (p !== '/' && path.startsWith(p + '/')));
