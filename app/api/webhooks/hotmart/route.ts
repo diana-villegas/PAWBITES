@@ -26,6 +26,23 @@ export const runtime = 'nodejs'; // node:crypto + raw body — no Edge
 const REPLAY_WINDOW_MS = 5 * 60 * 1000;
 const DIA = 24 * 60 * 60 * 1000;
 
+/** Deja lista la cuenta de auth (y su fila de profiles, que crea el trigger). Hotmart manda
+ * varios avisos a la vez por cada compra: si dos intentan crear la misma cuenta, uno choca.
+ * En vez de fallar, se vuelve a mirar si la cuenta ya existe (la creó el otro) y se reintenta
+ * con una pausa corta. Solo devuelve false si de verdad no se pudo. */
+async function asegurarCuenta(admin: ReturnType<typeof createAdminClient>, email: string): Promise<boolean> {
+  for (let intento = 0; intento < 4; intento++) {
+    const { data } = await admin.from('profiles').select('id').eq('email', email).maybeSingle();
+    if (data) return true;
+    const { error } = await admin.auth.admin.createUser({ email, email_confirm: true });
+    if (!error) return true;
+    console.warn('hotmart webhook: createUser falló, se reintenta', { intento, code: error.code, status: error.status });
+    await new Promise((r) => setTimeout(r, 300 * (intento + 1)));
+  }
+  const { data } = await admin.from('profiles').select('id').eq('email', email).maybeSingle();
+  return !!data;
+}
+
 export async function POST(req: NextRequest) {
   const admin = createAdminClient();
 
@@ -103,7 +120,9 @@ export async function POST(req: NextRequest) {
     event === 'SUBSCRIPTION_CANCELLATION' ||
     event === 'PURCHASE_DELAYED';
   if (!isKnownEvent) {
-    // Evento que no nos interesa — 200 para que Hotmart no reintente.
+    // Evento que no nos interesa — 200 para que Hotmart no reintente, pero se deja
+    // constancia (así se ve qué está llegando de verdad).
+    await admin.from('webhook_log').insert({ event_id: eventId, type: event, result: 'ignored' });
     return NextResponse.json({ received: true, ignored: event });
   }
 
@@ -112,14 +131,10 @@ export async function POST(req: NextRequest) {
   // 6. Asegurar que la cuenta de auth exista ANTES de aplicar el cambio de plan: si no
   //    existe se crea (dispara handle_new_user(), que crea profiles con plan='trial').
   //    Es lo que deja lista la cuenta para el login sin contraseña (/entrar).
-  const { data: existingProfile } = await admin.from('profiles').select('id').eq('email', email).maybeSingle();
-  if (!existingProfile) {
-    const { error: createErr } = await admin.auth.admin.createUser({ email, email_confirm: true });
-    if (createErr && !/already.*regist(ered|istered)/i.test(createErr.message ?? '')) {
-      console.error('hotmart webhook: no se pudo crear la cuenta', { event, code: createErr.code });
-      await admin.from('webhook_log').insert({ event_id: eventId, type: event, result: 'error' });
-      return NextResponse.json({ error: 'user creation failed' }, { status: 500 }); // 5xx → Hotmart reintenta
-    }
+  if (!(await asegurarCuenta(admin, email))) {
+    console.error('hotmart webhook: no se pudo asegurar la cuenta', { event });
+    await admin.from('webhook_log').insert({ event_id: eventId, type: event, result: 'error' });
+    return NextResponse.json({ error: 'user creation failed' }, { status: 500 }); // 5xx → Hotmart reintenta
   }
 
   // 7. Idempotencia + cambio de plan, atómico en la RPC transaccional.

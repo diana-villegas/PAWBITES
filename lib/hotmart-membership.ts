@@ -69,7 +69,13 @@ export function planForEvent(event: string, offerCode: string | undefined): Plan
   if (event === TRIAL_START_EVENT) {
     return { plan: 'trial', trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) };
   }
-  if (event === 'PURCHASE_APPROVED' || event === 'PURCHASE_COMPLETE' || event === PLAN_CHANGE_EVENT) {
+  if (event === 'PURCHASE_APPROVED' || event === 'PURCHASE_COMPLETE') {
+    // Una compra SIEMPRE da acceso, aunque la oferta no se reconozca: soltar el evento
+    // en silencio dejaría a alguien que pagó sin cuenta (el bug caro del archivo 18).
+    // El acceso es idéntico en mensual y anual; la etiqueta se corrige a mano si hace falta.
+    return { plan: planForOfferCode(offerCode) ?? 'mensual' };
+  }
+  if (event === PLAN_CHANGE_EVENT) {
     return { plan: planForOfferCode(offerCode) ?? null };
   }
   if (CUTS_ACCESS_NOW.has(event)) {
