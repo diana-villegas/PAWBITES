@@ -2,12 +2,17 @@
 // y en la plantilla de "enlace mágico" de Supabase). A diferencia de /auth/callback
 // (PKCE, exige abrirlo en el mismo navegador que pidió el acceso), este funciona
 // desde cualquier dispositivo. Ruta pública (PUBLIC_PATHS cubre /auth).
+//
+// El tipo con el que se verifica depende de cómo nació el token: el enlace de una cuenta
+// YA existente (signInWithOtp / generateLink) es 'magiclink'; el de una cuenta que se
+// confirma por primera vez es 'email'. Como el correo no puede saberlo de antemano, se
+// prueba el tipo que trae el enlace y, si el token "no se encuentra", el otro.
 
 import { NextResponse, type NextRequest } from 'next/server';
 import type { EmailOtpType } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
 
-const TIPOS_PERMITIDOS: ReadonlySet<string> = new Set(['email', 'magiclink']);
+const TIPOS_PERMITIDOS: readonly EmailOtpType[] = ['magiclink', 'email'];
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -17,13 +22,26 @@ export async function GET(request: NextRequest) {
   // Solo una ruta relativa propia (nunca "//host" ni una URL completa).
   const destino = destinoCrudo && destinoCrudo.startsWith('/') && !destinoCrudo.startsWith('//') ? destinoCrudo : '/app';
 
-  if (tokenHash && tipo && TIPOS_PERMITIDOS.has(tipo)) {
+  let motivo = 'sin_token';
+  if (tokenHash) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: tipo as EmailOtpType });
-    if (!error) {
-      return NextResponse.redirect(`${origin}${destino}`);
+    // El tipo pedido primero (si es válido), luego el resto, sin repetir.
+    const orden = [
+      ...TIPOS_PERMITIDOS.filter((t) => t === tipo),
+      ...TIPOS_PERMITIDOS.filter((t) => t !== tipo),
+    ];
+    for (const type of orden) {
+      const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
+      if (!error) {
+        return NextResponse.redirect(`${origin}${destino}`);
+      }
+      motivo = error.code ?? 'verificacion_fallida';
+      // Solo tiene sentido probar el otro tipo si el token "no se encontró".
+      if (motivo !== 'otp_expired') break;
     }
+    console.error('auth/confirm: enlace rechazado', { motivo });
   }
 
-  return NextResponse.redirect(`${origin}/entrar?error=enlace_invalido`);
+  // El motivo es solo un código (nunca el token) — sirve para diagnosticar sin logs.
+  return NextResponse.redirect(`${origin}/entrar?error=enlace_invalido&motivo=${encodeURIComponent(motivo)}`);
 }

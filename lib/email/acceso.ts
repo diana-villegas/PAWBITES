@@ -16,7 +16,7 @@ async function crearEnlaceAcceso(admin: SupabaseClient, email: string): Promise<
     console.error('email: no se pudo generar el enlace de acceso', { code: error?.code });
     return null;
   }
-  return `${SITE_URL}/auth/confirm?token_hash=${encodeURIComponent(hashed)}&type=email`;
+  return `${SITE_URL}/auth/confirm?token_hash=${encodeURIComponent(hashed)}&type=magiclink`;
 }
 
 export async function enviarAcceso(admin: SupabaseClient, email: string, nombre?: string | null): Promise<EstadoEnvio> {
