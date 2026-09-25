@@ -3,7 +3,9 @@
 // se pase a un plan con más dominios, mover MARKETING_FROM a news.paw-bites.com
 // (docs/sistema/46-EMAIL-DELIVERABILITY.md: transaccional y marketing separados).
 
-export const SITE_URL = 'https://paw-bites.com';
+// Dirección canónica: paw-bites.com (sin www) redirige 308 a www, así que se usa www
+// directo (los clientes de correo y los POST de terceros no siempre siguen redirecciones).
+export const SITE_URL = 'https://www.paw-bites.com';
 
 export const TRANSACTIONAL_FROM = 'PawBites <acceso@tx.paw-bites.com>';
 export const MARKETING_FROM = 'PawBites <hola@tx.paw-bites.com>';

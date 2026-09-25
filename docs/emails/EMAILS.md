@@ -34,4 +34,4 @@ Fuera de alcance por decisión del usuario (2026-09-25): nurturing de lead magne
 
 ## Plantilla del enlace de login de Supabase
 Archivo `docs/emails/supabase-magic-link.html` → Supabase → Authentication → Emails → Templates → "Magic Link".
-Asunto: `Tu enlace para entrar a PawBites`. Requiere Site URL = `https://paw-bites.com`.
+Asunto: `Tu enlace para entrar a PawBites`. Requiere Site URL = `https://www.paw-bites.com`.

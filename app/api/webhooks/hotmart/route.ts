@@ -95,11 +95,18 @@ export async function POST(req: NextRequest) {
     `${event}:${payload.data?.buyer?.email}:${ts ?? ''}`;
   // El comprador vive en data.buyer en los avisos de compra, y en data.subscriber (o
   // dentro de data.subscription) en los de suscripción (cancelación, cambio de plan).
-  const persona = payload.data?.buyer ?? payload.data?.subscriber ?? payload.data?.subscription?.subscriber ?? payload.data?.user;
+  const persona =
+    payload.data?.buyer ??
+    payload.data?.subscriber ??
+    payload.data?.subscription?.user ?? // cambio de plan (SWITCH_PLAN): data.subscription.user.email
+    payload.data?.subscription?.subscriber ??
+    payload.data?.user;
   const email: string | undefined = (persona?.email ?? payload.email)?.toString().trim().toLowerCase();
   const nombre: string | undefined = persona?.name;
   const subscriberCode: string | undefined =
-    payload.data?.subscription?.subscriber?.code ?? payload.data?.subscriber?.code;
+    payload.data?.subscription?.subscriber?.code ??
+    payload.data?.subscriber?.code ??
+    payload.data?.subscription?.subscriber_code;
   const offerCode: string | undefined = payload.data?.purchase?.offer?.code ?? payload.data?.offer?.code;
 
   if (!email) {
@@ -168,6 +175,9 @@ export async function POST(req: NextRequest) {
     p_subscriber_code: subscriberCode ?? null,
     p_new_plan: decision.plan,
     p_trial_ends_at: decision.trialEndsAt?.toISOString() ?? null,
+    // Fecha del aviso según Hotmart: la RPC solo bloquea avisos MÁS VIEJOS que el último
+    // cambio de plan (una recompra posterior a una cancelación sí debe dar acceso).
+    p_event_at: Number.isFinite(Number(ts)) && Number(ts) > 0 ? new Date(Number(ts)).toISOString() : null,
   });
 
   if (error) {
