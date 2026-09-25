@@ -16,16 +16,26 @@ function itemsLista(estado: AppState): { key: string; label: string; cantidad: s
     const totalG = gDiarios * frecuencia;
     return totalG >= 1000 ? `${(totalG / 1000).toFixed(1)} kg` : `${totalG} g`;
   };
-  const items: { key: string; label: string; cantidad: string; icon: LucideIcon; c1: string; c2: string }[] = [
-    { key: 'carne', label: 'Carne (pollo, res o similar)', cantidad: kg(plato.carneG), icon: Drumstick, c1: 'var(--cat-green-2)', c2: 'var(--cat-green)' },
-  ];
+  const items: { key: string; label: string; cantidad: string; icon: LucideIcon; c1: string; c2: string }[] = [];
+  if (plato.carneG > 0) {
+    items.push({ key: 'carne', label: 'Carne (pollo, res o similar)', cantidad: kg(plato.carneG), icon: Drumstick, c1: 'var(--cat-green-2)', c2: 'var(--cat-green)' });
+  }
   if (plato.huesoG > 0) {
     items.push({ key: 'hueso', label: 'Hueso carnoso crudo', cantidad: kg(plato.huesoG), icon: Bone, c1: 'var(--cat-blue-2)', c2: 'var(--cat-blue)' });
   }
-  items.push(
-    { key: 'vicera', label: 'Vísceras (hígado, riñón)', cantidad: kg(plato.visceraG), icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)' },
-    { key: 'vegetal', label: 'Vegetales (zanahoria, calabaza)', cantidad: kg(plato.vegetalG), icon: Leaf, c1: 'var(--cat-yellow-2)', c2: 'var(--cat-yellow)' }
-  );
+  // Hígado separado de las demás vísceras a propósito: es mucho más
+  // concentrado (vitamina A) y pasarse de cantidad es la causa más común de
+  // diarrea por exceso de vísceras — separarlo en la lista evita que se
+  // compre "vísceras" genérico y se sirva de más hígado sin darse cuenta.
+  if (plato.higadoG > 0) {
+    items.push({ key: 'higado', label: 'Hígado', cantidad: kg(plato.higadoG), icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)' });
+  }
+  if (plato.otraVisceraG > 0) {
+    items.push({ key: 'otra_viscera', label: 'Otras vísceras (riñón, molleja)', cantidad: kg(plato.otraVisceraG), icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)' });
+  }
+  if (plato.vegetalG > 0) {
+    items.push({ key: 'vegetal', label: 'Vegetales (zanahoria, calabaza)', cantidad: kg(plato.vegetalG), icon: Leaf, c1: 'var(--cat-yellow-2)', c2: 'var(--cat-yellow)' });
+  }
   return items;
 }
 
@@ -69,7 +79,7 @@ export default function ListaPage() {
         variants={{ hidden: {}, visible: { transition: { staggerChildren: reduce ? 0 : 0.06 } } }}
         className="flex flex-col gap-4"
       >
-        <motion.div variants={{ hidden: { opacity: 0, y: reduce ? 0 : 10 }, visible: { opacity: 1, y: 0 } }}>
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
           <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">Lista</p>
           <h1 className="text-2xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
             Tu tanda de {estado.frecuencia} días
@@ -80,7 +90,7 @@ export default function ListaPage() {
         </motion.div>
 
         <motion.div
-          variants={{ hidden: { opacity: 0, y: reduce ? 0 : 10 }, visible: { opacity: 1, y: 0 } }}
+          variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
           className="flex flex-col gap-2.5"
         >
           {items.map((it) => {
@@ -113,20 +123,22 @@ export default function ListaPage() {
                   </span>
                   <span className="block text-xs font-medium text-[var(--text-tertiary)]">{it.cantidad}</span>
                 </span>
-                <span
+                <motion.span
+                  animate={reduce ? undefined : { scale: activo ? [1, 1.2, 1] : 1 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
                   className={`flex size-6 items-center justify-center rounded-full border-2 ${
                     activo ? 'border-[var(--accent)] bg-[var(--accent)]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)]'
                   }`}
                 >
                   {activo && <Check size={13} strokeWidth={3} color="white" aria-hidden="true" />}
-                </span>
+                </motion.span>
               </motion.button>
             );
           })}
         </motion.div>
 
         <motion.div
-          variants={{ hidden: { opacity: 0, y: reduce ? 0 : 10 }, visible: { opacity: 1, y: 0 } }}
+          variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
           className="rounded-[var(--radius-card)] bg-[color-mix(in_oklab,var(--text-tertiary)_6%,var(--bg))] p-4 text-center"
         >
           <p className="text-sm text-[var(--text-secondary)]">

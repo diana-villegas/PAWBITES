@@ -17,11 +17,22 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion, useReducedMotion, AnimatePresence } from 'motion/react';
-import { Bone, Check, ChevronRight, Drumstick, HeartPulse, Leaf, ShoppingBasket, Sparkles } from 'lucide-react';
+import { Award, Bone, Check, ChevronRight, Drumstick, HeartPulse, Leaf, ShoppingBasket, Sparkles } from 'lucide-react';
+import Confetti from '@/components/app/Confetti';
 import type { LucideIcon } from 'lucide-react';
 import { useCountUp } from '@/components/landing/PlatoMockup';
-import { loadAppState, guardarAppState, diaDeTransicion, porcentajeTransicion, type AppState } from '@/lib/appData';
-import type { Plato } from '@/lib/plato';
+import { Hairline } from '@/components/landing/ui';
+import {
+  loadAppState,
+  guardarAppState,
+  diaDeTransicion,
+  porcentajeTransicion,
+  calidadDiaAnterior,
+  calcularRachaDias,
+  HITOS_RACHA,
+  type AppState,
+} from '@/lib/appData';
+import { ajustarPorDigestion, type Plato } from '@/lib/plato';
 
 function categorias(p: Plato): { g: number; label: string; icon: LucideIcon; c1: string; c2: string; rotate: string }[] {
   return [
@@ -29,7 +40,10 @@ function categorias(p: Plato): { g: number; label: string; icon: LucideIcon; c1:
     ...(p.huesoG > 0
       ? [{ g: p.huesoG, label: 'Hueso', icon: Bone, c1: 'var(--cat-blue-2)', c2: 'var(--cat-blue)', rotate: 'rotate-6' }]
       : []),
-    { g: p.visceraG, label: 'Vísceras', icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)', rotate: 'rotate-3' },
+    // Combinado a propósito aquí (chip de resumen): el desglose hígado vs.
+    // otras vísceras — el que importa para no pasarse de hígado — vive en
+    // la Lista de compras, donde el usuario realmente compra y prepara.
+    { g: p.higadoG + p.otraVisceraG, label: 'Vísceras', icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)', rotate: 'rotate-3' },
     { g: p.vegetalG, label: 'Vegetales', icon: Leaf, c1: 'var(--cat-yellow-2)', c2: 'var(--cat-yellow)', rotate: '-rotate-3' },
   ];
 }
@@ -76,6 +90,10 @@ export default function HoyPage() {
   // El conteo animado es un hook: se llama SIEMPRE en el mismo orden (nunca tras un
   // return condicional) — con 0 mientras `estado` todavía no cargó de localStorage.
   const total = useCountUpSafe(estado?.plato.totalG ?? 0);
+  const diaSeguro = estado ? diaDeTransicion(estado.transitionStartedAt) : 1;
+  const pctSeguro = porcentajeTransicion(diaSeguro);
+  const pctReal = useCountUpSafe(pctSeguro.real);
+  const pctConcentrado = useCountUpSafe(pctSeguro.concentrado);
 
   useEffect(() => {
     setEstado(loadAppState());
@@ -89,9 +107,15 @@ export default function HoyPage() {
     );
   }
 
-  const dia = diaDeTransicion(estado.transitionStartedAt);
-  const pct = porcentajeTransicion(dia);
-  const cats = categorias(estado.plato);
+  const dia = diaSeguro;
+  const pct = { real: pctReal, concentrado: pctConcentrado };
+  const calidadAyer = calidadDiaAnterior(estado.checkins, dia);
+  const platoDeHoy = ajustarPorDigestion(estado.plato, calidadAyer);
+  const ajustado = platoDeHoy.carneG !== estado.plato.carneG;
+  const cats = categorias(platoDeHoy);
+  const racha = calcularRachaDias(estado.checkins, dia);
+  const hitoAlcanzado = [...HITOS_RACHA].reverse().find((h) => racha >= h);
+  const hitoRecienAlcanzado = racha === hitoAlcanzado;
 
   function marcarPreparado() {
     if (!estado) return;
@@ -121,7 +145,7 @@ export default function HoyPage() {
         className="flex flex-col gap-4"
       >
         <motion.div
-          variants={{ hidden: { opacity: 0, y: reduce ? 0 : 10 }, visible: { opacity: 1, y: 0 } }}
+          variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
           className="flex items-center justify-between"
         >
           <div>
@@ -135,10 +159,17 @@ export default function HoyPage() {
             initial={pulso > 0 ? { scale: 1.3 } : false}
             animate={{ scale: 1 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-center gap-1.5 rounded-full bg-[var(--chip-bg)] px-3 py-1.5"
+            className="relative flex shrink-0 items-center gap-1.5 rounded-full bg-[var(--chip-bg)] px-3 py-1.5"
           >
-            <Sparkles size={13} color="var(--accent)" aria-hidden="true" />
-            <span className="text-xs font-bold text-[var(--accent)]">Racha: {estado.streakWeeks} sem</span>
+            <Confetti activo={hitoRecienAlcanzado} />
+            {hitoAlcanzado ? (
+              <Award size={13} color="var(--accent)" aria-hidden="true" />
+            ) : (
+              <Sparkles size={13} color="var(--accent)" aria-hidden="true" />
+            )}
+            <span className="text-xs font-bold text-[var(--accent)] whitespace-nowrap">
+              {racha} {racha === 1 ? 'día' : 'días'}
+            </span>
           </motion.div>
         </motion.div>
 
@@ -146,7 +177,7 @@ export default function HoyPage() {
             deslizar hacia la izquierda para marcarlo preparado (heurística 7:
             atajo para el usuario recurrente; el botón de abajo sigue siendo
             el método accesible por tap). */}
-        <motion.div variants={{ hidden: { opacity: 0, y: reduce ? 0 : 14 }, visible: { opacity: 1, y: 0 } }}>
+        <motion.div variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0 } }}>
           <motion.div
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
@@ -167,8 +198,15 @@ export default function HoyPage() {
             <p className="mt-2 text-xs font-semibold text-white/85">
               {pct.real}% comida real · {pct.concentrado}% concentrado hoy
             </p>
-            {!marcado && (
-              <p className="mt-3 text-xs font-semibold text-white/70">‹‹ Desliza o toca abajo para marcarlo preparado</p>
+            {ajustado ? (
+              <p className="mt-2 rounded-xl bg-[var(--surface)] px-2.5 py-1.5 text-xs font-semibold text-[var(--accent)]">
+                Ajustamos su plato hoy — ayer registraste heces {calidadAyer === 'diarrea' ? 'con diarrea' : 'blandas'}. No
+                necesitas hacer nada, ya quedó ajustado.
+              </p>
+            ) : (
+              !marcado && (
+                <p className="mt-3 text-xs font-semibold text-white/70">‹‹ Desliza o toca abajo para marcarlo preparado</p>
+              )
             )}
           </motion.div>
 
@@ -180,7 +218,7 @@ export default function HoyPage() {
         </motion.div>
 
         {/* Acción primaria — se puede deshacer con un segundo tap (control y libertad) */}
-        <motion.div variants={{ hidden: { opacity: 0, y: reduce ? 0 : 10 }, visible: { opacity: 1, y: 0 } }}>
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
           <motion.button
             type="button"
             onClick={marcarPreparado}
@@ -237,10 +275,8 @@ export default function HoyPage() {
         {/* Segundo bloque, fusionado: próximos pasos (plan de transición + lista de
             compras en una sola card — antes eran 2 bloques separados, bajaba la
             carga cognitiva de la primera vista). */}
-        <motion.div
-          variants={{ hidden: { opacity: 0, y: reduce ? 0 : 10 }, visible: { opacity: 1, y: 0 } }}
-          className="rounded-[var(--radius-card)] bg-[var(--surface)] shadow-[var(--shadow-1)]"
-        >
+        <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+        <Hairline surface="surface" className="shadow-[var(--shadow-1)]">
           <div className="p-4">
             <div className="flex items-center justify-between">
               <p className="text-sm font-semibold text-[var(--text-primary)]">Tu plan de transición</p>
@@ -254,7 +290,7 @@ export default function HoyPage() {
             <div className="mt-3 flex h-2 w-full overflow-hidden rounded-full bg-[var(--bg)]">
               <motion.div
                 className="h-full rounded-full bg-[var(--accent)]"
-                initial={{ width: reduce ? `${(dia / 14) * 100}%` : '0%' }}
+                initial={{ width: '0%' }}
                 animate={{ width: `${(dia / 14) * 100}%` }}
                 transition={{ duration: reduce ? 0 : 0.8, ease: [0.16, 1, 0.3, 1] }}
               />
@@ -283,6 +319,7 @@ export default function HoyPage() {
             </span>
             <ChevronRight size={18} color="var(--text-tertiary)" aria-hidden="true" />
           </Link>
+        </Hairline>
         </motion.div>
       </motion.div>
     </div>

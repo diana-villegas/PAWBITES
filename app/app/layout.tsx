@@ -65,7 +65,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   useMigracionOnboarding();
   return (
-    <div className="flex min-h-dvh flex-col bg-[var(--bg)]">
+    <div
+      className="flex min-h-dvh flex-col"
+      style={{
+        background:
+          'radial-gradient(640px 420px at 50% -8%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 62%), radial-gradient(520px 360px at 100% 100%, color-mix(in oklab, var(--cat-green) 9%, transparent), transparent 60%), var(--bg)',
+      }}
+    >
       <div className="flex-1 pb-24">{children}</div>
       <nav
         className="fixed inset-x-0 bottom-0 z-40 border-t border-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)] bg-[var(--surface)] pb-[env(safe-area-inset-bottom)]"

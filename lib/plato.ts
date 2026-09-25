@@ -6,6 +6,8 @@ export type Actividad = 'bajo' | 'moderado' | 'alto';
 export type Edad = 'cachorro' | 'adulto' | 'senior';
 export type Dieta = 'barf' | 'cocinada';
 export type Frecuencia = 7 | 15;
+/** Check-in diario de digestión durante los 14 días de transición. */
+export type CalidadHeces = 'bien' | 'blanda' | 'diarrea';
 
 export interface RespuestasOnboarding {
   nombrePerro: string;
@@ -20,7 +22,13 @@ export interface Plato {
   totalG: number;
   carneG: number;
   huesoG: number;
-  visceraG: number;
+  /** El hígado es MUCHO más concentrado que el resto de vísceras (vitamina A) —
+   * pasarse de proporción es la causa #1 de diarrea por exceso de vísceras en
+   * dietas BARF/cocinadas. Se separa de `otraVisceraG` (riñón, molleja, bazo)
+   * a propósito, con su propio porcentaje más bajo — nunca se suman en un
+   * solo "vísceras" en las pantallas donde el usuario compra o prepara. */
+  higadoG: number;
+  otraVisceraG: number;
   vegetalG: number;
 }
 
@@ -43,7 +51,10 @@ export function calcularPlato(r: Pick<RespuestasOnboarding, 'pesoKg' | 'edad' | 
       totalG,
       carneG: Math.round(totalG * 0.7),
       huesoG: Math.round(totalG * 0.1),
-      visceraG: Math.round(totalG * 0.1),
+      // El 10% de vísceras se reparte 5%/5% — nunca más hígado que el resto,
+      // es la proporción estándar de las guías BARF para evitar diarrea.
+      higadoG: Math.round(totalG * 0.05),
+      otraVisceraG: Math.round(totalG * 0.05),
       vegetalG: Math.round(totalG * 0.1),
     };
   }
@@ -53,7 +64,8 @@ export function calcularPlato(r: Pick<RespuestasOnboarding, 'pesoKg' | 'edad' | 
     totalG,
     carneG: Math.round(totalG * 0.75),
     huesoG: 0,
-    visceraG: Math.round(totalG * 0.1),
+    higadoG: Math.round(totalG * 0.05),
+    otraVisceraG: Math.round(totalG * 0.05),
     vegetalG: Math.round(totalG * 0.15),
   };
 }
@@ -66,6 +78,35 @@ export function porcentajeTransicion(dia: number): { real: number; concentrado: 
   return { real: 100, concentrado: 0 };
 }
 
+export const ETIQUETA_CALIDAD: Record<CalidadHeces, string> = {
+  bien: 'Bien formadas',
+  blanda: 'Blandas',
+  diarrea: 'Diarrea',
+};
+
+/** Ajusta el plato del día siguiente según cómo reaccionó el perro el día
+ * anterior — heurística nutricional simple y determinística (sin IA, igual
+ * que el resto de la calculadora): heces blandas → más fibra (vegetal), menos
+ * grasa (carne); diarrea → el mismo ajuste más fuerte, y menos hueso (puede
+ * irritar más). El total de gramos NUNCA cambia — solo se redistribuye. */
+export function ajustarPorDigestion(plato: Plato, calidadDiaAnterior: CalidadHeces | null): Plato {
+  if (!calidadDiaAnterior || calidadDiaAnterior === 'bien') return plato;
+
+  const desplazamiento = calidadDiaAnterior === 'diarrea' ? 0.15 : 0.08;
+  const deCarne = Math.round(plato.carneG * desplazamiento);
+  const huesoNuevo = calidadDiaAnterior === 'diarrea' ? Math.round(plato.huesoG * 0.5) : plato.huesoG;
+  const deHueso = plato.huesoG - huesoNuevo;
+
+  return {
+    totalG: plato.totalG,
+    carneG: plato.carneG - deCarne,
+    huesoG: huesoNuevo,
+    higadoG: plato.higadoG,
+    otraVisceraG: plato.otraVisceraG,
+    vegetalG: plato.vegetalG + deCarne + deHueso,
+  };
+}
+
 export const ETIQUETA_EDAD: Record<Edad, string> = {
   cachorro: 'Cachorro (menos de 1 año)',
   adulto: 'Adulto (1 a 7 años)',
@@ -76,4 +117,9 @@ export const ETIQUETA_ACTIVIDAD: Record<Actividad, string> = {
   bajo: 'Tranquilo — paseos cortos',
   moderado: 'Activo — paseos largos a diario',
   alto: 'Muy activo — corre o hace deporte',
+};
+
+export const ETIQUETA_DIETA: Record<Dieta, string> = {
+  barf: 'Cruda (BARF)',
+  cocinada: 'Cocinada en casa',
 };

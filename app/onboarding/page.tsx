@@ -134,6 +134,7 @@ export default function OnboardingPage() {
   const reduce = useReducedMotion();
 
   const [nombrePerro, setNombrePerro] = useState('');
+  const [raza, setRaza] = useState('');
   const [pesoKg, setPesoKg] = useState(15);
   const [edad, setEdad] = useState<Edad | null>(null);
   const [actividad, setActividad] = useState<Actividad | null>(null);
@@ -213,8 +214,26 @@ export default function OnboardingPage() {
                   placeholder="Ej. Luna"
                   className="h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] px-4 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
                 />
-                <div className="flex flex-1 items-center justify-center" aria-hidden="true">
-                  <PawPrint size={96} strokeWidth={1.2} color="var(--surface-2)" />
+                {/* La raza NO va en este paso a propósito: agregarla aquí rompía
+                    el patrón "una pregunta por pantalla" que respeta el resto
+                    del funnel (defecto real de una ronda de revisor). Se puede
+                    agregar después, en Perfil, sin fricción en el primer paso. */}
+                <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
+                  <span
+                    className="flex size-16 items-center justify-center rounded-2xl"
+                    style={{ background: 'var(--chip-bg)' }}
+                    aria-hidden="true"
+                  >
+                    <PawPrint size={30} color="var(--accent)" aria-hidden="true" />
+                  </span>
+                  <p className="max-w-56 text-sm text-[var(--text-secondary)]">
+                    Cada plato se calcula solo para tu perro — nada de tablas genéricas.
+                  </p>
+                  {!nombrePerro.trim() && (
+                    <p className="text-xs font-semibold text-[var(--text-tertiary)]">
+                      Escribe su nombre para continuar
+                    </p>
+                  )}
                 </div>
                 <div className="pt-4">
                   <CtaFunnel type="submit" disabled={!nombrePerro.trim()}>
@@ -260,8 +279,17 @@ export default function OnboardingPage() {
                   {tamanoPorPeso(pesoKg)}
                 </p>
               </div>
-              <div className="flex flex-1 items-end justify-center pb-8" aria-hidden="true">
-                <PawPrint size={80} strokeWidth={1.2} color="var(--surface-2)" />
+              <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
+                <span
+                  className="flex size-16 items-center justify-center rounded-2xl"
+                  style={{ background: 'var(--chip-bg)' }}
+                  aria-hidden="true"
+                >
+                  <Weight size={30} color="var(--accent)" aria-hidden="true" />
+                </span>
+                <p className="max-w-56 text-sm text-[var(--text-secondary)]">
+                  Más peso, más gramos — el plato se ajusta solo, no hay que hacer cuentas.
+                </p>
               </div>
               <div>
                 <CtaFunnel onClick={avanzar}>Fijar el peso de {nombrePerro || 'mi perro'}</CtaFunnel>
@@ -431,8 +459,17 @@ export default function OnboardingPage() {
             />
           )}
 
-          {paso === 'paywall' && plato && (
-            <Paywall nombrePerro={nombrePerro || 'tu perro'} pesoKg={pesoKg} plato={plato} frecuencia={frecuencia ?? 7} />
+          {paso === 'paywall' && plato && edad && actividad && dieta && (
+            <Paywall
+              nombrePerro={nombrePerro || 'tu perro'}
+              raza={raza.trim() || undefined}
+              pesoKg={pesoKg}
+              edad={edad}
+              actividad={actividad}
+              dieta={dieta}
+              plato={plato}
+              frecuencia={frecuencia ?? 7}
+            />
           )}
         </motion.div>
       </AnimatePresence>

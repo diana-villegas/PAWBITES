@@ -5,6 +5,7 @@
 // Supabase Auth real (Sesión 6): signInWithOtp + callback en /auth/callback.
 
 import { useState, type FormEvent } from 'react';
+import Image from 'next/image';
 import { motion } from 'motion/react';
 import { Mail } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
@@ -57,7 +58,7 @@ export default function EntrarPage() {
     <main className="flex min-h-dvh flex-col items-center justify-center bg-[var(--bg)] px-5">
       <div className="w-full max-w-sm">
         <a href="/" className="mb-8 flex items-center justify-center gap-2 text-base font-semibold text-[var(--text-primary)]">
-          <span aria-hidden="true" className="size-6 rounded-lg bg-[var(--accent)]" />
+          <Image src="/logo.png" alt="" width={28} height={28} className="rounded-lg" />
           PawBites
         </a>
 
