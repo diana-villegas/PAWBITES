@@ -17,6 +17,25 @@ export function planForOfferCode(offerCode: string | undefined): Plan | null {
   return OFFER_TO_PLAN[offerCode] ?? null;
 }
 
+/** Enlaces reales del checkout (uno por plan). Los usan el paywall y los correos. */
+export const HOTMART_CHECKOUT_URL = {
+  anual: 'https://pay.hotmart.com/I107682501L?off=zvhojwxd',
+  mensual: 'https://pay.hotmart.com/I107682501L?off=l303zeos',
+} as const;
+
+/** Si no se sabe qué oferta abandonó el lead, se le lleva a la recomendada (anual). */
+export const CART_CHECKOUT_DEFAULT: string = HOTMART_CHECKOUT_URL.anual;
+
+export function checkoutUrlForOffer(offerCode: string | undefined): string {
+  const plan = planForOfferCode(offerCode);
+  return plan === 'mensual' ? HOTMART_CHECKOUT_URL.mensual : CART_CHECKOUT_DEFAULT;
+}
+
+/** ⚠️ Nombre del evento "Abandono de carrito" del webhook v2 de Hotmart — sin verificar
+ * con un JSON real de esta cuenta (mismo caso que TRIAL_START_EVENT). Hay que ACTIVAR
+ * ese evento en el panel de Hotmart (Herramientas → Webhook) para que llegue. */
+export const CART_ABANDON_EVENT = 'PURCHASE_OUT_OF_SHOPPING_CART';
+
 /** ⚠️ PLACEHOLDER — verificar con una compra sandbox real (mini-procedimiento
  * de 5 pasos en 18-VENTA-HOTMART.md, sección "OPERACIONES DE SUSCRIPCIÓN").
  * Es plausible que Hotmart dispare esto como un PURCHASE_APPROVED con

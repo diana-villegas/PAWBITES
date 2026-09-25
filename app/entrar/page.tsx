@@ -131,7 +131,7 @@ export default function EntrarPage() {
 
         <p className="mt-8 text-center text-xs text-[var(--text-tertiary)]">
           ¿Compraste y no te llega el acceso?{' '}
-          <a href="mailto:hola@pawbites.app" className="font-semibold text-[var(--accent)]">
+          <a href="mailto:hola@paw-bites.com" className="font-semibold text-[var(--accent)]">
             Escríbenos
           </a>
         </p>

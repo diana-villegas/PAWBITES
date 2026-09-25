@@ -22,8 +22,8 @@ export default function Privacidad() {
         </p>
         <p>
           Puedes pedirnos borrar tu cuenta y tus datos en cualquier momento escribiendo a{' '}
-          <a href="mailto:hola@pawbites.app" className="text-[var(--accent)]">
-            hola@pawbites.app
+          <a href="mailto:hola@paw-bites.com" className="text-[var(--accent)]">
+            hola@paw-bites.com
           </a>
           .
         </p>

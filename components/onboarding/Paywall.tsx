@@ -14,6 +14,7 @@ import { Bone, Check, Drumstick, HeartPulse, Leaf, ShieldCheck, X } from 'lucide
 import type { LucideIcon } from 'lucide-react';
 import type { Plato, Frecuencia, Edad, Actividad, Dieta } from '@/lib/plato';
 import { useCountUp } from '@/components/landing/PlatoMockup';
+import { HOTMART_CHECKOUT_URL } from '@/lib/hotmart-membership';
 
 /** Stagger de entrada de los bloques del paywall (baseline de movimiento #1). */
 function useEntrada(): { contenedor: Variants; item: Variants } {
@@ -43,12 +44,6 @@ interface Props {
 }
 
 type PlanId = 'anual' | 'mensual';
-
-// Enlaces reales del checkout de Hotmart, uno por plan (creados por el usuario en su panel).
-const HOTMART_CHECKOUT_URL: Record<PlanId, string> = {
-  anual: 'https://pay.hotmart.com/I107682501L?off=zvhojwxd',
-  mensual: 'https://pay.hotmart.com/I107682501L?off=l303zeos',
-};
 
 const CATEGORIAS = (p: Plato) =>
   [

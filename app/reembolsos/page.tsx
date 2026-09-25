@@ -22,8 +22,8 @@ export default function Reembolsos() {
         <p>
           Más allá de la política de reembolso estándar de Hotmart, nuestra plataforma de pago,
           PawBites respalda esta garantía directamente. Escribe a{' '}
-          <a href="mailto:hola@pawbites.app" className="text-[var(--accent)]">
-            hola@pawbites.app
+          <a href="mailto:hola@paw-bites.com" className="text-[var(--accent)]">
+            hola@paw-bites.com
           </a>{' '}
           o gestiona el reembolso directamente desde tu recibo de compra de Hotmart.
         </p>

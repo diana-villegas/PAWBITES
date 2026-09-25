@@ -199,7 +199,7 @@ export default function LandingPawBites() {
       />
 
       {/* Ayuda/documentación (h10 de usabilidad): salida clara si la FAQ no resolvió la duda */}
-      <AyudaContacto email="hola@pawbites.app" />
+      <AyudaContacto email="hola@paw-bites.com" />
 
       {/* 9. CTA FINAL */}
       <CtaFinal
@@ -214,7 +214,7 @@ export default function LandingPawBites() {
       {/* 10. FOOTER LEGAL */}
       <FooterLegal
         appName="PawBites"
-        soporteEmail="hola@pawbites.app"
+        soporteEmail="hola@paw-bites.com"
         enlaces={[
           { label: 'Privacidad', href: '/privacidad' },
           { label: 'Términos y Condiciones', href: '/terminos' },
