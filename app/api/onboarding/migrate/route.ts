@@ -11,6 +11,7 @@ import { createClient } from '@/lib/supabase/server';
 
 const payloadSchema = z.object({
   nombrePerro: z.string().trim().min(1).max(60),
+  raza: z.string().trim().max(60).optional(),
   pesoKg: z.number().positive().max(120),
   edad: z.enum(['cachorro', 'adulto', 'senior']),
   actividad: z.enum(['bajo', 'moderado', 'alto']),
@@ -46,6 +47,7 @@ export async function POST(request: Request) {
     .insert({
       user_id: user.id,
       name: r.nombrePerro,
+      breed: r.raza ?? null,
       weight_kg: r.pesoKg,
       age_group: r.edad,
       activity_level: r.actividad,
@@ -56,6 +58,16 @@ export async function POST(request: Request) {
     .single();
 
   if (error) {
+    // El constraint único de dogs.user_id (auditoría) puede rechazar esta
+    // inserción si otra petición ganó la carrera entre el select de arriba y
+    // este insert (doble tap, dos pestañas) — no es un error real, ya existe
+    // el perro: se recupera y se responde igual que el caso "ya_existe".
+    if (error.code === '23505') {
+      const { data: yaCreado } = await supabase.from('dogs').select('id').eq('user_id', user.id).limit(1).maybeSingle();
+      if (yaCreado) {
+        return NextResponse.json({ status: 'ya_existe', dogId: yaCreado.id });
+      }
+    }
     return NextResponse.json({ error: 'No se pudo guardar el perro.' }, { status: 500 });
   }
 

@@ -43,6 +43,14 @@ export async function updateSession(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   if (!user && !esRutaPublica(path)) {
+    // Una ruta /api/* la llama `fetch()` desde el cliente, no un navegador
+    // navegando — redirigirla a la página HTML de /entrar rompe la respuesta
+    // (el fetch espera JSON) y además Next responde 405 porque una página no
+    // acepta POST. Debe ser un 401 explícito, no un redirect (defecto real
+    // encontrado en auditoría: rompía en silencio la migración de onboarding).
+    if (path.startsWith('/api/')) {
+      return NextResponse.json({ error: 'No autenticado.' }, { status: 401 });
+    }
     const url = request.nextUrl.clone();
     url.pathname = '/entrar';
     return NextResponse.redirect(url);

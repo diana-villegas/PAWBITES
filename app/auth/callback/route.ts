@@ -8,7 +8,11 @@ import { createClient } from '@/lib/supabase/server';
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const destino = searchParams.get('next') ?? '/app';
+  const destinoCrudo = searchParams.get('next');
+  // Solo una ruta relativa propia (nunca "//host" ni una URL completa) —
+  // si no, un `next` manipulado podría romper el redirect o, en el peor
+  // caso, apuntar fuera del sitio (auditoría: input no validado).
+  const destino = destinoCrudo && destinoCrudo.startsWith('/') && !destinoCrudo.startsWith('//') ? destinoCrudo : '/app';
 
   if (code) {
     const supabase = await createClient();
