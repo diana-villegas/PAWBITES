@@ -18,16 +18,20 @@
 - **Ventana mínima antes de declarar que una campaña fracasó:** NO ENCONTRADO — usar el mínimo genérico del SO (60) hasta tener datos propios
 
 ## 3. CÓMO PAGA ESTE MERCADO
-- Medios de pago en el checkout real: NO ENCONTRADO — pendiente de abrir un checkout de Hotmart real en la Sesión 6 y mirarlo
-- Penetración de tarjeta de crédito: NO ENCONTRADO (varía mucho por país dentro de LATAM — decidir país(es) prioritarios antes de esta sección)
-- **Consecuencia para el producto:** por ahora se asume que Hotmart resuelve tarjeta + métodos locales (PIX, boleto, etc. según país) — se confirma en Sesión 6
+- Medios de pago en el checkout real (verificado 2026-09-19, checkout real abierto a 375px, país por defecto Colombia): **Débito/Crédito** (Visa/Mastercard/Amex vía formulario propio), **Efecty** (pago en efectivo en punto físico — 2 días para pagar, hasta 3 días hábiles en confirmarse), **PayPal** (tarjeta registrada en PayPal). Los 3 se tocaron uno por uno: ninguno está inerte, los 3 responden y muestran su propio flujo.
+- ⚠️ No aparece PSE ni Nequi (muy usados en Colombia) — si el país prioritario es Colombia, vale la pena revisar en el panel de Hotmart si se pueden habilitar.
+- ⚠️ Efecty (pago en efectivo) tarda hasta 3 días hábiles en confirmarse — con un trial de 7 días, alguien que paga por Efecty el día 6-7 puede perder el acceso antes de que el pago confirme. Vale la pena revisar si Hotmart maneja esto solo o si hace falta avisarlo en el copy de esa opción específica.
+- Penetración de tarjeta de crédito: NO ENCONTRADO (varía mucho por país dentro de LATAM)
+- **Consecuencia para el producto:** confirmado que el checkout de Hotmart ya resuelve tarjeta + efectivo local + PayPal sin configuración adicional nuestra.
+- No se vio ninguna mención de garantía/reembolso en el checkout — confirma que la única promesa de garantía es la nuestra (regla del 18: "si no aparece, tu web es el único sitio que lo promete").
 
 ## 4. PRUEBA Y GARANTÍA
-- Plazos de prueba que admite la pasarela: NO ENCONTRADO — verificar en Hotmart antes de publicar (Sesión 6); se usa como referencia el piso legal estándar de Hotmart (7 días de garantía) hasta confirmar el producto real
-- Prueba elegida: 3 días · Garantía elegida: 7 días
-- Comprobación: garantía 7 > prueba 3 → SÍ
-- ¿Desde cuándo cuenta el plazo de garantía?: NO CONFIRMADO — el copy de la landing (docs/copy/landing.md, sección 7) no fija fecha de inicio, solo dice "primeros 7 días", cumpliendo la regla de no prometer lo que no está confirmado
-- ⚠️ Estos plazos (3/7) son una PROPUESTA usada para poder publicar copy coherente en la Sesión 3 — se deben verificar contra el producto real de Hotmart en la Sesión 6 antes de vender de verdad
+- Plazos de prueba que admite la pasarela: **CONFIRMADO 2026-09-19** — el checkout real muestra "Tendrás 7 día(s) para probar el producto", con la opción "Quiero un periodo gratis" ya marcada por defecto. El período de 7 días SÍ está disponible en Hotmart.
+- Prueba elegida: 7 días · Garantía elegida: 14 días
+- Razón del cambio (sesión 2026-09-19): con 3 días el usuario nunca completaba un ciclo de preparación (7 o 15 días) ni veía el ajuste automático del plato por digestión — la app nunca mostraba su verdadero mecanismo de retención antes de cobrar. 7 días alcanza para un ciclo completo de preparación semanal. Referencia: trials de 17-32 días convierten 42.5% (mediana) vs 25.5% los de <4 días (RevenueCat 2026, +115k apps) — la duración se decide por tiempo-a-valor, no por imitación (02C).
+- Comprobación: garantía 14 > prueba 7 → SÍ
+- ¿Desde cuándo cuenta el plazo de garantía?: NO CONFIRMADO — el copy no fija fecha de inicio, solo dice "primeros 14 días", cumpliendo la regla de no prometer lo que no está confirmado
+- ⚠️ Estos plazos (7/14) son una PROPUESTA para poder publicar copy coherente — se deben verificar contra el producto real de Hotmart antes de vender de verdad: (a) confirmar que Hotmart permite configurar un período de prueba de 7 días en el plan de suscripción, (b) confirmar si el reembolso más allá de la ventana automática de Hotmart requiere gestión manual del vendedor (probable) y dejarlo anotado en el manual de soporte
 
 ## 5. CONVERSIÓN ESPERABLE
 - NO ENCONTRADO — sin campaña propia todavía; se medirá desde el primer tráfico real (60)

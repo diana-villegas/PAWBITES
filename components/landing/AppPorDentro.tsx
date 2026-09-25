@@ -35,7 +35,7 @@ export interface AppPorDentroProps {
 }
 
 export function AppPorDentro({
-  kicker = 'ASÍ SE VE POR DENTRO',
+  kicker = 'Así se ve por dentro',
   tituloMarked,
   frames,
   ctaLabel,

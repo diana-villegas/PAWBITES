@@ -4,14 +4,15 @@
 // de 02B, con el visual del valor = el plato REAL calculado (no el de ejemplo de
 // la landing) + timeline del trial (C4, patrón Blinkist: sube inicios de trial y
 // baja la queja #1 "miedo a olvidar cancelar"). CTA guarda el estado local y
-// lleva a /entrar — el checkout real de Hotmart se conecta en la Sesión 6 (C3ter:
-// simular con estado local, nunca un checkout falso).
+// lleva al checkout real de Hotmart (producto "PawBites", creado 2026-09-19) —
+// el webhook (pendiente) crea la cuenta al comprar; el usuario recupera su plan
+// vía la migración de localStorage al loguearse (mismo dispositivo, 18-VENTA-HOTMART).
 
 import { useEffect, useState } from 'react';
 import { motion, useReducedMotion, type Variants } from 'motion/react';
 import { Bone, Check, Drumstick, HeartPulse, Leaf, ShieldCheck, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import type { Plato, Frecuencia } from '@/lib/plato';
+import type { Plato, Frecuencia, Edad, Actividad, Dieta } from '@/lib/plato';
 import { useCountUp } from '@/components/landing/PlatoMockup';
 
 /** Stagger de entrada de los bloques del paywall (baseline de movimiento #1). */
@@ -20,7 +21,7 @@ function useEntrada(): { contenedor: Variants; item: Variants } {
   return {
     contenedor: { hidden: {}, visible: { transition: { staggerChildren: reduce ? 0 : 0.08 } } },
     item: {
-      hidden: { opacity: 0, y: reduce ? 0 : 14 },
+      hidden: { opacity: 0, y: 14 },
       visible: {
         opacity: 1,
         y: 0,
@@ -32,12 +33,22 @@ function useEntrada(): { contenedor: Variants; item: Variants } {
 
 interface Props {
   nombrePerro: string;
+  raza?: string;
   pesoKg: number;
+  edad: Edad;
+  actividad: Actividad;
+  dieta: Dieta;
   plato: Plato;
   frecuencia: Frecuencia;
 }
 
 type PlanId = 'anual' | 'mensual';
+
+// Enlaces reales del checkout de Hotmart, uno por plan (creados por el usuario en su panel).
+const HOTMART_CHECKOUT_URL: Record<PlanId, string> = {
+  anual: 'https://pay.hotmart.com/I107682501L?off=zvhojwxd',
+  mensual: 'https://pay.hotmart.com/I107682501L?off=l303zeos',
+};
 
 const CATEGORIAS = (p: Plato) =>
   [
@@ -45,13 +56,15 @@ const CATEGORIAS = (p: Plato) =>
     p.huesoG > 0
       ? { g: p.huesoG, label: 'Hueso', icon: Bone, c1: 'var(--cat-blue-2)', c2: 'var(--cat-blue)', rotate: 'rotate-3' }
       : null,
-    { g: p.visceraG, label: 'Vísceras', icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)', rotate: 'rotate-2' },
+    // Combinado a propósito (preview de conversión): el desglose hígado vs.
+    // otras vísceras vive en la Lista de compras, no aquí.
+    { g: p.higadoG + p.otraVisceraG, label: 'Vísceras', icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)', rotate: 'rotate-2' },
     { g: p.vegetalG, label: 'Vegetales', icon: Leaf, c1: 'var(--cat-yellow-2)', c2: 'var(--cat-yellow)', rotate: '-rotate-2' },
   ].filter((x): x is NonNullable<typeof x> => x !== null);
 
 const PLANES: Record<PlanId, { nombre: string; ctaLabel: string; recap: string }> = {
-  anual: { nombre: 'Anual', ctaLabel: 'Empezar mis 3 días gratis', recap: '1er cobro: $2.50/mes · cancela antes sin costo' },
-  mensual: { nombre: 'Mensual', ctaLabel: 'Empezar mis 3 días gratis', recap: '1er cobro: $4.99/mes · cancela antes sin costo' },
+  anual: { nombre: 'Anual', ctaLabel: 'Empezar mis 7 días gratis', recap: '1er cobro: $2.50/mes · cancela antes sin costo' },
+  mensual: { nombre: 'Mensual', ctaLabel: 'Empezar mis 7 días gratis', recap: '1er cobro: $4.99/mes · cancela antes sin costo' },
 };
 
 /** Mismo tratamiento de check que `ChipOpcion` (components/onboarding/ui.tsx) —
@@ -144,23 +157,39 @@ function CategoriaChip({
   );
 }
 
-export function Paywall({ nombrePerro, pesoKg, plato, frecuencia }: Props) {
+export function Paywall({ nombrePerro, raza, pesoKg, edad, actividad, dieta, plato, frecuencia }: Props) {
   const categorias = CATEGORIAS(plato);
   const [plan, setPlan] = useState<PlanId>('anual');
   const { contenedor, item } = useEntrada();
 
   // Estado anónimo → cuenta (26-AUTH-MODERNO): se guarda para que /entrar y el
   // futuro webhook de Hotmart puedan recuperar el plan sin repetir el quiz.
+  // IMPORTANTE: estos campos deben calzar 1:1 con el zod schema de
+  // /api/onboarding/migrate — antes faltaban edad/actividad/dieta y la
+  // migración a Supabase fallaba la validación en silencio (bug real
+  // encontrado en auditoría).
   useEffect(() => {
     try {
       localStorage.setItem(
         'pawbites_onboarding',
-        JSON.stringify({ v: 1, nombrePerro, pesoKg, plato, frecuencia, plan, fecha: new Date().toISOString() })
+        JSON.stringify({
+          v: 1,
+          nombrePerro,
+          raza,
+          pesoKg,
+          edad,
+          actividad,
+          dieta,
+          plato,
+          frecuencia,
+          plan,
+          fecha: new Date().toISOString(),
+        })
       );
     } catch {
       // localStorage puede fallar (modo privado) — no bloquea el flujo
     }
-  }, [nombrePerro, pesoKg, plato, frecuencia, plan]);
+  }, [nombrePerro, raza, pesoKg, edad, actividad, dieta, plato, frecuencia, plan]);
 
   return (
     <div className="flex flex-1 flex-col px-4 pb-8">
@@ -226,12 +255,23 @@ export function Paywall({ nombrePerro, pesoKg, plato, frecuencia }: Props) {
       {/* C4 — timeline del trial (patrón Blinkist): responde "¿puedo cancelar?" de un vistazo */}
       <motion.div
         variants={item}
-        className="mt-6 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--accent)_20%,transparent)] bg-[color-mix(in_oklab,var(--accent)_5%,transparent)] p-4"
-        style={{ boxShadow: 'inset 0 1px 4px color-mix(in oklab, var(--text-primary) 6%, transparent)' }}
+        className="mt-6 rounded-[var(--radius-card)] p-4"
+        style={{
+          border: '1.5px solid transparent',
+          background:
+            'linear-gradient(color-mix(in oklab, var(--accent) 5%, transparent), color-mix(in oklab, var(--accent) 5%, transparent)) padding-box, ' +
+            'linear-gradient(135deg, color-mix(in oklab, var(--accent) 70%, transparent), transparent 65%) border-box',
+          boxShadow: 'inset 0 1px 4px color-mix(in oklab, var(--text-primary) 6%, transparent)',
+        }}
       >
+        {/* "7 días gratis" = Hoy...Día 7 completos; el cobro cae el Día 8, nunca
+            antes de que el 7º día termine. Los 4 nodos comprimen la semana sin
+            perder el patrón "aviso antes del cobro" (mismo criterio que la
+            versión de 3 días: nunca saltar directo de "hoy" al cobro). */}
         <TimelineItem activo label="Hoy" detalle={`El plato de ${nombrePerro}, sin límites`} />
-        <TimelineItem label="Día 2" detalle="Te avisamos por correo antes de cualquier cobro" />
-        <TimelineItem ultimo label="Día 3" detalle={PLANES[plan].recap} />
+        <TimelineItem label="Día 4" detalle="Sigues probando gratis, sin ningún cobro" />
+        <TimelineItem label="Día 7" detalle="Te avisamos por correo antes de cualquier cobro" />
+        <TimelineItem ultimo label="Día 8" detalle={PLANES[plan].recap} />
       </motion.div>
 
       {/* Plan recomendado — tocable, ambas cards seleccionables (h5: control real, no solo visual) */}
@@ -239,8 +279,9 @@ export function Paywall({ nombrePerro, pesoKg, plato, frecuencia }: Props) {
         <span className="absolute -top-2.5 left-1/2 z-10 -translate-x-1/2 rounded-full bg-[var(--accent)] px-3 py-1 text-xs font-bold uppercase tracking-wide text-white">
           Más popular
         </span>
-        <button
+        <motion.button
           type="button"
+          whileTap={{ scale: 0.98 }}
           onClick={() => setPlan('anual')}
           aria-pressed={plan === 'anual'}
           className={`w-full rounded-[var(--radius-card)] bg-[var(--surface)] p-5 pt-6 text-left transition-colors duration-150 ${
@@ -258,11 +299,12 @@ export function Paywall({ nombrePerro, pesoKg, plato, frecuencia }: Props) {
             $2.50<span className="text-sm font-semibold text-[var(--text-secondary)]">/mes</span>
           </p>
           <p className="mt-1 text-xs text-[var(--text-secondary)]">Se cobra $29.99/año</p>
-        </button>
+        </motion.button>
       </motion.div>
       <motion.button
         variants={item}
         type="button"
+        whileTap={{ scale: 0.98 }}
         onClick={() => setPlan('mensual')}
         aria-pressed={plan === 'mensual'}
         className={`mt-3 w-full rounded-[var(--radius-card)] p-4 text-left transition-colors duration-150 ${
@@ -283,7 +325,7 @@ export function Paywall({ nombrePerro, pesoKg, plato, frecuencia }: Props) {
       <motion.div variants={item} className="mt-6">
         <motion.a
           whileTap={{ scale: 0.97 }}
-          href="/entrar"
+          href={HOTMART_CHECKOUT_URL[plan]}
           className="flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-white shadow-[0_8px_24px_color-mix(in_oklab,var(--accent)_30%,transparent)]"
         >
           {PLANES[plan].ctaLabel}
@@ -296,12 +338,12 @@ export function Paywall({ nombrePerro, pesoKg, plato, frecuencia }: Props) {
       <motion.div variants={item} className="mt-4 flex items-center justify-center gap-4 text-xs text-[var(--text-secondary)]">
         <a href="/">Ahora no</a>
         <span aria-hidden="true">·</span>
-        <a href="/entrar">Restaurar compra</a>
+        <a href="/entrar">¿Ya compraste? Inicia sesión</a>
       </motion.div>
 
       <motion.div variants={item} className="mt-4 flex items-center justify-center gap-1.5 text-xs text-[var(--text-tertiary)]">
         <ShieldCheck size={14} aria-hidden="true" />
-        Pago seguro con Hotmart · Garantía de 7 días
+        Pago seguro con Hotmart · Garantía de 14 días
       </motion.div>
       </motion.div>
     </div>

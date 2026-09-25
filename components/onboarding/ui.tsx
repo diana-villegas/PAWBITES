@@ -99,7 +99,7 @@ export function ChipOpcion({
       onClick={onClick}
       disabled={deshabilitado}
       whileTap={deshabilitado ? undefined : { scale: 0.97 }}
-      initial={{ opacity: 0, y: reduce ? 0 : 10 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: deshabilitado && !seleccionado ? 0.45 : 1, y: 0 }}
       transition={{ duration: reduce ? 0.15 : 0.3, delay: reduce ? 0 : index * 0.06, ease: [0.16, 1, 0.3, 1] }}
       className={`flex h-14 w-full items-center gap-3 rounded-[var(--radius-button)] border px-4 text-left shadow-[var(--shadow-1)] transition-colors duration-150 [touch-action:manipulation] ${

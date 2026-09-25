@@ -51,6 +51,8 @@ export interface OfertaProps {
     totalTachado: string;
     nota?: string;
   };
+  /** Microcopy corto de garantía bajo el CTA de la card Anual (refuerza el riesgo cero justo en el momento de pagar). */
+  notaGarantia?: string;
   /** default 'oferta' — lo observa StickyCtaMobile. */
   id?: string;
 }
@@ -96,13 +98,14 @@ function Features({ items, origen }: { items: string[]; origen: string }) {
 }
 
 export function Oferta({
-  kicker = 'LA OFERTA',
+  kicker = 'La oferta',
   tituloMarked,
   trialDias,
   anual,
   mensual,
   extraAnual,
   stack,
+  notaGarantia,
   id = 'oferta',
 }: OfertaProps) {
   warnCopy('Oferta → título', tituloMarked, 8);
@@ -113,7 +116,7 @@ export function Oferta({
       <motion.div variants={contenedor} initial="hidden" whileInView="visible" viewport={VIEWPORT_ONCE}>
         <motion.div variants={item} className="mx-auto max-w-xl text-center">
           <Kicker>{kicker}</Kicker>
-          <h2 className="text-balance text-3xl font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-5xl">
+          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px]">
             <MarkedCopy text={tituloMarked} />
           </h2>
         </motion.div>
@@ -174,6 +177,9 @@ export function Oferta({
                   <CtaButton href={anual.ctaHref} fullMobile>
                     {anual.ctaLabel}
                   </CtaButton>
+                  {notaGarantia && (
+                    <p className="mt-3 text-center text-xs text-[var(--text-secondary)]">{notaGarantia}</p>
+                  )}
                 </div>
               </div>
             </Hairline>

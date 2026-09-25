@@ -4,6 +4,7 @@
 // marcado desde docs/copy/landing.md, tokens desde FICHA-ARTE.md (components/landing/tokens.css).
 // Modelo 02C: onboarding-first anónimo — todo CTA lleva a /onboarding.
 
+import Image from 'next/image';
 import { Scale, HeartCrack, Snowflake, CircleHelp } from 'lucide-react';
 import { Hero } from '@/components/landing/Hero';
 import { PlatoMockup, IngredientesBand, CategoriaBar, BackToTop, AyudaContacto } from '@/components/landing/PlatoMockup';
@@ -34,6 +35,7 @@ export default function LandingPawBites() {
       {/* 1. HERO */}
       <Hero
         appName="PawBites"
+        logo={<Image src="/logo.png" alt="" width={28} height={28} className="rounded-lg" priority />}
         loginHref="/entrar"
         preciosHref="#oferta"
         navExtra={[
@@ -44,7 +46,7 @@ export default function LandingPawBites() {
         subtitleMarked="El Plato Exacto calcula sus porciones y arma [b]la lista del súper[/b] por ti"
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        socialProof={<span>Garantía del Primer Plato — Hotmart, 7 días</span>}
+        socialProof={<span>Garantía del Primer Plato — 14 días</span>}
         visual={<PlatoMockup />}
       />
 
@@ -77,6 +79,7 @@ export default function LandingPawBites() {
       {/* 4. SOLUCIÓN */}
       <Solucion
         id="solucion"
+        kicker="Así funciona"
         tituloMarked="El plato de tu perro, [acento]calculado por ti[/acento]"
         mecanismo="el Plato Exacto"
         bigIdeaMarked="No es que te falte disciplina — es que las calculadoras que probaste son para expertos. [b]El Plato Exacto[/b] hace el cálculo por ti, en 3 clics."
@@ -114,7 +117,7 @@ export default function LandingPawBites() {
       {/* 6. OFERTA — el dispositivo satélite ahora vive INTEGRADO en la card Anual (CategoriaBar) */}
       <Oferta
         tituloMarked="Empieza gratis. Sigue por [acento]$0.10 al día[/acento]"
-        trialDias={3}
+        trialDias={7}
         stack={{
           lineas: [
             { resultado: 'PawBites Pro con el Plato Exacto (12 meses)', valor: '$60' },
@@ -124,6 +127,7 @@ export default function LandingPawBites() {
           totalTachado: '$94',
           nota: 'Hoy: $2.50/mes (se cobra $29.99/año)',
         }}
+        notaGarantia="Respaldado por la Garantía del Primer Plato — 14 días"
         anual={{
           nombre: 'Anual',
           badge: 'MÁS POPULAR',
@@ -131,7 +135,7 @@ export default function LandingPawBites() {
           totalAnual: 'Se cobra $29.99/año',
           ahorro: '6 meses gratis',
           descomposicionDia: 'menos de $0.10 al día',
-          ctaLabel: 'Empezar mis 3 días gratis',
+          ctaLabel: 'Empezar mis 7 días gratis',
           ctaHref: CTA_HREF,
           features: [
             'El plato exacto de tu perro cada día',
@@ -160,11 +164,11 @@ export default function LandingPawBites() {
         }}
       />
 
-      {/* 7. GARANTÍA (7 días > 3 días de prueba) */}
+      {/* 7. GARANTÍA (14 días > 7 días de prueba) */}
       <Garantia
-        nombre="la Garantía del Primer Plato"
-        condicionMarked="Si en tus primeros 7 días el Plato Exacto no te da el desglose correcto para tu perro, escribes un correo y te devolvemos todo. [b]Sin preguntas.[/b]"
-        pisoLegal="Respaldada por la garantía Hotmart de 7 días"
+        nombre="La Garantía del Primer Plato"
+        condicionMarked="Si en tus primeros 14 días el Plato Exacto no te da el desglose correcto para tu perro, escribes un correo y te devolvemos todo. [b]Sin preguntas.[/b]"
+        pisoLegal="Escríbenos y te devolvemos todo, sin trámites"
       />
 
       {/* 8. FAQ */}
@@ -181,7 +185,7 @@ export default function LandingPawBites() {
           },
           {
             pregunta: '¿Es caro comparado con el concentrado?',
-            respuestaMarked: 'Cuesta menos de $0.10 al día — mucho menos que un nutricionista veterinario o la comida precocinada premium.',
+            respuestaMarked: 'Cuesta menos de $0.10 al día — mucho menos que un nutricionista veterinario ($80+ la consulta) o la comida precocinada premium ($150+ al mes).',
           },
           {
             pregunta: '¿Qué pasa si mi perro tiene una condición médica?',
@@ -203,8 +207,8 @@ export default function LandingPawBites() {
         futurePacingMarked="Abres la app, ves el plato de hoy en gramos, y sigues con tu día — sin dudas, sin Excel."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
-        recap="Garantía del Primer Plato · 3 días gratis"
-        psMarked="Recuerda: PawBites calcula el plato exacto de tu perro y arma tu lista del súper con el Plato Exacto. Hoy entras con 3 días gratis y la Garantía del Primer Plato."
+        recap="Garantía del Primer Plato · 7 días gratis"
+        psMarked="Recuerda: PawBites calcula el plato exacto de tu perro y arma tu lista del súper con el Plato Exacto. Hoy entras con 7 días gratis y la Garantía del Primer Plato."
       />
 
       {/* 10. FOOTER LEGAL */}

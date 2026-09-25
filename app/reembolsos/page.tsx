@@ -16,12 +16,12 @@ export default function Reembolsos() {
           <strong className="font-semibold text-[var(--text-primary)]">
             La Garantía del Primer Plato:
           </strong>{' '}
-          si en tus primeros 7 días PawBites no te da el desglose correcto para tu perro,
+          si en tus primeros 14 días PawBites no te da el desglose correcto para tu perro,
           escríbenos y te devolvemos tu dinero. Sin preguntas.
         </p>
         <p>
-          Esta garantía está respaldada por la política de reembolso de 7 días de Hotmart,
-          nuestra plataforma de pago. Escribe a{' '}
+          Más allá de la política de reembolso estándar de Hotmart, nuestra plataforma de pago,
+          PawBites respalda esta garantía directamente. Escribe a{' '}
           <a href="mailto:hola@pawbites.app" className="text-[var(--accent)]">
             hola@pawbites.app
           </a>{' '}

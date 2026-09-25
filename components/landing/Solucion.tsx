@@ -40,7 +40,7 @@ export interface SolucionProps {
 }
 
 export function Solucion({
-  kicker = 'EL MECANISMO',
+  kicker = 'El mecanismo',
   tituloMarked,
   mecanismo,
   bigIdeaMarked,
@@ -64,10 +64,7 @@ export function Solucion({
       >
         <motion.div variants={item}>
           <Kicker>{kicker}</Kicker>
-          {/* h2 más grande que el resto de secciones a propósito: esta es la sección
-              que vende el mecanismo/Big Idea — refuerza el nivel 2 de jerarquía
-              (desviación justificada del tamaño estándar del kit, ver ESTADO.md) */}
-          <h2 className="text-balance text-4xl font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-6xl">
+          <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px]">
             <MarkedCopy text={tituloMarked} />
           </h2>
         </motion.div>
@@ -106,14 +103,14 @@ export function Solucion({
         {antesDespues && (
           <motion.div variants={item} className="mt-10 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div className="rounded-[var(--radius-card)] bg-[var(--surface-2)] p-5">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+              <p className="text-xs font-semibold text-[var(--text-tertiary)]">
                 {antesDespues.labelAntes}
               </p>
               <p className="mt-2 text-[16px] leading-snug text-[var(--text-secondary)]">{antesDespues.antes}</p>
             </div>
             {/* El "después" con acento sutil de fondo (4-6%) */}
             <div className="rounded-[var(--radius-card)] bg-[color-mix(in_oklab,var(--accent)_6%,transparent)] p-5">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
+              <p className="text-xs font-semibold text-[var(--accent)]">
                 {antesDespues.labelDespues}
               </p>
               <p className="mt-2 text-[16px] font-medium leading-snug text-[var(--text-primary)]">

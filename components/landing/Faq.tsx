@@ -30,7 +30,7 @@ export interface FaqProps {
   id?: string;
 }
 
-export function Faq({ kicker = 'PREGUNTAS', titulo = 'Lo que quizá te estás preguntando', items, abiertoInicial = 0, id }: FaqProps) {
+export function Faq({ kicker = 'Preguntas', titulo = 'Lo que quizá te estás preguntando', items, abiertoInicial = 0, id }: FaqProps) {
   warnRango('FAQ → ítems', items.length, 4, 6);
   items.forEach((it, i) => warnCopy(`FAQ → respuesta ${i + 1}`, it.respuestaMarked, 40));
   const [abierto, setAbierto] = useState<number | null>(abiertoInicial);

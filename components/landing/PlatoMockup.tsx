@@ -21,7 +21,12 @@ export const INGREDIENTES = [
 
 export function useCountUp(target: number, durationMs = 700) {
   const reduce = useReducedMotion();
-  const [valor, setValor] = useState(reduce ? target : 0);
+  // Arranca SIEMPRE en 0 (igual que el render del servidor, que no conoce
+  // `prefers-reduced-motion`): saltar directo a `target` cuando reduce=true
+  // pasa por el useEffect de abajo, después de hidratar — ramificar el valor
+  // inicial del useState aquí causaba un mismatch de hidratación real para
+  // cualquier usuario con "reducir movimiento" activado en el sistema.
+  const [valor, setValor] = useState(0);
 
   useEffect(() => {
     if (reduce) {
@@ -67,7 +72,7 @@ function IngredienteChip({ ing }: { ing: (typeof INGREDIENTES)[number] }) {
       <p className="text-xs font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
         {g}g
       </p>
-      <p className="text-[9.5px] font-semibold text-[var(--text-tertiary)]">{ing.label}</p>
+      <p className="text-xs font-semibold text-[var(--text-tertiary)]">{ing.label}</p>
     </div>
   );
 }
@@ -78,7 +83,7 @@ function IngredienteChip({ ing }: { ing: (typeof INGREDIENTES)[number] }) {
 export function IngredientesBand({ titulo }: { titulo: string }) {
   return (
     <div className="mx-auto mt-8 max-w-sm">
-      <p className="mb-3 text-center text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">
+      <p className="mb-3 text-center text-xs font-semibold text-[var(--text-tertiary)]">
         {titulo}
       </p>
       <div className="grid grid-cols-4 gap-2">
@@ -95,7 +100,7 @@ export function IngredientesBand({ titulo }: { titulo: string }) {
             <p className="text-xs font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
               {ing.g}g
             </p>
-            <p className="text-[9.5px] font-semibold text-[var(--text-tertiary)]">{ing.label}</p>
+            <p className="text-xs font-semibold text-[var(--text-tertiary)]">{ing.label}</p>
           </div>
         ))}
       </div>
@@ -122,7 +127,7 @@ export function CategoriaBar() {
               key={ing.label}
               className="h-full"
               style={{ background: `linear-gradient(90deg, ${ing.c1}, ${ing.c2})` }}
-              initial={{ width: reduce ? `${pct}%` : '0%' }}
+              initial={{ width: '0%' }}
               whileInView={{ width: `${pct}%` }}
               viewport={{ once: true, amount: 0.6 }}
               transition={{ duration: reduce ? 0 : 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -132,7 +137,7 @@ export function CategoriaBar() {
       </div>
       <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1">
         {INGREDIENTES.map((ing) => (
-          <span key={ing.label} className="inline-flex items-center gap-1 text-[9.5px] font-semibold text-[var(--text-tertiary)]">
+          <span key={ing.label} className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--text-tertiary)]">
             <span
               className="size-2 rounded-full"
               style={{ background: `linear-gradient(145deg, ${ing.c1}, ${ing.c2})` }}
@@ -214,7 +219,7 @@ export function PlatoMockup() {
             'linear-gradient(155deg, color-mix(in oklab, var(--accent) 78%, white), var(--accent))',
         }}
       >
-        <p className="text-xs font-semibold uppercase tracking-wide text-white/85">
+        <p className="text-xs font-semibold text-white/85">
           Hoy · Labrador · 22 kg
         </p>
         <p className="mt-1 text-4xl font-bold tabular-nums leading-none [font-family:var(--font-display)]">

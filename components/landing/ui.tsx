@@ -16,13 +16,12 @@ export function Accent({ children }: { children: ReactNode }) {
   return <span className="text-[var(--accent)]">{children}</span>;
 }
 
-/* ── <Kicker> — caps 12px/600 tracking +0.08em en acento (máx 1 por sección) ── */
+/* ── <Kicker> — 13px/700 en acento, sentence case (máx 1 por sección). Sin
+   mayúsculas ni tracking: el todo-mayúsculas+letterspacing es justo la firma
+   de "eyebrow genérico de SaaS" que el propio sistema marca como señal de
+   diseño hecho con IA — se resuelve con peso y color, no con el truco tipográfico. ── */
 export function Kicker({ children }: { children: ReactNode }) {
-  return (
-    <p className="mb-3 text-[12px] font-semibold uppercase tracking-[0.08em] text-[var(--accent)]">
-      {children}
-    </p>
-  );
+  return <p className="mb-3 text-xs font-bold text-[var(--accent)]">{children}</p>;
 }
 
 /* ── <IconChip> — ícono SVG 22px dentro de chip 44px (55: jamás emoji) ──────
@@ -37,10 +36,18 @@ export function IconChip({ icon: Icono, tone = 'accent' }: { icon: LucideIcon; t
       className={`inline-flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-button)] border ${
         acento
           ? 'border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)]'
-          : 'border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)]'
+          : 'border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface-2)]'
       }`}
     >
-      <Icono size={22} strokeWidth={2} color={acento ? 'var(--accent)' : 'var(--text-secondary)'} aria-hidden="true" />
+      {/* 'muted' usa el hundido cálido de la ficha (--surface-2), no gris frío
+          mezclado con text-tertiary — apagado sigue siendo apagado, pero
+          dentro de la familia de neutros con tinte de la marca, no genérico. */}
+      <Icono
+        size={22}
+        strokeWidth={2}
+        color={acento ? 'var(--accent)' : 'color-mix(in oklab, var(--accent) 35%, var(--text-secondary))'}
+        aria-hidden="true"
+      />
     </span>
   );
 }
@@ -121,7 +128,12 @@ export function SectionShell({
 }
 
 /* ── useReveal — variants de entrada whileInView con stagger, UNA sola vez,
-   reduced-motion respetado (movimiento fuera, fade dentro — 55 T4). ── */
+   reduced-motion respetado (movimiento fuera, fade dentro — 55 T4).
+   El variant `hidden` NUNCA se ramifica por `reduce`: es el mismo valor que
+   el servidor renderiza (que no conoce prefers-reduced-motion), así que
+   ramificarlo aquí producía un mismatch de hidratación real para cualquier
+   visitante con "reducir movimiento" activado en su sistema — solo se
+   ramifica la DURACIÓN de la transición (eso no se serializa al DOM). ── */
 export function useReveal(stagger = 0.07): { contenedor: Variants; item: Variants } {
   const reduce = useReducedMotion();
   return {
@@ -130,8 +142,8 @@ export function useReveal(stagger = 0.07): { contenedor: Variants; item: Variant
       visible: { transition: { staggerChildren: reduce ? 0 : stagger } },
     },
     item: {
-      hidden: { opacity: 0, y: reduce ? 0 : 20 },
-      visible: { opacity: 1, y: 0, transition: { duration: reduce ? 0.2 : 0.45, ease: [0.16, 1, 0.3, 1] } },
+      hidden: { opacity: 0, y: 20 },
+      visible: { opacity: 1, y: 0, transition: { duration: reduce ? 0 : 0.45, ease: [0.16, 1, 0.3, 1] } },
     },
   };
 }
