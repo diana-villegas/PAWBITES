@@ -13,6 +13,10 @@ import type { Plantilla } from './templates';
 
 export type EstadoEnvio = 'sent' | 'duplicate' | 'suppressed' | 'failed' | 'disabled';
 
+/** Correos de prueba (el "Enviar test" de Hotmart usa @example.com, test@hotmart.com...):
+ * escribirles rebota y quema la reputación del dominio de envío. Nunca se les manda. */
+const CORREO_DE_PRUEBA = /(@example\.(com|org|net)$|^(test|teste|testecomprador[\w.+-]*)@hotmart\.com(\.br)?$|^testecomprador[\w.+-]*@)/i;
+
 export async function enviarCorreo(opts: {
   to: string;
   kind: EmailKind;
@@ -26,6 +30,7 @@ export async function enviarCorreo(opts: {
   }
 
   const to = opts.to.trim().toLowerCase();
+  if (CORREO_DE_PRUEBA.test(to)) return 'suppressed';
   const ref = opts.ref ?? '';
   const esMarketing = MARKETING_KINDS.has(opts.kind);
   const admin = createAdminClient();
