@@ -3,8 +3,16 @@
 // E. LOGIN — spec: 50-DISENO-ONBOARDING-PAYWALL.md §E. Magic link/OTP por email
 // (passwordless, jerarquía Hotmart-first de 26-AUTH-MODERNO). Conectado a
 // Supabase Auth real (Sesión 6): signInWithOtp + callback en /auth/callback.
+//
+// "Entrar con contraseña" (2026-09-28, a pedido explícito del usuario para una
+// auditoría externa): opción SECUNDARIA y adicional — el enlace mágico sigue
+// siendo el camino por defecto para clientes reales, que nunca tienen contraseña
+// asignada (así que ese campo simplemente no les sirve). Solo la/s cuenta/s a las
+// que se les asigne una contraseña a mano (ver auditoriasrentas@gmail.com en
+// ESTADO.md) pueden usar este camino.
 
 import { useState, type FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion } from 'motion/react';
 import { Mail } from 'lucide-react';
@@ -13,9 +21,31 @@ import { createClient } from '@/lib/supabase/client';
 type Estado = 'form' | 'enviando' | 'enviado' | 'error';
 
 export default function EntrarPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [estado, setEstado] = useState<Estado>('form');
   const [reenviarEn, setReenviarEn] = useState(0);
+  const [conContrasena, setConContrasena] = useState(false);
+  const [contrasena, setContrasena] = useState('');
+  const [entrandoConContrasena, setEntrandoConContrasena] = useState(false);
+  const [errorContrasena, setErrorContrasena] = useState('');
+
+  async function handleSubmitContrasena(e: FormEvent) {
+    e.preventDefault();
+    if (!email.includes('@') || !contrasena || entrandoConContrasena) return;
+    setEntrandoConContrasena(true);
+    setErrorContrasena('');
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithPassword({ email, password: contrasena });
+    if (error) {
+      // Mismo mensaje genérico ante cualquier fallo (anti-enumeración: no revelar
+      // si el correo existe o si fue la contraseña la que falló).
+      setErrorContrasena('Correo o contraseña incorrectos.');
+      setEntrandoConContrasena(false);
+      return;
+    }
+    router.push('/app');
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -71,40 +101,101 @@ export default function EntrarPage() {
               Para guardarlo y verlo en cualquier dispositivo — sin contraseñas.
             </p>
 
-            <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-3">
-              <input
-                type="email"
-                autoFocus
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu@correo.com"
-                className="h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] px-4 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
-              />
-              <motion.button
-                type="submit"
-                disabled={estado === 'enviando' || !email.includes('@')}
-                whileTap={{ scale: 0.97 }}
-                className="flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-white disabled:opacity-60"
-              >
-                {estado === 'enviando' && (
-                  <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+            {!conContrasena ? (
+              <>
+                <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-3">
+                  <input
+                    type="email"
+                    autoFocus
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="tu@correo.com"
+                    className="h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] px-4 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                  />
+                  <motion.button
+                    type="submit"
+                    disabled={estado === 'enviando' || !email.includes('@')}
+                    whileTap={{ scale: 0.97 }}
+                    className="flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-white disabled:opacity-60"
+                  >
+                    {estado === 'enviando' && (
+                      <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+                    )}
+                    {estado === 'enviando' ? 'Enviando…' : 'Enviarme mi enlace de acceso'}
+                  </motion.button>
+                </form>
+
+                {estado === 'error' && (
+                  <p className="mt-3 text-center text-sm text-[var(--error)]">
+                    No pudimos enviar el correo — revisa tu conexión e inténtalo de nuevo.
+                  </p>
                 )}
-                {estado === 'enviando' ? 'Enviando…' : 'Enviarme mi enlace de acceso'}
-              </motion.button>
-            </form>
 
-            {estado === 'error' && (
-              <p className="mt-3 text-center text-sm text-[var(--error)]">
-                No pudimos enviar el correo — revisa tu conexión e inténtalo de nuevo.
-              </p>
+                <p className="mt-4 text-center text-xs text-[var(--text-tertiary)]">
+                  Sin contraseñas: te llegará un enlace de un solo uso.
+                  <br />
+                  ¿Compraste PawBites? Usa el correo de tu compra.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => setConContrasena(true)}
+                  className="mt-4 w-full text-center text-xs font-semibold text-[var(--text-tertiary)] underline underline-offset-2 [touch-action:manipulation]"
+                >
+                  ¿Prefieres entrar con correo y contraseña?
+                </button>
+              </>
+            ) : (
+              <>
+                <form onSubmit={handleSubmitContrasena} className="mt-6 flex flex-col gap-3">
+                  <input
+                    type="email"
+                    autoFocus
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="tu@correo.com"
+                    className="h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] px-4 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                  />
+                  <input
+                    type="password"
+                    required
+                    value={contrasena}
+                    onChange={(e) => setContrasena(e.target.value)}
+                    placeholder="Contraseña"
+                    className="h-14 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--surface)] px-4 text-base text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                  />
+                  <motion.button
+                    type="submit"
+                    disabled={entrandoConContrasena || !email.includes('@') || !contrasena}
+                    whileTap={{ scale: 0.97 }}
+                    className="flex h-14 w-full items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-white disabled:opacity-60"
+                  >
+                    {entrandoConContrasena && (
+                      <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+                    )}
+                    {entrandoConContrasena ? 'Entrando…' : 'Entrar'}
+                  </motion.button>
+                </form>
+
+                {errorContrasena && (
+                  <p className="mt-3 text-center text-sm text-[var(--error)]">{errorContrasena}</p>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setConContrasena(false);
+                    setErrorContrasena('');
+                    setContrasena('');
+                  }}
+                  className="mt-4 w-full text-center text-xs font-semibold text-[var(--text-tertiary)] underline underline-offset-2 [touch-action:manipulation]"
+                >
+                  Prefiero el enlace sin contraseña
+                </button>
+              </>
             )}
-
-            <p className="mt-4 text-center text-xs text-[var(--text-tertiary)]">
-              Sin contraseñas: te llegará un enlace de un solo uso.
-              <br />
-              ¿Compraste PawBites? Usa el correo de tu compra.
-            </p>
           </>
         ) : (
           <div className="flex flex-col items-center text-center">
