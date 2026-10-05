@@ -78,6 +78,48 @@ export function porcentajeTransicion(dia: number): { real: number; concentrado: 
   return { real: 100, concentrado: 0 };
 }
 
+/** Escala el plato completo (100%) al % de comida real de UN día del plan de
+ * transición — no cambia `calcularPlato`, solo aplica el porcentaje encima de
+ * su resultado. El total es la suma de las categorías ya redondeadas, para
+ * que coincida exactamente con lo que se ve en las tarjetas. */
+export function aplicarPorcentajeTransicion(platoCompleto: Plato, pctReal: number): Plato {
+  const factor = pctReal / 100;
+  const r = (n: number) => Math.round(n * factor);
+  const carneG = r(platoCompleto.carneG);
+  const huesoG = r(platoCompleto.huesoG);
+  const higadoG = r(platoCompleto.higadoG);
+  const otraVisceraG = r(platoCompleto.otraVisceraG);
+  const vegetalG = r(platoCompleto.vegetalG);
+  return { totalG: carneG + huesoG + higadoG + otraVisceraG + vegetalG, carneG, huesoG, higadoG, otraVisceraG, vegetalG };
+}
+
+/** Suma, día por día, cuánta comida real hace falta durante una tanda completa
+ * de compra — una tanda de 7 o 15 días puede cruzar dos tramos distintos del
+ * plan de transición (ej. 3 días al 25% + 4 días al 50%), así que multiplicar
+ * el plato completo por los días de la tanda sobraría comida. `diaInicio` es
+ * el día 1-indexado de la tanda (sin tope de 14, misma cuenta que `tandaActual`);
+ * los días después del 14 ya cuentan como 100% (`porcentajeTransicion` lo maneja). */
+export function sumarTandaConTransicion(platoCompleto: Plato, diaInicio: number, frecuencia: Frecuencia): Plato {
+  let carneG = 0, huesoG = 0, higadoG = 0, otraVisceraG = 0, vegetalG = 0;
+  for (let i = 0; i < frecuencia; i++) {
+    const factor = porcentajeTransicion(diaInicio + i).real / 100;
+    carneG += platoCompleto.carneG * factor;
+    huesoG += platoCompleto.huesoG * factor;
+    higadoG += platoCompleto.higadoG * factor;
+    otraVisceraG += platoCompleto.otraVisceraG * factor;
+    vegetalG += platoCompleto.vegetalG * factor;
+  }
+  const r = Math.round;
+  return {
+    totalG: r(carneG) + r(huesoG) + r(higadoG) + r(otraVisceraG) + r(vegetalG),
+    carneG: r(carneG),
+    huesoG: r(huesoG),
+    higadoG: r(higadoG),
+    otraVisceraG: r(otraVisceraG),
+    vegetalG: r(vegetalG),
+  };
+}
+
 export const ETIQUETA_CALIDAD: Record<CalidadHeces, string> = {
   bien: 'Bien formadas',
   blanda: 'Blandas',

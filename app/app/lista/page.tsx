@@ -8,33 +8,33 @@ import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Bone, Check, Drumstick, HeartPulse, Leaf } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { loadAppState, guardarAppState, type AppState } from '@/lib/appData';
+import { loadAppState, guardarAppState, tandaActual, type AppState } from '@/lib/appData';
+import { sumarTandaConTransicion, type Plato } from '@/lib/plato';
 
-function itemsLista(estado: AppState): { key: string; label: string; cantidad: string; icon: LucideIcon; c1: string; c2: string }[] {
-  const { plato, frecuencia } = estado;
-  const kg = (gDiarios: number) => {
-    const totalG = gDiarios * frecuencia;
-    return totalG >= 1000 ? `${(totalG / 1000).toFixed(1)} kg` : `${totalG} g`;
-  };
+/** Recibe el plato YA sumado día a día para toda la tanda (ver
+ * `sumarTandaConTransicion`) — no multiplica por la frecuencia aquí, porque
+ * una tanda puede cruzar más de un tramo del plan de transición. */
+function itemsLista(platoTanda: Plato): { key: string; label: string; cantidad: string; icon: LucideIcon; c1: string; c2: string }[] {
+  const kg = (totalG: number) => (totalG >= 1000 ? `${(totalG / 1000).toFixed(1)} kg` : `${totalG} g`);
   const items: { key: string; label: string; cantidad: string; icon: LucideIcon; c1: string; c2: string }[] = [];
-  if (plato.carneG > 0) {
-    items.push({ key: 'carne', label: 'Carne (pollo, res o similar)', cantidad: kg(plato.carneG), icon: Drumstick, c1: 'var(--cat-green-2)', c2: 'var(--cat-green)' });
+  if (platoTanda.carneG > 0) {
+    items.push({ key: 'carne', label: 'Carne (pollo, res o similar)', cantidad: kg(platoTanda.carneG), icon: Drumstick, c1: 'var(--cat-green-2)', c2: 'var(--cat-green)' });
   }
-  if (plato.huesoG > 0) {
-    items.push({ key: 'hueso', label: 'Hueso carnoso crudo', cantidad: kg(plato.huesoG), icon: Bone, c1: 'var(--cat-blue-2)', c2: 'var(--cat-blue)' });
+  if (platoTanda.huesoG > 0) {
+    items.push({ key: 'hueso', label: 'Hueso carnoso crudo', cantidad: kg(platoTanda.huesoG), icon: Bone, c1: 'var(--cat-blue-2)', c2: 'var(--cat-blue)' });
   }
   // Hígado separado de las demás vísceras a propósito: es mucho más
   // concentrado (vitamina A) y pasarse de cantidad es la causa más común de
   // diarrea por exceso de vísceras — separarlo en la lista evita que se
   // compre "vísceras" genérico y se sirva de más hígado sin darse cuenta.
-  if (plato.higadoG > 0) {
-    items.push({ key: 'higado', label: 'Hígado', cantidad: kg(plato.higadoG), icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)' });
+  if (platoTanda.higadoG > 0) {
+    items.push({ key: 'higado', label: 'Hígado', cantidad: kg(platoTanda.higadoG), icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)' });
   }
-  if (plato.otraVisceraG > 0) {
-    items.push({ key: 'otra_viscera', label: 'Otras vísceras (riñón, molleja)', cantidad: kg(plato.otraVisceraG), icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)' });
+  if (platoTanda.otraVisceraG > 0) {
+    items.push({ key: 'otra_viscera', label: 'Otras vísceras (riñón, molleja)', cantidad: kg(platoTanda.otraVisceraG), icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)' });
   }
-  if (plato.vegetalG > 0) {
-    items.push({ key: 'vegetal', label: 'Vegetales (zanahoria, calabaza)', cantidad: kg(plato.vegetalG), icon: Leaf, c1: 'var(--cat-yellow-2)', c2: 'var(--cat-yellow)' });
+  if (platoTanda.vegetalG > 0) {
+    items.push({ key: 'vegetal', label: 'Vegetales (zanahoria, calabaza)', cantidad: kg(platoTanda.vegetalG), icon: Leaf, c1: 'var(--cat-yellow-2)', c2: 'var(--cat-yellow)' });
   }
   return items;
 }
@@ -58,7 +58,10 @@ export default function ListaPage() {
     );
   }
 
-  const items = itemsLista(estado);
+  const tanda = tandaActual(estado.transitionStartedAt, estado.frecuencia);
+  const diaInicioTanda = tanda * estado.frecuencia + 1;
+  const platoTanda = sumarTandaConTransicion(estado.plato, diaInicioTanda, estado.frecuencia);
+  const items = itemsLista(platoTanda);
   const marcados = estado.listaComprada;
   const todosMarcados = items.every((it) => marcados.includes(it.key));
 

@@ -32,7 +32,9 @@ import {
   HITOS_RACHA,
   type AppState,
 } from '@/lib/appData';
-import { ajustarPorDigestion, type Plato } from '@/lib/plato';
+import { ajustarPorDigestion, aplicarPorcentajeTransicion, type Plato } from '@/lib/plato';
+
+const PLATO_VACIO: Plato = { totalG: 0, carneG: 0, huesoG: 0, higadoG: 0, otraVisceraG: 0, vegetalG: 0 };
 
 function categorias(p: Plato): { g: number; label: string; icon: LucideIcon; c1: string; c2: string; rotate: string }[] {
   return [
@@ -87,11 +89,16 @@ export default function HoyPage() {
   const [errorGuardado, setErrorGuardado] = useState(false);
   const [mostrarExito, setMostrarExito] = useState(false);
   const reduce = useReducedMotion();
-  // El conteo animado es un hook: se llama SIEMPRE en el mismo orden (nunca tras un
-  // return condicional) — con 0 mientras `estado` todavía no cargó de localStorage.
-  const total = useCountUpSafe(estado?.plato.totalG ?? 0);
+  // Los hooks se llaman SIEMPRE en el mismo orden (nunca tras un return
+  // condicional) — con valores "vacíos" mientras `estado` todavía no cargó de
+  // localStorage. El plato de hoy ya es solo la parte de comida real del día
+  // (el % del plan de transición aplicado sobre el plato completo).
   const diaSeguro = estado ? diaDeTransicion(estado.transitionStartedAt) : 1;
   const pctSeguro = porcentajeTransicion(diaSeguro);
+  const platoDelDiaSeguro = estado ? aplicarPorcentajeTransicion(estado.plato, pctSeguro.real) : PLATO_VACIO;
+  const calidadAyerSeguro = estado ? calidadDiaAnterior(estado.checkins, diaSeguro) : null;
+  const platoDeHoySeguro = ajustarPorDigestion(platoDelDiaSeguro, calidadAyerSeguro);
+  const total = useCountUpSafe(platoDeHoySeguro.totalG);
   const pctReal = useCountUpSafe(pctSeguro.real);
   const pctConcentrado = useCountUpSafe(pctSeguro.concentrado);
 
@@ -109,9 +116,12 @@ export default function HoyPage() {
 
   const dia = diaSeguro;
   const pct = { real: pctReal, concentrado: pctConcentrado };
-  const calidadAyer = calidadDiaAnterior(estado.checkins, dia);
-  const platoDeHoy = ajustarPorDigestion(estado.plato, calidadAyer);
-  const ajustado = platoDeHoy.carneG !== estado.plato.carneG;
+  const calidadAyer = calidadAyerSeguro;
+  const platoDeHoy = platoDeHoySeguro;
+  // Comparado contra el plato YA reducido al % del día (no el 100%), para que
+  // el aviso de "ajustamos tu plato" solo aparezca cuando la digestión de
+  // ayer movió algo — no simplemente porque hoy comen menos que el 100%.
+  const ajustado = platoDeHoy.carneG !== platoDelDiaSeguro.carneG;
   const cats = categorias(platoDeHoy);
   const racha = calcularRachaDias(estado.checkins, dia);
   const hitoAlcanzado = [...HITOS_RACHA].reverse().find((h) => racha >= h);
@@ -193,10 +203,11 @@ export default function HoyPage() {
             </p>
             <p className="mt-1 text-4xl font-bold tabular-nums leading-none [font-family:var(--font-display)]">
               {total}
-              <span className="ml-1 text-sm font-semibold text-white/80">g totales</span>
+              <span className="ml-1 text-sm font-semibold text-white/80">g de comida real</span>
             </p>
             <p className="mt-2 text-xs font-semibold text-white/85">
               {pct.real}% comida real · {pct.concentrado}% concentrado hoy
+              {pct.concentrado > 0 && ' — completa el resto con su concentrado habitual'}
             </p>
             {ajustado ? (
               <p className="mt-2 rounded-xl bg-[var(--surface)] px-2.5 py-1.5 text-xs font-semibold text-[var(--accent)]">
