@@ -58,8 +58,10 @@ const CATEGORIAS = (p: Plato) =>
   ].filter((x): x is NonNullable<typeof x> => x !== null);
 
 const PLANES: Record<PlanId, { nombre: string; ctaLabel: string; recap: string }> = {
-  anual: { nombre: 'Anual', ctaLabel: 'Empezar mis 7 días gratis', recap: '1er cobro: $2.50/mes · cancela antes sin costo' },
-  mensual: { nombre: 'Mensual', ctaLabel: 'Empezar mis 7 días gratis', recap: '1er cobro: $4.99/mes · cancela antes sin costo' },
+  // El cobro del día 8 es el monto COMPLETO del plan (no el equivalente mensual
+  // del anual) — Hotmart cobra $29.99 USD de una sola vez, nunca $2.50/mes.
+  anual: { nombre: 'Anual', ctaLabel: 'Empezar mis 7 días gratis', recap: '1er cobro: $29.99 USD (equivale a $2.50 USD al mes) · cancela antes sin costo' },
+  mensual: { nombre: 'Mensual', ctaLabel: 'Empezar mis 7 días gratis', recap: '1er cobro: $4.99 USD · cancela antes sin costo' },
 };
 
 /** Mismo tratamiento de check que `ChipOpcion` (components/onboarding/ui.tsx) —
@@ -244,7 +246,7 @@ export function Paywall({ nombrePerro, raza, pesoKg, edad, actividad, dieta, pla
 
       {/* Ancla de precio (objeción #4 de FICHA-AVATAR.md: "es caro / no sé si lo voy a usar") */}
       <motion.p variants={item} className="mt-3 text-xs text-[var(--text-secondary)]">
-        Menos que una consulta con nutricionista veterinario (<span className="font-semibold text-[var(--text-primary)]">$80+</span>) o la comida precocinada (<span className="font-semibold text-[var(--text-primary)]">$150+/mes</span>).
+        Menos que una consulta con nutricionista veterinario (<span className="font-semibold text-[var(--text-primary)]">$80+ USD</span>) o la comida precocinada (<span className="font-semibold text-[var(--text-primary)]">$150+ USD/mes</span>).
       </motion.p>
 
       {/* C4 — timeline del trial (patrón Blinkist): responde "¿puedo cancelar?" de un vistazo */}
@@ -291,9 +293,9 @@ export function Paywall({ nombrePerro, raza, pesoKg, edad, actividad, dieta, pla
             <span className="text-xs font-bold text-[var(--accent)]">6 meses gratis</span>
           </div>
           <p className="mt-2 text-4xl font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-            $2.50<span className="text-sm font-semibold text-[var(--text-secondary)]">/mes</span>
+            $2.50<span className="text-sm font-semibold text-[var(--text-secondary)]"> USD/mes</span>
           </p>
-          <p className="mt-1 text-xs text-[var(--text-secondary)]">Se cobra $29.99/año</p>
+          <p className="mt-1 text-xs text-[var(--text-secondary)]">Se cobra $29.99 USD/año</p>
         </motion.button>
       </motion.div>
       <motion.button
@@ -312,7 +314,7 @@ export function Paywall({ nombrePerro, raza, pesoKg, edad, actividad, dieta, pla
             Mensual
           </span>
           <span className="text-xl font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-            $4.99<span className="text-sm font-semibold text-[var(--text-secondary)]">/mes</span>
+            $4.99<span className="text-sm font-semibold text-[var(--text-secondary)]"> USD/mes</span>
           </span>
         </div>
       </motion.button>
@@ -327,6 +329,9 @@ export function Paywall({ nombrePerro, raza, pesoKg, edad, actividad, dieta, pla
         </motion.a>
         <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
           Hoy no pagas nada · te avisamos antes del cobro · cancela en 1 tap
+        </p>
+        <p className="mt-1 text-center text-xs text-[var(--text-tertiary)]">
+          Hotmart te mostrará el monto en tu moneda local
         </p>
       </motion.div>
 

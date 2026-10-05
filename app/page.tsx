@@ -120,19 +120,20 @@ export default function LandingPawBites() {
         trialDias={7}
         stack={{
           lineas: [
-            { resultado: 'PawBites Pro con el Plato Exacto (12 meses)', valor: '$60' },
-            { resultado: 'Plan de transición de 14 días guiado', valor: '$19' },
-            { resultado: 'Sustitutor de ingredientes sin complicarte', valor: '$15' },
+            { resultado: 'PawBites Pro con el Plato Exacto (12 meses)', valor: '$60 USD' },
+            { resultado: 'Plan de transición de 14 días guiado', valor: '$19 USD' },
+            { resultado: 'Sustitutor de ingredientes sin complicarte', valor: '$15 USD' },
           ],
-          totalTachado: '$94',
-          nota: 'Hoy: $2.50/mes (se cobra $29.99/año)',
+          totalTachado: '$94 USD',
+          nota: 'Hoy: $2.50 USD/mes (se cobra $29.99 USD/año)',
         }}
-        notaGarantia="Respaldado por la Garantía del Primer Plato — 14 días"
+        notaGarantia="Respaldado por la Garantía del Primer Plato — 14 días · Hotmart te mostrará el monto en tu moneda local"
         anual={{
           nombre: 'Anual',
           badge: 'MÁS POPULAR',
           precioMes: '$2.50',
-          totalAnual: 'Se cobra $29.99/año',
+          sufijo: 'USD/mes',
+          totalAnual: 'Se cobra $29.99 USD/año',
           ahorro: '6 meses gratis',
           descomposicionDia: 'menos de $0.10 al día',
           ctaLabel: 'Empezar mis 7 días gratis',
@@ -153,6 +154,7 @@ export default function LandingPawBites() {
         mensual={{
           nombre: 'Mensual',
           precioMes: '$4.99',
+          sufijo: 'USD/mes',
           ctaLabel: 'Elegir mensual',
           ctaHref: CTA_HREF,
           features: [
