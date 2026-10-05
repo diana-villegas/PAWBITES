@@ -105,10 +105,10 @@ export default function LandingPawBites() {
       <AppPorDentro
         tituloMarked="Tu día a día con [acento]PawBites[/acento]"
         frames={[
-          { label: 'El plato de hoy, en gramos', nombrePantalla: 'Hoy' },
-          { label: 'Tu plan de transición de 14 días', nombrePantalla: 'Plan' },
-          { label: 'La lista del súper, lista para marcar', nombrePantalla: 'Compras' },
-          { label: 'El perfil de tu perro', nombrePantalla: 'Perfil' },
+          { src: '/showcase/hoy.webp', label: 'El plato de hoy, en gramos', nombrePantalla: 'Hoy' },
+          { src: '/showcase/plan.webp', label: 'Tu plan de transición de 14 días', nombrePantalla: 'Plan' },
+          { src: '/showcase/lista.webp', label: 'La lista del súper, lista para marcar', nombrePantalla: 'Compras' },
+          { src: '/showcase/perfil.webp', label: 'El perfil de tu perro', nombrePantalla: 'Perfil' },
         ]}
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
