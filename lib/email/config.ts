@@ -20,7 +20,8 @@ export type EmailKind =
   | 'pago_fallido'
   | 'cancelacion'
   | 'trial_d3'
-  | 'trial_d6';
+  | 'trial_d6'
+  | 'plato_correo';
 
 /** Correos de marketing: llevan enlace de baja, cabecera List-Unsubscribe y respetan
  * la lista de bajas. Los transaccionales (acceso, pagos, aviso de cobro) no. */

@@ -5,6 +5,7 @@
 // Todo dato que viene de fuera (nombre de Hotmart, nombre del perro) se escapa.
 
 import { SITE_URL } from './config';
+import type { Plato } from '@/lib/plato';
 
 export interface Plantilla {
   subject: string;
@@ -205,6 +206,35 @@ export function plantillaTrialD3(d: { nombre?: string | null; perro?: string | n
     subject: perro ? `${perro}: ya van 3 días` : 'Ya van 3 días con PawBites',
     subjectAlt: '¿Ya armaste tu lista del súper?',
     preheader: 'Un paso corto para que la transición vaya bien.',
+    html,
+    text,
+  };
+}
+
+/** "Envíame el plato" — a pedido explícito de quien llegó al paywall y tocó
+ * "Ahora no" en vez de salir sin dejar rastro (transaccional: lo pidió). */
+export function plantillaPlatoPorCorreo(d: { perro: string; plato: Plato; enlace: string }): Plantilla {
+  const perro = esc(d.perro);
+  const { carneG, huesoG, higadoG, otraVisceraG, vegetalG, totalG } = d.plato;
+  const filas: string[] = [`Carne: ${carneG} g`];
+  if (huesoG > 0) filas.push(`Hueso: ${huesoG} g`);
+  if (higadoG > 0) filas.push(`Hígado: ${higadoG} g`);
+  if (otraVisceraG > 0) filas.push(`Otras vísceras: ${otraVisceraG} g`);
+  if (vegetalG > 0) filas.push(`Vegetales: ${vegetalG} g`);
+  const { html, text } = armar({
+    preheader: `El plato de ${perro} en gramos exactos, listo para cuando quieras.`,
+    parrafos: [
+      'Hola,',
+      `Aquí está el plato exacto de ${perro}, calculado para su peso, edad y actividad — un total de <strong>${totalG} g al día</strong>:`,
+      filas.join('<br>'),
+      'Cuando quieras seguir y activar los 7 días gratis, toca el botón de abajo.',
+    ],
+    boton: { texto: 'Ver mi plan y precios', url: d.enlace },
+  });
+  return {
+    subject: `El plato de ${d.perro}, en gramos exactos`,
+    subjectAlt: `${d.perro} ya tiene su plato calculado`,
+    preheader: `El plato de ${perro} en gramos exactos, listo para cuando quieras.`,
     html,
     text,
   };

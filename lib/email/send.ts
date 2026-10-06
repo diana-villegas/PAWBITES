@@ -79,7 +79,7 @@ export async function enviarCorreo(opts: {
     }
     return 'sent';
   } catch (e) {
-    console.error('email: falló la llamada a Resend', { kind: opts.kind, error: (e as Error).name });
+    console.error('email: falló la llamada a Resend', { kind: opts.kind, error: (e as Error).name, mensaje: (e as Error).message });
     await admin.from('email_log').delete().eq('email', to).eq('kind', opts.kind).eq('ref', ref);
     return 'failed';
   }

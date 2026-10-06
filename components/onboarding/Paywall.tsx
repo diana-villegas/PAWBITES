@@ -161,6 +161,14 @@ export function Paywall({ nombrePerro, raza, pesoKg, edad, actividad, dieta, pla
   const [plan, setPlan] = useState<PlanId>('anual');
   const { contenedor, item } = useEntrada();
 
+  // "Ahora no" ya no saca sin dejar rastro — ofrece mandar el plato por correo.
+  const [mostrarEnvioCorreo, setMostrarEnvioCorreo] = useState(false);
+  const [correoEnvio, setCorreoEnvio] = useState('');
+  const [enviandoCorreo, setEnviandoCorreo] = useState(false);
+  const [errorCorreo, setErrorCorreo] = useState('');
+  const [correoEnviado, setCorreoEnviado] = useState(false);
+  const correoEnvioValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correoEnvio);
+
   // Estado anónimo → cuenta (26-AUTH-MODERNO): se guarda para que /entrar y el
   // futuro webhook de Hotmart puedan recuperar el plan sin repetir el quiz.
   // IMPORTANTE: estos campos deben calzar 1:1 con el zod schema de
@@ -338,9 +346,113 @@ export function Paywall({ nombrePerro, raza, pesoKg, edad, actividad, dieta, pla
         </p>
       </motion.div>
 
+      {!mostrarEnvioCorreo ? (
+        <motion.div variants={item} className="mt-4 flex items-center justify-center gap-4 text-xs text-[var(--text-secondary)]">
+          <button type="button" onClick={() => setMostrarEnvioCorreo(true)} className="[touch-action:manipulation]">
+            Ahora no
+          </button>
+          <span aria-hidden="true">·</span>
+          <a href="/entrar">¿Ya compraste? Inicia sesión</a>
+        </motion.div>
+      ) : correoEnviado ? (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-4 rounded-[var(--radius-card)] bg-[var(--surface)] p-4 text-center"
+        >
+          <p className="text-sm font-semibold text-[var(--text-primary)]">
+            Listo — revisa tu correo
+          </p>
+          <p className="mt-1 text-xs text-[var(--text-secondary)]">
+            Te mandamos el plato de {nombrePerro} a {correoEnvio}.
+          </p>
+          <a href="/" className="mt-3 inline-block text-xs font-semibold text-[var(--accent)]">
+            Volver al inicio
+          </a>
+        </motion.div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-4 rounded-[var(--radius-card)] bg-[var(--surface)] p-4"
+        >
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!correoEnvioValido || enviandoCorreo) return;
+              setEnviandoCorreo(true);
+              setErrorCorreo('');
+              try {
+                const res = await fetch('/api/leads/plato', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    email: correoEnvio,
+                    nombrePerro,
+                    pesoKg,
+                    edad,
+                    actividad,
+                    dieta,
+                    frecuencia,
+                    plato,
+                  }),
+                });
+                if (!res.ok) {
+                  const data = await res.json().catch(() => null);
+                  setErrorCorreo(data?.error ?? 'No pudimos enviar el correo — intenta de nuevo.');
+                  setEnviandoCorreo(false);
+                  return;
+                }
+                setCorreoEnviado(true);
+              } catch {
+                setErrorCorreo('No pudimos enviar el correo — revisa tu conexión.');
+                setEnviandoCorreo(false);
+              }
+            }}
+          >
+            <p className="text-sm font-semibold text-[var(--text-primary)]">
+              ¿Te enviamos el plato de {nombrePerro} a tu correo?
+            </p>
+            <input
+              type="email"
+              autoFocus
+              required
+              value={correoEnvio}
+              onChange={(e) => setCorreoEnvio(e.target.value)}
+              placeholder="tu@correo.com"
+              className="mt-3 h-12 w-full rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] bg-[var(--bg)] px-4 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+            />
+            {correoEnvio.length > 0 && !correoEnvioValido && (
+              <p className="mt-2 text-xs text-[var(--error)]">Escribe un correo válido (ej. tu@correo.com).</p>
+            )}
+            {errorCorreo && <p className="mt-2 text-xs text-[var(--error)]">{errorCorreo}</p>}
+            <p className="mt-2 text-[12px] leading-snug text-[var(--text-tertiary)]">
+              Al enviarlo aceptas nuestra{' '}
+              <a href="/privacidad" target="_blank" rel="noreferrer" className="underline">
+                política de privacidad
+              </a>
+              .
+            </p>
+            <motion.button
+              type="submit"
+              disabled={!correoEnvioValido || enviandoCorreo}
+              whileTap={{ scale: 0.97 }}
+              className="mt-3 flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-sm font-semibold text-white disabled:opacity-60"
+            >
+              {enviandoCorreo ? 'Enviando…' : 'Enviármelo'}
+            </motion.button>
+            <button
+              type="button"
+              onClick={() => (window.location.href = '/')}
+              className="mt-3 w-full text-center text-xs font-semibold text-[var(--text-tertiary)] underline underline-offset-2 [touch-action:manipulation]"
+            >
+              No, gracias
+            </button>
+          </form>
+        </motion.div>
+      )}
+
       <motion.div variants={item} className="mt-4 flex items-center justify-center gap-4 text-xs text-[var(--text-secondary)]">
-        <a href="/">Ahora no</a>
-        <span aria-hidden="true">·</span>
         <a href="/entrar">¿Ya compraste? Inicia sesión</a>
       </motion.div>
 

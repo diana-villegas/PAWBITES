@@ -124,7 +124,7 @@ export default function LandingPawBites() {
 
       {/* 6. OFERTA — el dispositivo satélite ahora vive INTEGRADO en la card Anual (CategoriaBar) */}
       <Oferta
-        tituloMarked="Empieza gratis. Sigue por [acento]$0.10 al día[/acento]"
+        tituloMarked="7 días gratis. Desde [acento]$0.10 USD al día[/acento]"
         trialDias={7}
         stack={{
           lineas: [
