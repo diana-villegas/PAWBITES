@@ -15,6 +15,7 @@ import {
   type Frecuencia,
   type Plato,
 } from './plato';
+import { INGREDIENTES_POR_DEFECTO, type GrupoIngrediente, type Ingredientes } from './sustitutos';
 
 export interface AppState {
   v: 1;
@@ -40,12 +41,37 @@ export interface AppState {
   listaCompradaTanda: number;
   /** Check-in diario de digestión por día del plan (1-14) — mapa de transición. */
   checkins: Record<number, CalidadHeces>;
+  /** Ingrediente específico elegido por grupo (sustitutor) — los gramos del
+   * grupo nunca cambian, solo cuál alimento concreto los cubre. */
+  ingredientes: Ingredientes;
 }
 
 const KEY = 'pawbites_app_state';
 const KEY_ONBOARDING = 'pawbites_onboarding';
+// Separada a propósito del resto del estado: "Cerrar sesión" borra pawbites_app_state
+// (lista comprada, racha, historial de digestión — dispositivo compartido, Perfil)
+// pero la preferencia de qué ingrediente sustituto usa cada grupo NO es un dato
+// sensible de actividad — se conserva aparte para sobrevivir el cierre de sesión.
+const KEY_INGREDIENTES = 'pawbites_ingredientes';
 
-const SEMILLA_DEMO: Omit<AppState, 'plato' | 'transitionStartedAt' | 'streakWeeks' | 'listaComprada' | 'listaCompradaTanda' | 'checkins'> = {
+function cargarIngredientesPersistentes(): Ingredientes | null {
+  try {
+    const raw = localStorage.getItem(KEY_INGREDIENTES);
+    return raw ? (JSON.parse(raw) as Ingredientes) : null;
+  } catch {
+    return null;
+  }
+}
+
+function guardarIngredientesPersistentes(ing: Ingredientes): void {
+  try {
+    localStorage.setItem(KEY_INGREDIENTES, JSON.stringify(ing));
+  } catch {
+    // localStorage puede fallar (modo privado) — no bloquea el resto del guardado
+  }
+}
+
+const SEMILLA_DEMO: Omit<AppState, 'plato' | 'transitionStartedAt' | 'streakWeeks' | 'listaComprada' | 'listaCompradaTanda' | 'checkins' | 'ingredientes'> = {
   v: 1,
   nombrePerro: 'Luna',
   pesoKg: 15,
@@ -86,6 +112,7 @@ function construirEstadoInicial(): AppState {
     listaComprada: [],
     listaCompradaTanda: 0,
     checkins: {},
+    ingredientes: INGREDIENTES_POR_DEFECTO,
   };
 }
 
@@ -98,6 +125,14 @@ export function tandaActual(transitionStartedAt: string, frecuencia: Frecuencia)
   return Math.floor(Math.max(dias, 0) / frecuencia);
 }
 
+/** La preferencia de ingrediente sustituto vive aparte de `pawbites_app_state`
+ * (ver KEY_INGREDIENTES) para sobrevivir un "Cerrar sesión" — si existe,
+ * manda sobre lo que haya en el estado normal. */
+function conIngredientesPersistentes(estado: AppState): AppState {
+  const persistido = cargarIngredientesPersistentes();
+  return persistido ? { ...estado, ingredientes: persistido } : estado;
+}
+
 export function loadAppState(): AppState {
   try {
     const raw = localStorage.getItem(KEY);
@@ -106,12 +141,13 @@ export function loadAppState(): AppState {
       // Migración defensiva: estados guardados antes de la Sesión de gamificación
       // no tienen `checkins` ni `listaCompradaTanda` — se completan para no
       // romper el mapa de transición ni la lista de compras.
-      const estado = {
+      const estado = conIngredientesPersistentes({
         checkins: {},
         listaComprada: [],
         listaCompradaTanda: 0,
+        ingredientes: INGREDIENTES_POR_DEFECTO,
         ...guardado,
-      } as AppState;
+      } as AppState);
       // Si ya empezó una tanda nueva desde la última vez que se guardó, los
       // check-off de la tanda anterior ya no aplican — limpiar (defecto real:
       // la lista quedaba marcada para siempre después de la primera compra).
@@ -126,7 +162,7 @@ export function loadAppState(): AppState {
   } catch {
     // sigue abajo
   }
-  const estado = construirEstadoInicial();
+  const estado = conIngredientesPersistentes(construirEstadoInicial());
   guardarAppState(estado);
   return estado;
 }
@@ -136,6 +172,9 @@ export function loadAppState(): AppState {
 export function guardarAppState(estado: AppState): boolean {
   try {
     localStorage.setItem(KEY, JSON.stringify(estado));
+    // Mantiene la copia que sobrevive a "Cerrar sesión" al día con cualquier
+    // cambio de ingrediente, sin que cada pantalla tenga que acordarse de hacerlo.
+    guardarIngredientesPersistentes(estado.ingredientes);
     return true;
   } catch {
     return false;
@@ -153,6 +192,12 @@ export function diaDeTransicion(transitionStartedAt: string): number {
 /** Guarda el check-in de digestión de un día del plan (mapa de transición). */
 export function guardarCheckin(estado: AppState, dia: number, calidad: CalidadHeces): AppState {
   return { ...estado, checkins: { ...estado.checkins, [dia]: calidad } };
+}
+
+/** Cambia el ingrediente elegido de un grupo (sustitutor) — nunca toca los
+ * gramos, solo qué alimento concreto cubre ese grupo. */
+export function guardarIngrediente(estado: AppState, grupo: GrupoIngrediente, id: string): AppState {
+  return { ...estado, ingredientes: { ...estado.ingredientes, [grupo]: id } };
 }
 
 /** Quita el check-in de un día (deshacer un registro por error — control y libertad). */

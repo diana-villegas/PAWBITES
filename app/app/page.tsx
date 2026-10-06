@@ -25,6 +25,7 @@ import { Hairline } from '@/components/landing/ui';
 import {
   loadAppState,
   guardarAppState,
+  guardarIngrediente,
   diaDeTransicion,
   porcentajeTransicion,
   calidadDiaAnterior,
@@ -33,28 +34,38 @@ import {
   type AppState,
 } from '@/lib/appData';
 import { ajustarPorDigestion, aplicarPorcentajeTransicion, type Plato } from '@/lib/plato';
+import { nombreIngrediente, type GrupoIngrediente, type Ingredientes } from '@/lib/sustitutos';
+import { SustitutorSheet, type GrupoAMostrar } from '@/components/app/SustitutorSheet';
 
 const PLATO_VACIO: Plato = { totalG: 0, carneG: 0, huesoG: 0, higadoG: 0, otraVisceraG: 0, vegetalG: 0 };
 
-function categorias(p: Plato): { g: number; label: string; icon: LucideIcon; c1: string; c2: string; rotate: string }[] {
+function categorias(
+  p: Plato,
+  ing: Ingredientes
+): { g: number; label: string; icon: LucideIcon; c1: string; c2: string; rotate: string; grupos: GrupoIngrediente[] }[] {
   return [
-    { g: p.carneG, label: 'Carne', icon: Drumstick, c1: 'var(--cat-green-2)', c2: 'var(--cat-green)', rotate: '-rotate-6' },
+    { g: p.carneG, label: nombreIngrediente('carne', ing.carne), icon: Drumstick, c1: 'var(--cat-green-2)', c2: 'var(--cat-green)', rotate: '-rotate-6', grupos: ['carne'] },
     ...(p.huesoG > 0
-      ? [{ g: p.huesoG, label: 'Hueso', icon: Bone, c1: 'var(--cat-blue-2)', c2: 'var(--cat-blue)', rotate: 'rotate-6' }]
+      ? [{ g: p.huesoG, label: nombreIngrediente('hueso', ing.hueso), icon: Bone, c1: 'var(--cat-blue-2)', c2: 'var(--cat-blue)', rotate: 'rotate-6', grupos: ['hueso'] as GrupoIngrediente[] }]
       : []),
     // Combinado a propósito aquí (chip de resumen): el desglose hígado vs.
     // otras vísceras — el que importa para no pasarse de hígado — vive en
-    // la Lista de compras, donde el usuario realmente compra y prepara.
-    { g: p.higadoG + p.otraVisceraG, label: 'Vísceras', icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)', rotate: 'rotate-3' },
-    { g: p.vegetalG, label: 'Vegetales', icon: Leaf, c1: 'var(--cat-yellow-2)', c2: 'var(--cat-yellow)', rotate: '-rotate-3' },
+    // la Lista de compras, donde el usuario realmente compra y prepara. Se
+    // toca igual: abre las dos elecciones (hígado + otras vísceras) juntas.
+    { g: p.higadoG + p.otraVisceraG, label: 'Vísceras', icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)', rotate: 'rotate-3', grupos: ['higado', 'otraViscera'] },
+    { g: p.vegetalG, label: nombreIngrediente('vegetal', ing.vegetal), icon: Leaf, c1: 'var(--cat-yellow-2)', c2: 'var(--cat-yellow)', rotate: '-rotate-3', grupos: ['vegetal'] },
   ];
 }
 
-function CategoriaSatelite({ cat }: { cat: ReturnType<typeof categorias>[number] }) {
+function CategoriaSatelite({ cat, onClick }: { cat: ReturnType<typeof categorias>[number]; onClick: () => void }) {
   const g = useCountUp(cat.g, 800);
   const Icono = cat.icon;
   return (
-    <div className={`rounded-2xl bg-[var(--surface)] p-3 text-center shadow-[var(--shadow-1)] ${cat.rotate}`}>
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-2xl bg-[var(--surface)] p-3 text-center shadow-[var(--shadow-1)] [touch-action:manipulation] ${cat.rotate}`}
+    >
       <div
         className="mx-auto mb-1.5 flex size-8 items-center justify-center rounded-xl"
         style={{ background: `linear-gradient(145deg, ${cat.c1}, ${cat.c2})` }}
@@ -64,7 +75,7 @@ function CategoriaSatelite({ cat }: { cat: ReturnType<typeof categorias>[number]
       </div>
       <p className="text-sm font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">{g}g</p>
       <p className="text-[12px] font-semibold text-[var(--text-tertiary)]">{cat.label}</p>
-    </div>
+    </button>
   );
 }
 
@@ -88,6 +99,7 @@ export default function HoyPage() {
   const [pulso, setPulso] = useState(0);
   const [errorGuardado, setErrorGuardado] = useState(false);
   const [mostrarExito, setMostrarExito] = useState(false);
+  const [grupoAbierto, setGrupoAbierto] = useState<GrupoIngrediente[] | null>(null);
   const reduce = useReducedMotion();
   // Los hooks se llaman SIEMPRE en el mismo orden (nunca tras un return
   // condicional) — con valores "vacíos" mientras `estado` todavía no cargó de
@@ -122,7 +134,7 @@ export default function HoyPage() {
   // el aviso de "ajustamos tu plato" solo aparezca cuando la digestión de
   // ayer movió algo — no simplemente porque hoy comen menos que el 100%.
   const ajustado = platoDeHoy.carneG !== platoDelDiaSeguro.carneG;
-  const cats = categorias(platoDeHoy);
+  const cats = categorias(platoDeHoy, estado.ingredientes);
   const racha = calcularRachaDias(estado.checkins, dia);
   const hitoAlcanzado = [...HITOS_RACHA].reverse().find((h) => racha >= h);
   const hitoRecienAlcanzado = racha === hitoAlcanzado;
@@ -138,6 +150,15 @@ export default function HoyPage() {
       setMostrarExito(true);
       window.setTimeout(() => setMostrarExito(false), 1800);
     }
+  }
+
+  /** Sustitutor: elegir un ingrediente nunca toca los gramos, solo qué
+   * alimento concreto cubre ese grupo — se guarda igual que el resto del estado. */
+  function elegirIngrediente(grupo: GrupoIngrediente, id: string) {
+    if (!estado) return;
+    const nuevo = guardarIngrediente(estado, grupo, id);
+    setEstado(nuevo);
+    guardarAppState(nuevo);
   }
 
   /** Reintenta el guardado sin tocar el estado de "marcado" (el toggle ya se aplicó). */
@@ -223,7 +244,7 @@ export default function HoyPage() {
 
           <div className={`mt-3 grid gap-2 ${cats.length === 4 ? 'grid-cols-4' : 'grid-cols-3'}`}>
             {cats.map((c) => (
-              <CategoriaSatelite key={c.label} cat={c} />
+              <CategoriaSatelite key={c.grupos.join('-')} cat={c} onClick={() => setGrupoAbierto(c.grupos)} />
             ))}
           </div>
         </motion.div>
@@ -333,6 +354,13 @@ export default function HoyPage() {
         </Hairline>
         </motion.div>
       </motion.div>
+
+      <SustitutorSheet
+        abierto={grupoAbierto !== null}
+        grupos={(grupoAbierto ?? []).map((grupo): GrupoAMostrar => ({ grupo, seleccionado: estado.ingredientes[grupo] }))}
+        onElegir={elegirIngrediente}
+        onCerrar={() => setGrupoAbierto(null)}
+      />
     </div>
   );
 }

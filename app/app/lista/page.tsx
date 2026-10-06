@@ -6,41 +6,56 @@
 
 import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
-import { Bone, Check, Drumstick, HeartPulse, Leaf } from 'lucide-react';
+import { Bone, Check, ChevronRight, Drumstick, HeartPulse, Leaf } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { loadAppState, guardarAppState, tandaActual, type AppState } from '@/lib/appData';
+import { loadAppState, guardarAppState, guardarIngrediente, tandaActual, type AppState } from '@/lib/appData';
 import { sumarTandaConTransicion, type Plato } from '@/lib/plato';
+import { ETIQUETA_GRUPO, nombreIngrediente, type GrupoIngrediente, type Ingredientes } from '@/lib/sustitutos';
+import { SustitutorSheet } from '@/components/app/SustitutorSheet';
+
+interface ItemLista {
+  key: string;
+  grupo: GrupoIngrediente;
+  label: string;
+  cantidad: string;
+  icon: LucideIcon;
+  c1: string;
+  c2: string;
+}
 
 /** Recibe el plato YA sumado día a día para toda la tanda (ver
  * `sumarTandaConTransicion`) — no multiplica por la frecuencia aquí, porque
- * una tanda puede cruzar más de un tramo del plan de transición. */
-function itemsLista(platoTanda: Plato): { key: string; label: string; cantidad: string; icon: LucideIcon; c1: string; c2: string }[] {
+ * una tanda puede cruzar más de un tramo del plan de transición. El label de
+ * cada renglón es el ingrediente concreto elegido (sustitutor), no el nombre
+ * genérico del grupo. */
+function itemsLista(platoTanda: Plato, ing: Ingredientes): ItemLista[] {
   const kg = (totalG: number) => (totalG >= 1000 ? `${(totalG / 1000).toFixed(1)} kg` : `${totalG} g`);
-  const items: { key: string; label: string; cantidad: string; icon: LucideIcon; c1: string; c2: string }[] = [];
+  const items: ItemLista[] = [];
   if (platoTanda.carneG > 0) {
-    items.push({ key: 'carne', label: 'Carne (pollo, res o similar)', cantidad: kg(platoTanda.carneG), icon: Drumstick, c1: 'var(--cat-green-2)', c2: 'var(--cat-green)' });
+    items.push({ key: 'carne', grupo: 'carne', label: nombreIngrediente('carne', ing.carne), cantidad: kg(platoTanda.carneG), icon: Drumstick, c1: 'var(--cat-green-2)', c2: 'var(--cat-green)' });
   }
   if (platoTanda.huesoG > 0) {
-    items.push({ key: 'hueso', label: 'Hueso carnoso crudo', cantidad: kg(platoTanda.huesoG), icon: Bone, c1: 'var(--cat-blue-2)', c2: 'var(--cat-blue)' });
+    items.push({ key: 'hueso', grupo: 'hueso', label: nombreIngrediente('hueso', ing.hueso), cantidad: kg(platoTanda.huesoG), icon: Bone, c1: 'var(--cat-blue-2)', c2: 'var(--cat-blue)' });
   }
   // Hígado separado de las demás vísceras a propósito: es mucho más
   // concentrado (vitamina A) y pasarse de cantidad es la causa más común de
   // diarrea por exceso de vísceras — separarlo en la lista evita que se
   // compre "vísceras" genérico y se sirva de más hígado sin darse cuenta.
   if (platoTanda.higadoG > 0) {
-    items.push({ key: 'higado', label: 'Hígado', cantidad: kg(platoTanda.higadoG), icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)' });
+    items.push({ key: 'higado', grupo: 'higado', label: nombreIngrediente('higado', ing.higado), cantidad: kg(platoTanda.higadoG), icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)' });
   }
   if (platoTanda.otraVisceraG > 0) {
-    items.push({ key: 'otra_viscera', label: 'Otras vísceras (riñón, molleja)', cantidad: kg(platoTanda.otraVisceraG), icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)' });
+    items.push({ key: 'otra_viscera', grupo: 'otraViscera', label: nombreIngrediente('otraViscera', ing.otraViscera), cantidad: kg(platoTanda.otraVisceraG), icon: HeartPulse, c1: 'var(--cat-purple-2)', c2: 'var(--cat-purple)' });
   }
   if (platoTanda.vegetalG > 0) {
-    items.push({ key: 'vegetal', label: 'Vegetales (zanahoria, calabaza)', cantidad: kg(platoTanda.vegetalG), icon: Leaf, c1: 'var(--cat-yellow-2)', c2: 'var(--cat-yellow)' });
+    items.push({ key: 'vegetal', grupo: 'vegetal', label: nombreIngrediente('vegetal', ing.vegetal), cantidad: kg(platoTanda.vegetalG), icon: Leaf, c1: 'var(--cat-yellow-2)', c2: 'var(--cat-yellow)' });
   }
   return items;
 }
 
 export default function ListaPage() {
   const [estado, setEstado] = useState<AppState | null>(null);
+  const [grupoAbierto, setGrupoAbierto] = useState<GrupoIngrediente | null>(null);
   const reduce = useReducedMotion();
 
   useEffect(() => {
@@ -61,7 +76,7 @@ export default function ListaPage() {
   const tanda = tandaActual(estado.transitionStartedAt, estado.frecuencia);
   const diaInicioTanda = tanda * estado.frecuencia + 1;
   const platoTanda = sumarTandaConTransicion(estado.plato, diaInicioTanda, estado.frecuencia);
-  const items = itemsLista(platoTanda);
+  const items = itemsLista(platoTanda, estado.ingredientes);
   const marcados = estado.listaComprada;
   const todosMarcados = items.every((it) => marcados.includes(it.key));
 
@@ -70,6 +85,14 @@ export default function ListaPage() {
     const yaEsta = estado.listaComprada.includes(key);
     const listaComprada = yaEsta ? estado.listaComprada.filter((k) => k !== key) : [...estado.listaComprada, key];
     const nuevo = { ...estado, listaComprada };
+    setEstado(nuevo);
+    guardarAppState(nuevo);
+  }
+
+  /** Sustitutor: elegir un ingrediente nunca toca los gramos del grupo. */
+  function elegirIngrediente(grupo: GrupoIngrediente, id: string) {
+    if (!estado) return;
+    const nuevo = guardarIngrediente(estado, grupo, id);
     setEstado(nuevo);
     guardarAppState(nuevo);
   }
@@ -100,42 +123,54 @@ export default function ListaPage() {
             const activo = marcados.includes(it.key);
             const Icono = it.icon;
             return (
-              <motion.button
+              <motion.div
                 key={it.key}
-                type="button"
-                onClick={() => toggle(it.key)}
-                whileTap={{ scale: 0.98 }}
-                className={`flex items-center gap-3 rounded-[var(--radius-card)] border p-4 text-left shadow-[var(--shadow-1)] transition-colors duration-150 [touch-action:manipulation] ${
+                className={`flex items-center gap-3 rounded-[var(--radius-card)] border p-4 shadow-[var(--shadow-1)] transition-colors duration-150 ${
                   activo
                     ? 'border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_8%,transparent)]'
                     : 'border-transparent bg-[var(--surface)]'
                 }`}
               >
-                <span
-                  className="flex size-10 shrink-0 items-center justify-center rounded-xl"
-                  style={{ background: `linear-gradient(145deg, ${it.c1}, ${it.c2})` }}
-                  aria-hidden="true"
+                {/* Ícono + nombre: abre el sustitutor (ingrediente equivalente). Separado
+                    del check de "comprado" para que los dos gestos no choquen. */}
+                <button
+                  type="button"
+                  onClick={() => setGrupoAbierto(it.grupo)}
+                  aria-label={`Cambiar el ingrediente de ${ETIQUETA_GRUPO[it.grupo]}`}
+                  className="flex min-w-0 flex-1 items-center gap-3 text-left [touch-action:manipulation]"
                 >
-                  <Icono size={17} color="white" aria-hidden="true" />
-                </span>
-                <span className="flex-1">
                   <span
-                    className={`block text-sm font-semibold ${activo ? 'text-[var(--text-tertiary)] line-through' : 'text-[var(--text-primary)]'}`}
+                    className="flex size-10 shrink-0 items-center justify-center rounded-xl"
+                    style={{ background: `linear-gradient(145deg, ${it.c1}, ${it.c2})` }}
+                    aria-hidden="true"
                   >
-                    {it.label}
+                    <Icono size={17} color="white" aria-hidden="true" />
                   </span>
-                  <span className="block text-xs font-medium text-[var(--text-tertiary)]">{it.cantidad}</span>
-                </span>
-                <motion.span
+                  <span className="min-w-0 flex-1">
+                    <span
+                      className={`block text-sm font-semibold ${activo ? 'text-[var(--text-tertiary)] line-through' : 'text-[var(--text-primary)]'}`}
+                    >
+                      {it.label}
+                    </span>
+                    <span className="block text-xs font-medium text-[var(--text-tertiary)]">{it.cantidad}</span>
+                  </span>
+                  <ChevronRight size={16} color="var(--text-tertiary)" aria-hidden="true" />
+                </button>
+                <motion.button
+                  type="button"
+                  onClick={() => toggle(it.key)}
+                  whileTap={{ scale: 0.9 }}
+                  aria-label={activo ? `${it.label}: marcado como comprado — toca para desmarcar` : `${it.label}: marcar como comprado`}
+                  aria-pressed={activo}
                   animate={reduce ? undefined : { scale: activo ? [1, 1.2, 1] : 1 }}
                   transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                  className={`flex size-6 items-center justify-center rounded-full border-2 ${
+                  className={`flex size-8 shrink-0 items-center justify-center rounded-full border-2 [touch-action:manipulation] ${
                     activo ? 'border-[var(--accent)] bg-[var(--accent)]' : 'border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)]'
                   }`}
                 >
                   {activo && <Check size={13} strokeWidth={3} color="white" aria-hidden="true" />}
-                </motion.span>
-              </motion.button>
+                </motion.button>
+              </motion.div>
             );
           })}
         </motion.div>
@@ -149,6 +184,13 @@ export default function ListaPage() {
           </p>
         </motion.div>
       </motion.div>
+
+      <SustitutorSheet
+        abierto={grupoAbierto !== null}
+        grupos={grupoAbierto ? [{ grupo: grupoAbierto, seleccionado: estado.ingredientes[grupoAbierto] }] : []}
+        onElegir={elegirIngrediente}
+        onCerrar={() => setGrupoAbierto(null)}
+      />
     </div>
   );
 }
