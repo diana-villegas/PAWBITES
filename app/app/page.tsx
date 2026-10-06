@@ -26,6 +26,9 @@ import {
   loadAppState,
   guardarAppState,
   guardarIngrediente,
+  guardarPreparado,
+  sincronizarCheckinsConServidor,
+  guardarCheckinEnServidor,
   diaDeTransicion,
   porcentajeTransicion,
   calidadDiaAnterior,
@@ -33,7 +36,7 @@ import {
   HITOS_RACHA,
   type AppState,
 } from '@/lib/appData';
-import { ajustarPorDigestion, aplicarPorcentajeTransicion, type Plato } from '@/lib/plato';
+import { ajustarPorDigestion, aplicarPorcentajeTransicion, diaParaPorcentaje, type Plato } from '@/lib/plato';
 import { nombreIngrediente, type GrupoIngrediente, type Ingredientes } from '@/lib/sustitutos';
 import { SustitutorSheet, type GrupoAMostrar } from '@/components/app/SustitutorSheet';
 
@@ -95,7 +98,6 @@ function PlatoHoySkeleton() {
 
 export default function HoyPage() {
   const [estado, setEstado] = useState<AppState | null>(null);
-  const [marcado, setMarcado] = useState(false);
   const [pulso, setPulso] = useState(0);
   const [errorGuardado, setErrorGuardado] = useState(false);
   const [mostrarExito, setMostrarExito] = useState(false);
@@ -104,18 +106,32 @@ export default function HoyPage() {
   // Los hooks se llaman SIEMPRE en el mismo orden (nunca tras un return
   // condicional) — con valores "vacíos" mientras `estado` todavía no cargó de
   // localStorage. El plato de hoy ya es solo la parte de comida real del día
-  // (el % del plan de transición aplicado sobre el plato completo).
+  // (el % del plan de transición aplicado sobre el plato completo). Si ayer
+  // (o algún día anterior) fue diarrea, el porcentaje de hoy puede ir por
+  // detrás del día de calendario — no sube de tramo hasta que el estómago
+  // tuvo un día de más para adaptarse (diaParaPorcentaje, lib/plato.ts).
   const diaSeguro = estado ? diaDeTransicion(estado.transitionStartedAt) : 1;
-  const pctSeguro = porcentajeTransicion(diaSeguro);
+  const diaPctSeguro = estado ? diaParaPorcentaje(estado.checkins, diaSeguro) : 1;
+  const pctSeguro = porcentajeTransicion(diaPctSeguro);
   const platoDelDiaSeguro = estado ? aplicarPorcentajeTransicion(estado.plato, pctSeguro.real) : PLATO_VACIO;
   const calidadAyerSeguro = estado ? calidadDiaAnterior(estado.checkins, diaSeguro) : null;
   const platoDeHoySeguro = ajustarPorDigestion(platoDelDiaSeguro, calidadAyerSeguro);
   const total = useCountUpSafe(platoDeHoySeguro.totalG);
   const pctReal = useCountUpSafe(pctSeguro.real);
   const pctConcentrado = useCountUpSafe(pctSeguro.concentrado);
+  // "Ya lo preparé" ya no es un useState aparte (se perdía al cambiar de
+  // pestaña) — vive en el estado guardado, ligado al día de hoy.
+  const marcado = estado ? !!estado.preparados[diaSeguro] : false;
 
   useEffect(() => {
-    setEstado(loadAppState());
+    const local = loadAppState();
+    setEstado(local);
+    // Trae los registros reales de la cuenta (ligados al perro, no al
+    // navegador) — la base de datos manda sobre lo que había en localStorage.
+    sincronizarCheckinsConServidor(local).then((sincronizado) => {
+      setEstado(sincronizado);
+      guardarAppState(sincronizado);
+    });
   }, []);
 
   if (!estado) {
@@ -142,9 +158,13 @@ export default function HoyPage() {
   function marcarPreparado() {
     if (!estado) return;
     const nuevoValor = !marcado;
-    setMarcado(nuevoValor);
-    const ok = guardarAppState(estado);
+    const nuevo = guardarPreparado(estado, dia, nuevoValor);
+    setEstado(nuevo);
+    const ok = guardarAppState(nuevo);
     setErrorGuardado(!ok);
+    // A la cuenta real, ligado al perro — para que sobreviva cambiar de
+    // pestaña o de dispositivo (antes esto no se guardaba en ningún lado).
+    guardarCheckinEnServidor(dia, nuevo.checkins[dia] ?? null, nuevoValor);
     if (nuevoValor && ok) {
       setPulso((p) => p + 1);
       setMostrarExito(true);

@@ -78,6 +78,19 @@ export function porcentajeTransicion(dia: number): { real: number; concentrado: 
   return { real: 100, concentrado: 0 };
 }
 
+/** Si un día se registró como diarrea, el día siguiente REPITE el mismo
+ * porcentaje (no sube de tramo) — un día más para que el estómago se adapte
+ * antes de avanzar. `diaCalendario` es el día real (1-14, `diaDeTransicion`);
+ * el resultado es el día que hay que pasarle a `porcentajeTransicion`, que
+ * puede ir por detrás del calendario si hubo diarreas en el camino. */
+export function diaParaPorcentaje(checkins: Record<number, CalidadHeces>, diaCalendario: number): number {
+  let efectivo = 1;
+  for (let d = 2; d <= diaCalendario; d++) {
+    if (checkins[d - 1] !== 'diarrea') efectivo++;
+  }
+  return Math.min(efectivo, 14);
+}
+
 /** Escala el plato completo (100%) al % de comida real de UN día del plan de
  * transición — no cambia `calcularPlato`, solo aplica el porcentaje encima de
  * su resultado. El total es la suma de las categorías ya redondeadas, para

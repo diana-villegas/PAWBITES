@@ -41,6 +41,9 @@ export interface AppState {
   listaCompradaTanda: number;
   /** Check-in diario de digestión por día del plan (1-14) — mapa de transición. */
   checkins: Record<number, CalidadHeces>;
+  /** Días (1-14) en los que ya se tocó "Ya lo preparé" — antes era un
+   * useState sin guardar, se perdía al cambiar de pestaña. */
+  preparados: Record<number, boolean>;
   /** Ingrediente específico elegido por grupo (sustitutor) — los gramos del
    * grupo nunca cambian, solo cuál alimento concreto los cubre. */
   ingredientes: Ingredientes;
@@ -71,7 +74,7 @@ function guardarIngredientesPersistentes(ing: Ingredientes): void {
   }
 }
 
-const SEMILLA_DEMO: Omit<AppState, 'plato' | 'transitionStartedAt' | 'streakWeeks' | 'listaComprada' | 'listaCompradaTanda' | 'checkins' | 'ingredientes'> = {
+const SEMILLA_DEMO: Omit<AppState, 'plato' | 'transitionStartedAt' | 'streakWeeks' | 'listaComprada' | 'listaCompradaTanda' | 'checkins' | 'preparados' | 'ingredientes'> = {
   v: 1,
   nombrePerro: 'Luna',
   pesoKg: 15,
@@ -112,6 +115,7 @@ function construirEstadoInicial(): AppState {
     listaComprada: [],
     listaCompradaTanda: 0,
     checkins: {},
+    preparados: {},
     ingredientes: INGREDIENTES_POR_DEFECTO,
   };
 }
@@ -143,6 +147,7 @@ export function loadAppState(): AppState {
       // romper el mapa de transición ni la lista de compras.
       const estado = conIngredientesPersistentes({
         checkins: {},
+        preparados: {},
         listaComprada: [],
         listaCompradaTanda: 0,
         ingredientes: INGREDIENTES_POR_DEFECTO,
@@ -194,6 +199,12 @@ export function guardarCheckin(estado: AppState, dia: number, calidad: CalidadHe
   return { ...estado, checkins: { ...estado.checkins, [dia]: calidad } };
 }
 
+/** Marca (o desmarca) un día como "ya preparado" — antes era un useState sin
+ * guardar, se perdía al cambiar de pestaña. */
+export function guardarPreparado(estado: AppState, dia: number, valor: boolean): AppState {
+  return { ...estado, preparados: { ...estado.preparados, [dia]: valor } };
+}
+
 /** Cambia el ingrediente elegido de un grupo (sustitutor) — nunca toca los
  * gramos, solo qué alimento concreto cubre ese grupo. */
 export function guardarIngrediente(estado: AppState, grupo: GrupoIngrediente, id: string): AppState {
@@ -205,6 +216,71 @@ export function quitarCheckin(estado: AppState, dia: number): AppState {
   const checkins = { ...estado.checkins };
   delete checkins[dia];
   return { ...estado, checkins };
+}
+
+interface CheckinDB {
+  dayNumber: number;
+  quality: CalidadHeces | null;
+  preparado: boolean;
+}
+
+/** Trae los registros reales de la cuenta (ligados al perro, no al navegador —
+ * ver migración 0011 y /api/checkins) y los mezcla con el estado local: la
+ * base de datos manda. Si la cuenta todavía no tiene NINGÚN registro pero el
+ * navegador sí (de antes de este cambio), se suben una sola vez para no
+ * perderlos — después de esa primera subida, la base de datos ya no está
+ * vacía y este paso deja de repetirse. Si falla la red o no hay perro
+ * todavía, se sigue con lo que había en el navegador (no bloquea la pantalla). */
+export async function sincronizarCheckinsConServidor(estado: AppState): Promise<AppState> {
+  try {
+    const res = await fetch('/api/checkins');
+    if (!res.ok) return estado; // sin sesión o sin perro todavía — sigue con localStorage
+    const data = (await res.json()) as { checkins: CheckinDB[] };
+
+    if (data.checkins.length > 0) {
+      const checkins: Record<number, CalidadHeces> = {};
+      const preparados: Record<number, boolean> = {};
+      for (const c of data.checkins) {
+        if (c.quality) checkins[c.dayNumber] = c.quality;
+        if (c.preparado) preparados[c.dayNumber] = true;
+      }
+      return { ...estado, checkins, preparados };
+    }
+
+    // La cuenta no tiene nada guardado todavía — si el navegador sí, se sube
+    // una vez (unión de los días con calidad y/o "ya preparado").
+    const dias = new Set([...Object.keys(estado.checkins), ...Object.keys(estado.preparados)].map(Number));
+    if (dias.size > 0) {
+      await Promise.all(
+        [...dias].map((dia) =>
+          guardarCheckinEnServidor(dia, estado.checkins[dia] ?? null, estado.preparados[dia] ?? false)
+        )
+      );
+    }
+    return estado;
+  } catch {
+    return estado; // sin conexión — la pantalla sigue con lo que ya tenía en el navegador
+  }
+}
+
+/** Guarda UN día (calidad y/o "ya preparado") en la cuenta real. Se llama
+ * junto con `guardarAppState` cada vez que cambia un registro — nunca
+ * lanza, devuelve si se pudo guardar para que la pantalla avise si no. */
+export async function guardarCheckinEnServidor(
+  dia: number,
+  calidad: CalidadHeces | null,
+  preparado: boolean
+): Promise<boolean> {
+  try {
+    const res = await fetch('/api/checkins', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dayNumber: dia, quality: calidad, preparado }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
 }
 
 /** La calidad del día anterior al indicado — insumo del ajuste automático del plato. */

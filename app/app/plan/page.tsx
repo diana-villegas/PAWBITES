@@ -18,6 +18,8 @@ import {
   quitarCheckin,
   calcularRachaDias,
   diaDeTransicion,
+  sincronizarCheckinsConServidor,
+  guardarCheckinEnServidor,
   HITOS_RACHA,
   type AppState,
 } from '@/lib/appData';
@@ -447,6 +449,9 @@ export default function PlanPage() {
   // control y libertad, ya que "Quitar registro" no tiene otra forma de
   // reversión más allá de volver a marcarlo a mano).
   const [ultimoQuitado, setUltimoQuitado] = useState<{ dia: number; calidad: CalidadHeces } | null>(null);
+  // Mensaje inmediato al registrar — "Diarrea" explica que mañana no sube de
+  // tramo; "Blandas" es solo un aviso corto de seguimiento.
+  const [avisoCalidad, setAvisoCalidad] = useState<CalidadHeces | null>(null);
   const reduce = useReducedMotion();
   // Conteo animado (baseline de movimiento #2): se llama SIEMPRE en el mismo
   // orden, nunca tras un return condicional — 0 mientras `estado` no cargó.
@@ -454,7 +459,14 @@ export default function PlanPage() {
   const rachaAnimada = useCountUp(estado ? calcularRachaDias(estado.checkins, diaHoyPrevio) : 0, 600);
 
   useEffect(() => {
-    setEstado(loadAppState());
+    const local = loadAppState();
+    setEstado(local);
+    // Trae los registros reales de la cuenta (ligados al perro, no al
+    // navegador) — la base de datos manda sobre lo que había en localStorage.
+    sincronizarCheckinsConServidor(local).then((sincronizado) => {
+      setEstado(sincronizado);
+      guardarAppState(sincronizado);
+    });
   }, []);
 
   if (!estado) {
@@ -479,9 +491,16 @@ export default function PlanPage() {
     const rachaDespues = calcularRachaDias(nuevo.checkins, diaHoy);
     setEstado(nuevo);
     setErrorGuardado(!guardarAppState(nuevo));
+    // A la cuenta real, ligado al perro — antes solo vivía en este navegador.
+    guardarCheckinEnServidor(dia, calidad, nuevo.preparados[dia] ?? false);
     if (rachaDespues > rachaAntes && (HITOS_RACHA as readonly number[]).includes(rachaDespues)) {
       setCelebrar(true);
       window.setTimeout(() => setCelebrar(false), 1000);
+    }
+    // Diarrea/blandas: aviso inmediato de qué significa el registro.
+    if (calidad === 'diarrea' || calidad === 'blanda') {
+      setAvisoCalidad(calidad);
+      window.setTimeout(() => setAvisoCalidad((a) => (a === calidad ? null : a)), 5000);
     }
   }
 
@@ -491,6 +510,7 @@ export default function PlanPage() {
     const nuevo = quitarCheckin(estado, dia);
     setEstado(nuevo);
     setErrorGuardado(!guardarAppState(nuevo));
+    guardarCheckinEnServidor(dia, null, nuevo.preparados[dia] ?? false);
     if (calidadPrevia) {
       setUltimoQuitado({ dia, calidad: calidadPrevia });
       window.setTimeout(() => setUltimoQuitado((u) => (u?.dia === dia ? null : u)), 5000);
@@ -696,6 +716,24 @@ export default function PlanPage() {
                 Deshacer
               </button>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {avisoCalidad && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            role="status"
+            className="fixed inset-x-0 bottom-24 z-50 flex justify-center px-4"
+          >
+            <p className="max-w-xs rounded-[var(--radius-card)] bg-[var(--surface-2)] px-4 py-2.5 text-center text-xs font-semibold text-[var(--text-secondary)] shadow-[var(--shadow-2)]">
+              {avisoCalidad === 'diarrea'
+                ? 'Mañana repetimos el porcentaje de hoy para que su estómago se adapte. Si continúa, consulta a tu veterinario.'
+                : 'Anotado — seguimos de cerca cómo evoluciona.'}
+            </p>
           </motion.div>
         )}
       </AnimatePresence>
