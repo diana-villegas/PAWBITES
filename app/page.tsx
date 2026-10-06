@@ -4,6 +4,7 @@
 // marcado desde docs/copy/landing.md, tokens desde FICHA-ARTE.md (components/landing/tokens.css).
 // Modelo 02C: onboarding-first anónimo — todo CTA lleva a /onboarding.
 
+import { useEffect } from 'react';
 import Image from 'next/image';
 import { Scale, HeartCrack, Snowflake, CircleHelp } from 'lucide-react';
 import { Hero } from '@/components/landing/Hero';
@@ -18,11 +19,18 @@ import { Faq } from '@/components/landing/Faq';
 import { CtaFinal } from '@/components/landing/CtaFinal';
 import { FooterLegal } from '@/components/landing/FooterLegal';
 import { StickyCtaMobile, SectionShell } from '@/components/landing/ui';
+import { capturarUtm } from '@/lib/utm';
 
 const CTA_HREF = '/onboarding';
 const CTA_LABEL = 'Calcular el plato de mi perro';
 
 export default function LandingPawBites() {
+  // Si llegó con utm_ en la URL (de un anuncio), se guardan para agregarlos
+  // más adelante al enlace de Hotmart — así se sabe de qué anuncio vino cada compra.
+  useEffect(() => {
+    capturarUtm();
+  }, []);
+
   return (
     <div className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
       <a

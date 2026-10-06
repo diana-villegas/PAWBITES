@@ -15,6 +15,8 @@ import type { LucideIcon } from 'lucide-react';
 import type { Plato, Frecuencia, Edad, Actividad, Dieta } from '@/lib/plato';
 import { useCountUp } from '@/components/landing/PlatoMockup';
 import { HOTMART_CHECKOUT_URL } from '@/lib/hotmart-membership';
+import { trackPixel } from '@/lib/pixel';
+import { conUtm } from '@/lib/utm';
 
 /** Stagger de entrada de los bloques del paywall (baseline de movimiento #1). */
 function useEntrada(): { contenedor: Variants; item: Variants } {
@@ -322,7 +324,8 @@ export function Paywall({ nombrePerro, raza, pesoKg, edad, actividad, dieta, pla
       <motion.div variants={item} className="mt-6">
         <motion.a
           whileTap={{ scale: 0.97 }}
-          href={HOTMART_CHECKOUT_URL[plan]}
+          href={conUtm(HOTMART_CHECKOUT_URL[plan])}
+          onClick={() => trackPixel('ClicEmpezarPrueba', { plan })}
           className="flex h-14 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-base font-semibold text-white shadow-[0_8px_24px_color-mix(in_oklab,var(--accent)_30%,transparent)]"
         >
           {PLANES[plan].ctaLabel}

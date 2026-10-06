@@ -6,7 +6,7 @@
 // Fuente del copy: FICHA-AVATAR.md (dolor #1: miedo a calcular mal · el insight
 // de espacio de congelador que aportó la propia usuaria del proyecto).
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { PawPrint, Dog, Moon, Footprints, Zap, Drumstick, Package, Boxes, Sparkles, ChefHat, Weight } from 'lucide-react';
 import { FunnelHeader, PantallaFunnel, ChipOpcion, CtaFunnel, VARIANTES_PASO } from '@/components/onboarding/ui';
@@ -22,6 +22,7 @@ import {
 import { LoadingPlan } from '@/components/onboarding/LoadingPlan';
 import { Paywall } from '@/components/onboarding/Paywall';
 import { IngredientesBand } from '@/components/landing/PlatoMockup';
+import { trackPixel } from '@/lib/pixel';
 
 type Paso =
   | 'nombre'
@@ -152,7 +153,28 @@ export default function OnboardingPage() {
 
   const [seleccionando, setSeleccionando] = useState(false);
 
+  // Medición (Meta Pixel): inicio del cuestionario, una sola vez al montar.
+  useEffect(() => {
+    trackPixel('InicioCuestionario');
+  }, []);
+
+  // Vista de la pantalla final con precios — una sola vez al llegar al paywall.
+  const paywallVistoRef = useRef(false);
+  useEffect(() => {
+    if (paso === 'paywall' && !paywallVistoRef.current) {
+      paywallVistoRef.current = true;
+      trackPixel('VioPantallaFinal');
+    }
+  }, [paso]);
+
   function avanzar() {
+    // Solo los pasos con pregunta real cuentan como "paso" medible (igual
+    // criterio que la barra de progreso, PASOS_CON_PROGRESO) — no manda
+    // ninguna respuesta del cuestionario, solo el número de paso.
+    const numeroPaso = PASOS_CON_PROGRESO.indexOf(paso);
+    if (numeroPaso >= 0) {
+      trackPixel('PasoCompletado', { paso: numeroPaso + 1 });
+    }
     setDireccion(1);
     setSeleccionando(false);
     setPasoIdx((i) => Math.min(i + 1, ORDEN.length - 1));
