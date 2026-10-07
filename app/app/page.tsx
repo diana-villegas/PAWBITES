@@ -17,7 +17,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion, useReducedMotion, AnimatePresence } from 'motion/react';
-import { Award, Bone, Check, ChevronRight, Drumstick, HeartPulse, Leaf, ShoppingBasket, Sparkles } from 'lucide-react';
+import { Award, Bone, Check, ChevronRight, Drumstick, HeartPulse, Leaf, Scale, ShoppingBasket, Sparkles, X } from 'lucide-react';
 import Confetti from '@/components/app/Confetti';
 import type { LucideIcon } from 'lucide-react';
 import { useCountUp } from '@/components/landing/PlatoMockup';
@@ -30,6 +30,8 @@ import {
   sincronizarCheckinsConServidor,
   guardarCheckinEnServidor,
   diaDeTransicion,
+  diasTranscurridosSinTope,
+  descartarAvisoPeso,
   porcentajeTransicion,
   calidadDiaAnterior,
   calcularRachaDias,
@@ -122,6 +124,11 @@ export default function HoyPage() {
   // "Ya lo preparé" ya no es un useState aparte (se perdía al cambiar de
   // pestaña) — vive en el estado guardado, ligado al día de hoy.
   const marcado = estado ? !!estado.preparados[diaSeguro] : false;
+  // Pasado el día 14 (transición terminada), invita a actualizar el peso una
+  // vez al mes — mismo criterio que el recordatorio por correo del cron.
+  const mesActual = new Date().toISOString().slice(0, 7);
+  const mostrarAvisoPeso =
+    !!estado && diasTranscurridosSinTope(estado.transitionStartedAt) > 14 && estado.pesoAvisoDescartadoMes !== mesActual;
 
   useEffect(() => {
     const local = loadAppState();
@@ -185,6 +192,14 @@ export default function HoyPage() {
   function reintentarGuardado() {
     if (!estado) return;
     setErrorGuardado(!guardarAppState(estado));
+  }
+
+  /** Cierra el aviso de "actualizar peso" por este mes — no insiste hasta el que viene. */
+  function descartarAviso() {
+    if (!estado) return;
+    const nuevo = descartarAvisoPeso(estado);
+    setEstado(nuevo);
+    guardarAppState(nuevo);
   }
 
   return (
@@ -373,6 +388,41 @@ export default function HoyPage() {
           </Link>
         </Hairline>
         </motion.div>
+
+        {mostrarAvisoPeso && (
+          <motion.div
+            variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
+            className="flex items-start gap-3 rounded-[var(--radius-card)] bg-[var(--chip-bg)] p-4"
+          >
+            <span
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl"
+              style={{ background: 'var(--surface)' }}
+              aria-hidden="true"
+            >
+              <Scale size={18} color="var(--accent)" aria-hidden="true" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-[var(--text-primary)]">¿Sigue pesando lo mismo {estado.nombrePerro}?</p>
+              <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                Ya terminó su plan de transición — si su peso cambió, actualízalo y el plato se recalcula solo.
+              </p>
+              <Link
+                href="/app/perfil"
+                className="mt-2 inline-block text-xs font-semibold text-[var(--accent)] [touch-action:manipulation]"
+              >
+                Actualizar peso de {estado.nombrePerro}
+              </Link>
+            </div>
+            <button
+              type="button"
+              onClick={descartarAviso}
+              aria-label="Ahora no, cerrar este aviso"
+              className="shrink-0 text-[var(--text-tertiary)] [touch-action:manipulation]"
+            >
+              <X size={16} aria-hidden="true" />
+            </button>
+          </motion.div>
+        )}
       </motion.div>
 
       <SustitutorSheet

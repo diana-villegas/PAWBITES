@@ -240,26 +240,99 @@ export function plantillaPlatoPorCorreo(d: { perro: string; plato: Plato; enlace
   };
 }
 
-/** Día 6 de la prueba — aviso honesto antes del cobro (transaccional). */
-export function plantillaTrialD6(d: { nombre?: string | null; perro?: string | null }): Plantilla {
+/** Día 6 de la prueba — aviso honesto antes del cobro (transaccional).
+ * `fechaCobro`/`monto` vienen de `profiles.trial_ends_at`/`pending_plan`
+ * cuando se conocen (el plan elegido al empezar la prueba) — si no, cae al
+ * texto genérico de antes (mensual o anual) en vez de inventar un dato. */
+export function plantillaTrialD6(d: { nombre?: string | null; perro?: string | null; fechaCobro?: string | null; monto?: string | null }): Plantilla {
   const perro = d.perro?.trim();
+  const cobro = d.fechaCobro && d.monto
+    ? `El ${esc(d.fechaCobro)} se cobra <strong>${esc(d.monto)}</strong>.`
+    : 'Mañana se cobra el plan que elegiste (mensual $4.99 USD o anual $29.99 USD).';
   const { html, text } = armar({
-    preheader: 'Esto es lo que pasa mañana y cómo cancelar si no quieres seguir.',
+    preheader: 'Esto es lo que pasa y cómo cancelar si no quieres seguir.',
     parrafos: [
       saludo(d.nombre),
-      'Mañana termina tu prueba gratis de PawBites.',
-      'Si sigues, se cobra el plan que elegiste (mensual $4.99 o anual $29.99). Si no quieres seguir, cancela antes desde el correo de recibo de Hotmart y no pagas nada.',
+      'Tu prueba gratis de PawBites está por terminar.',
+      `${cobro} Si no quieres seguir, cancela antes desde tu cuenta de Hotmart y no pagas nada.`,
       perro
         ? `Lo que ya tienes armado para ${esc(perro)}: su plato en gramos exactos, el plan de transición de 14 días y la lista del súper.`
         : 'Lo que ya tienes armado: tu plato en gramos exactos, el plan de transición de 14 días y la lista del súper.',
     ],
-    boton: { texto: 'Seguir con mi plan', url: `${SITE_URL}/app` },
-    notaFinal: 'Si necesitas ayuda para cancelar, responde este correo.',
+    boton: { texto: 'Gestionar o cancelar', url: 'https://consumer.hotmart.com' },
+    notaFinal: 'Si necesitas ayuda, responde este correo.',
   });
   return {
-    subject: 'Mañana termina tu prueba de PawBites',
-    subjectAlt: 'Tu prueba termina mañana: esto es lo que pasa',
-    preheader: 'Esto es lo que pasa mañana y cómo cancelar si no quieres seguir.',
+    subject: 'Tu prueba de PawBites está por terminar',
+    subjectAlt: 'Esto es lo que pasa cuando termine tu prueba',
+    preheader: 'Esto es lo que pasa y cómo cancelar si no quieres seguir.',
+    html,
+    text,
+  };
+}
+
+/** Recordatorio diario del plan de transición (días 1-14) — no se envía si ese
+ * día ya se marcó "Ya lo preparé" (lo decide quien llama al cron). */
+export function plantillaRecordatorioDiario(d: { nombre?: string | null; perro?: string | null; dia: number; pctReal: number; bajaUrl: string }): Plantilla {
+  const perro = d.perro?.trim() || 'tu perro';
+  const { html, text } = armar({
+    preheader: `Día ${d.dia} de 14: ${d.pctReal}% comida real.`,
+    parrafos: [
+      saludo(d.nombre),
+      `Hoy es el día ${d.dia} de ${esc(perro)}: <strong>${d.pctReal}% comida real</strong>. El plato exacto ya te está esperando en la app.`,
+    ],
+    boton: { texto: 'Ver el plato de hoy', url: `${SITE_URL}/app` },
+    bajaUrl: d.bajaUrl,
+  });
+  return {
+    subject: `Día ${d.dia}: el plato de ${perro} ya está listo`,
+    subjectAlt: `Hoy es el día ${d.dia} de la transición`,
+    preheader: `Día ${d.dia} de 14: ${d.pctReal}% comida real.`,
+    html,
+    text,
+  };
+}
+
+/** Recordatorio el día antes de que termine la tanda de compra actual. */
+export function plantillaRecordatorioCompras(d: { nombre?: string | null; perro?: string | null; bajaUrl: string }): Plantilla {
+  const perro = d.perro?.trim();
+  const { html, text } = armar({
+    preheader: 'Mañana se acaba tu tanda — revisa la lista antes de ir a comprar.',
+    parrafos: [
+      saludo(d.nombre),
+      perro
+        ? `Mañana se acaba la tanda actual de ${esc(perro)}. Revisa la lista del súper antes de ir, así no improvisas en la tienda.`
+        : 'Mañana se acaba tu tanda actual. Revisa la lista del súper antes de ir, así no improvisas en la tienda.',
+    ],
+    boton: { texto: 'Ver mi lista del súper', url: `${SITE_URL}/app/lista` },
+    bajaUrl: d.bajaUrl,
+  });
+  return {
+    subject: 'Mañana toca comprar de nuevo',
+    subjectAlt: 'Tu lista del súper te está esperando',
+    preheader: 'Mañana se acaba tu tanda — revisa la lista antes de ir a comprar.',
+    html,
+    text,
+  };
+}
+
+/** Recordatorio mensual (después del día 14) para actualizar el peso del
+ * perro — el plato se recalcula solo al guardarlo en Perfil. */
+export function plantillaActualizarPeso(d: { nombre?: string | null; perro?: string | null; bajaUrl: string }): Plantilla {
+  const perro = d.perro?.trim() || 'tu perro';
+  const { html, text } = armar({
+    preheader: 'Un cambio de peso cambia los gramos exactos del plato.',
+    parrafos: [
+      saludo(d.nombre),
+      `¿Sigue pesando lo mismo ${esc(perro)}? Si cambió, actualiza su peso en Perfil y el plato se recalcula solo — así los gramos siguen siendo exactos.`,
+    ],
+    boton: { texto: 'Actualizar el peso', url: `${SITE_URL}/app/perfil` },
+    bajaUrl: d.bajaUrl,
+  });
+  return {
+    subject: `¿Actualizamos el peso de ${perro}?`,
+    subjectAlt: 'Un chequeo rápido del peso de tu perro',
+    preheader: 'Un cambio de peso cambia los gramos exactos del plato.',
     html,
     text,
   };

@@ -25,3 +25,12 @@ export function urlDeBaja(email: string): string {
   const e = encodeURIComponent(email.trim().toLowerCase());
   return `${SITE_URL}/api/email/baja?e=${e}&t=${firmarCorreo(email)}`;
 }
+
+/** Baja SOLO de los recordatorios (plan diario / compras / peso) — misma firma
+ * que `urlDeBaja`, pero apaga `profiles.email_reminders_enabled` en vez de
+ * agregar a la lista global de marketing (los recordatorios no son marketing:
+ * son parte del servicio, y el interruptor ya existe en Perfil). */
+export function urlDeBajaRecordatorios(email: string): string {
+  const e = encodeURIComponent(email.trim().toLowerCase());
+  return `${SITE_URL}/api/email/recordatorios/baja?e=${e}&t=${firmarCorreo(email)}`;
+}

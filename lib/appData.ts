@@ -47,6 +47,10 @@ export interface AppState {
   /** Ingrediente específico elegido por grupo (sustitutor) — los gramos del
    * grupo nunca cambian, solo cuál alimento concreto los cubre. */
   ingredientes: Ingredientes;
+  /** Mes (YYYY-MM) en que se cerró el aviso de "actualizar el peso" en Hoy —
+   * para no insistir más de una vez por mes. Opcional: estados guardados antes
+   * de este cambio no lo tienen (se trata como "nunca cerrado"). */
+  pesoAvisoDescartadoMes?: string;
 }
 
 const KEY = 'pawbites_app_state';
@@ -192,6 +196,21 @@ export function diaDeTransicion(transitionStartedAt: string): number {
   const hoy = Date.now();
   const dias = Math.floor((hoy - inicio) / (1000 * 60 * 60 * 24)) + 1;
   return Math.min(Math.max(dias, 1), 14);
+}
+
+/** Igual que `diaDeTransicion` pero SIN tope en 14 — solo para decidir cuándo
+ * ya terminó la transición y toca invitar a actualizar el peso (una vez al mes,
+ * mismo criterio que el recordatorio por correo en app/api/cron/emails). */
+export function diasTranscurridosSinTope(transitionStartedAt: string): number {
+  const inicio = new Date(transitionStartedAt).getTime();
+  const hoy = Date.now();
+  return Math.floor((hoy - inicio) / (1000 * 60 * 60 * 24)) + 1;
+}
+
+/** Mes (YYYY-MM) en que se descartó el aviso de "actualizar el peso" — para no
+ * insistir más de una vez por mes en la pantalla "Hoy" si ya lo cerraron. */
+export function descartarAvisoPeso(estado: AppState): AppState {
+  return { ...estado, pesoAvisoDescartadoMes: new Date().toISOString().slice(0, 7) };
 }
 
 /** Guarda el check-in de digestión de un día del plan (mapa de transición). */

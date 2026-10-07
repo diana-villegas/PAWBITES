@@ -21,7 +21,10 @@ export type EmailKind =
   | 'cancelacion'
   | 'trial_d3'
   | 'trial_d6'
-  | 'plato_correo';
+  | 'plato_correo'
+  | 'plan_diario'
+  | 'tanda_compra'
+  | 'actualizar_peso';
 
 /** Correos de marketing: llevan enlace de baja, cabecera List-Unsubscribe y respetan
  * la lista de bajas. Los transaccionales (acceso, pagos, aviso de cobro) no. */

@@ -1,6 +1,38 @@
 # ESTADO — PawBites
 Última actualización: 2026-10-07 | Sesión actual: 6
 
+✅ CONFIRMADO (2026-10-07) — **Recordatorios automáticos por correo + aviso de cobro con fecha y
+monto exactos**. Nuevos trabajos en el cron diario (`app/api/cron/emails`, ya corría a la 1pm hora
+Colombia): (1) recordatorio diario del plan de transición (días 1-14, con el % de comida real de
+ese día) — NUNCA se manda si ese día ya se marcó "Ya lo preparé"; (2) recordatorio el día antes de
+que se acabe la tanda de compra (cada 7/15 días, según el perro); (3) recordatorio mensual para
+actualizar el peso, después de terminar el plan de 14 días — la MISMA invitación aparece también
+en "Hoy" (banner descartable "¿Sigue pesando lo mismo tu perro?", vuelve a aparecer el mes
+siguiente si no se cierra). El aviso del día 6 de prueba (`trial_d6`, ya existía) ahora dice la
+FECHA real y el MONTO exacto del primer cobro — se guarda qué oferta (mensual/anual) eligió cada
+quien al empezar la prueba (`profiles.pending_plan`, columna nueva, se llena en el webhook al
+recibir `SUBSCRIPTION_TRIAL_START`); si no se conoce, cae al texto genérico de antes (nunca inventa
+un monto). Los 3 recordatorios nuevos respetan un interruptor nuevo en Perfil → "Mi cuenta"
+("Recibir recordatorios por correo", prendido por defecto, de solo esa columna — `profiles.
+email_reminders_enabled`) y traen su propio enlace de baja (`/api/email/recordatorios/baja`, firma
+HMAC igual que el de marketing, pero apaga SOLO este interruptor, no la lista general). Máximo 1 de
+estos correos por cuenta por día (se prioriza tanda_compra > actualizar_peso > plan_diario, y se
+comparte con los demás trabajos del cron vía un set en memoria). Migración `0012_recordatorios.sql`
+(2 columnas en `profiles`), 0 alertas nuevas de seguridad. **Verificado de punta a punta contra la
+cuenta real de auditoría** (`auditoriasrentas@gmail.com`, perro Luna) manipulando fechas en la base
+de datos y llamando al cron real con su `CRON_SECRET`: día 3 → llegó el recordatorio diario
+(confirmado en `email_log`, Resend aceptó el envío) · día 4 con "Ya lo preparé" ya marcado → NINGÚN
+correo · día 6 (frecuencia 7) → llegó el aviso de compras, no se repitió en 2 llamadas más · día 20
+→ llegó el aviso de actualizar peso, no se repitió · con el interruptor apagado en la BD, un día que
+antes sí mandaba correo dejó de mandar algo. Aviso del día 6 de prueba verificado con fecha/monto
+reales en el mismo cron. En el navegador (Playwright): el interruptor de Perfil cambia la base de
+datos real al tocarlo y el valor persiste al navegar; el banner de "Hoy" aparece pasado el día 14,
+lleva a Perfil, y al guardar un peso nuevo (15→41 kg) el plato se recalculó solo (375g→1025g);
+"Ahora no" cierra el banner y no vuelve a aparecer en la misma sesión. Todos los datos de prueba
+(fechas, checkins, columnas) se dejaron tal como estaban antes de probar. `tsc`/`build` limpios.
+Pantallas secundarias (el banner vive en "Hoy", que ya está aprobada; el interruptor es parte de
+Perfil) — sin ronda nueva de revisor-visual. Sin subir todavía.
+
 ✅ CONFIRMADO (2026-10-07) — **Bloque "Mi cuenta" agregado en Perfil + copy de cancelación honesto
 en el paywall**. `app/app/perfil/page.tsx`: nueva tarjeta "Mi cuenta" bajo los datos del perro, con
 correo, plan en palabras simples (Prueba gratis/Mensual/Anual/Cancelado) y fecha de fin de prueba —

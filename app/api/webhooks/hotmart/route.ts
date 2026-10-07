@@ -10,6 +10,7 @@ import crypto from 'node:crypto';
 import { verifyHotmart } from '@/lib/hotmart-verify';
 import {
   planForEvent,
+  planForOfferCode,
   checkoutUrlForOffer,
   CART_ABANDON_EVENT,
   TRIAL_START_EVENT,
@@ -193,6 +194,12 @@ export async function POST(req: NextRequest) {
   // 8. Correos — SOLO si el evento se aplicó (nunca en duplicados ni transiciones ilegales)
   //    y sin poder romper la respuesta.
   if (status === 'applied') {
+    // Qué plan eligió la persona al EMPEZAR la prueba (antes de cualquier cobro) — solo
+    // para que el aviso del día 6 diga el monto exacto; si la oferta no se reconoce,
+    // queda null y ese correo cae a su texto genérico (sin inventar un monto).
+    if (event === TRIAL_START_EVENT) {
+      await admin.from('profiles').update({ pending_plan: planForOfferCode(offerCode) }).eq('email', email);
+    }
     try {
       if (decision.plan === 'trial' || decision.plan === 'mensual' || decision.plan === 'anual') {
         await enviarAcceso(admin, email, nombre);

@@ -76,7 +76,9 @@ export default function PerfilPage() {
   // (tabla `profiles`, protegida por su propia regla de seguridad — cada
   // cuenta solo puede leer su propia fila). Esta pantalla NUNCA escribe
   // en `plan` ni `trial_ends_at` — cambiar de plan se hace en Hotmart.
-  const [cuenta, setCuenta] = useState<{ email: string; plan: string; trialEndsAt: string | null } | null>(null);
+  // `recordatorios` SÍ se puede prender/apagar desde aquí (es su interruptor).
+  const [cuenta, setCuenta] = useState<{ email: string; plan: string; trialEndsAt: string | null; recordatorios: boolean } | null>(null);
+  const [guardandoRecordatorios, setGuardandoRecordatorios] = useState(false);
   const [editando, setEditando] = useState(false);
   const [guardando, setGuardando] = useState(false);
   // Copia de trabajo del formulario — solo se aplica al estado real al Guardar
@@ -124,16 +126,28 @@ export default function PerfilPage() {
       const supabase = createClient();
       const { data } = await supabase
         .from('profiles')
-        .select('email, plan, trial_ends_at')
+        .select('email, plan, trial_ends_at, email_reminders_enabled')
         .single();
       if (activo && data) {
-        setCuenta({ email: data.email, plan: data.plan, trialEndsAt: data.trial_ends_at });
+        setCuenta({ email: data.email, plan: data.plan, trialEndsAt: data.trial_ends_at, recordatorios: data.email_reminders_enabled });
       }
     })();
     return () => {
       activo = false;
     };
   }, []);
+
+  /** Prende/apaga el interruptor de recordatorios — solo esa columna, nunca `plan`
+   * ni `trial_ends_at` (la regla de seguridad de la cuenta ya limita esto a su
+   * propia fila; aquí además solo se manda este único campo). */
+  async function cambiarRecordatorios(valor: boolean) {
+    if (!cuenta || guardandoRecordatorios) return;
+    setCuenta({ ...cuenta, recordatorios: valor });
+    setGuardandoRecordatorios(true);
+    const { error } = await createClient().from('profiles').update({ email_reminders_enabled: valor }).eq('email', cuenta.email);
+    setGuardandoRecordatorios(false);
+    if (error) setCuenta({ ...cuenta, recordatorios: !valor }); // no se pudo guardar — revertir
+  }
 
   function abrirEdicion() {
     if (!estado) return;
@@ -279,6 +293,27 @@ export default function PerfilPage() {
                 </span>
               </div>
             )}
+
+            <div className="flex items-center justify-between gap-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)] py-2.5">
+              <span className="text-sm text-[var(--text-secondary)]">Recibir recordatorios por correo</span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={cuenta.recordatorios}
+                disabled={guardandoRecordatorios}
+                onClick={() => cambiarRecordatorios(!cuenta.recordatorios)}
+                className="relative h-7 w-12 shrink-0 rounded-full transition-colors disabled:opacity-60 [touch-action:manipulation]"
+                style={{ background: cuenta.recordatorios ? 'var(--accent)' : 'var(--surface-2)' }}
+              >
+                <span
+                  className="absolute top-1 size-5 rounded-full bg-white shadow-sm transition-transform"
+                  style={{ transform: cuenta.recordatorios ? 'translateX(22px)' : 'translateX(4px)' }}
+                />
+              </button>
+            </div>
+            <p className="mt-1.5 text-xs text-[var(--text-tertiary)]">
+              El día a día de tu plan, el aviso antes de comprar y el recordatorio de actualizar el peso.
+            </p>
 
             <a
               href="https://consumer.hotmart.com"
