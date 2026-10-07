@@ -15,10 +15,29 @@ const nunito = Nunito({
   weight: ["400", "500", "600", "700", "800"],
 });
 
+const TITULO = "PawBites — El plato exacto de tu perro, en gramos";
+const DESCRIPCION =
+  "Calcula el plato de tu perro en gramos, arma tu lista del súper y sigue el plan de transición a comida real — sin adivinar.";
+
 export const metadata: Metadata = {
-  title: "PawBites — El plato exacto de tu perro, en gramos",
-  description:
-    "Calcula el plato de tu perro en gramos, arma tu lista del súper y sigue el plan de transición a comida real — sin adivinar.",
+  metadataBase: new URL("https://www.paw-bites.com"),
+  title: TITULO,
+  description: DESCRIPCION,
+  // La imagen (1200×630) la genera app/opengraph-image.tsx — Next la conecta
+  // sola a openGraph.images/twitter.images, no hace falta listarla aquí.
+  openGraph: {
+    title: TITULO,
+    description: DESCRIPCION,
+    url: "https://www.paw-bites.com",
+    siteName: "PawBites",
+    locale: "es_CO",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITULO,
+    description: DESCRIPCION,
+  },
 };
 
 export default function RootLayout({

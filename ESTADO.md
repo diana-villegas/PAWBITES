@@ -1,6 +1,26 @@
 # ESTADO — PawBites
 Última actualización: 2026-10-07 | Sesión actual: 6
 
+✅ CONFIRMADO (2026-10-07) — **Los 4 arreglos de seguridad cerrados y verificados.** (1) vista
+previa al compartir, (2) robots.txt/sitemap.xml/manifest.json reales, (3) cabeceras de seguridad —
+ver detalle en el checkpoint de abajo, ya resuelto. (4) **Registro público cerrado en el panel de
+Supabase** (Authentication → Sign In/Up → "User Signups" → "Allow new users to sign up" = OFF,
+"Enable email provider" se quedó ON). El usuario lo hizo en el chat con guía paso a paso — 2
+confusiones reales en el camino, documentadas porque el panel de Supabase cambió de layout
+recientemente: (a) el primer intento apagó sin querer el PROVEEDOR de correo completo en vez de
+"Allow new users to sign up" — se detectó al instante porque rompió el enlace mágico de una cuenta
+YA existente (probado, no supuesto); (b) el interruptor correcto no vive dentro del panel "Email"
+como en versiones viejas de Supabase, sino en una sección aparte "User Signups" arriba de la lista
+de proveedores — confirmado con capturas de pantalla reales hasta ubicarlo. **Verificado con 3
+pruebas reales contra el proyecto en vivo, en este orden, tras cada cambio**: intentar `auth.signUp`
+directo con la clave pública (rechazado, "Signups not allowed for this instance") · pedir el enlace
+mágico a una cuenta YA existente (llegó bien, sin error) · entrar con correo+contraseña a esa misma
+cuenta (entró, 0 errores de consola) · `auth.admin.createUser` (la vía que usa el webhook de
+Hotmart) sigue creando cuentas sin problema — confirma que las compras no se van a ver afectadas.
+Sin dejar nada suelto: la ruta de prueba temporal se borró, las 3 cuentas de prueba creadas durante
+las pruebas se eliminaron, y la contraseña temporal de la cuenta de auditoría se quitó al final.
+`tsc`/`build` limpios. Listo para subir.
+
 ✅ CONFIRMADO (2026-10-07) — **Bug real encontrado y corregido: una cuenta sin perro guardado veía
 el ejemplo de muestra ("Luna") como si fuera su propio perro, sin ningún aviso.** Lo reportó el
 usuario: Claudia y Karen (las 2 cuentas de prueba para testimonios) entraban a "Hoy" y veían a Luna

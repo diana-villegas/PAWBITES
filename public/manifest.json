@@ -1,0 +1,10 @@
+{
+  "name": "PawBites — El plato exacto de tu perro, en gramos",
+  "short_name": "PawBites",
+  "description": "Calcula el plato de tu perro en gramos, arma tu lista del súper y sigue el plan de transición a comida real.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbf6ef",
+  "theme_color": "#c0431d",
+  "icons": [{ "src": "/icon.png", "sizes": "512x512", "type": "image/png" }]
+}

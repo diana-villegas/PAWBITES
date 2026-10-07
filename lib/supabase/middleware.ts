@@ -11,7 +11,16 @@ import { NextResponse, type NextRequest } from 'next/server';
 // /api/webhooks, /api/cron y /api/email NO llevan sesión de usuario: se autentican
 // solos (hottok de Hotmart, CRON_SECRET, token firmado de baja). Sin esta excepción
 // el portero les devolvía 401 antes de llegar al handler y Hotmart nunca entraba.
-const PUBLIC_PATHS = ['/', '/onboarding', '/entrar', '/auth', '/terminos', '/privacidad', '/reembolsos', '/aviso-nutricional', '/api/webhooks', '/api/cron', '/api/email', '/api/leads'];
+const PUBLIC_PATHS = [
+  '/', '/onboarding', '/entrar', '/auth', '/terminos', '/privacidad', '/reembolsos', '/aviso-nutricional',
+  '/api/webhooks', '/api/cron', '/api/email', '/api/leads',
+  // Archivos públicos de configuración (robots.txt y sitemap.xml los genera
+  // Next desde app/robots.ts y app/sitemap.ts; manifest.json es un archivo
+  // estático en public/, a propósito — el conversor dinámico de Next lo
+  // serviría en /manifest.webmanifest, no en /manifest.json) — antes el
+  // portero los redirigía a /entrar como si fueran pantallas protegidas.
+  '/robots.txt', '/sitemap.xml', '/manifest.json',
+];
 
 function esRutaPublica(path: string): boolean {
   return PUBLIC_PATHS.some((p) => path === p || (p !== '/' && path.startsWith(p + '/')));
