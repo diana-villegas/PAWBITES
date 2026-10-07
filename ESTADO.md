@@ -17,8 +17,8 @@ datos; el botón de Hotmart apunta a la URL correcta; completé el cuestionario 
 la pantalla final de precios ya se lee "cancela cuando quieras desde tu cuenta de Hotmart". `tsc`/
 `build` limpios. Capturas: `.playwright-mcp/perfil-mi-cuenta-375-full.png` y
 `.playwright-mcp/paywall-texto-cancelacion.png`. Pantalla secundaria (Perfil) — sin revisor-visual,
-solo medición + checklist, según la política del SO. Sin subir todavía — pendiente del "sí, súbelo"
-del usuario.
+solo medición + checklist, según la política del SO. **Subido y en producción** (commit `e08d912`,
+el usuario pidió subirlo ya sin esperar los testimonios).
 
 ⏸️ CHECKPOINT (2026-10-07, testimonios) — **Prueba social: en curso.** Pidió agregar testimonios ("Tutores que ya lo probaron") + la fórmula real del cálculo en "Así funciona", antes de la sección de precios. **Hecho ya**: la línea de la fórmula (sacada del código, `lib/plato.ts`: 1.8-4% del peso/día según edad y actividad; BARF 70% carne·10% hueso·10% vísceras·10% vegetales; cocinada 75% carne·10% vísceras·15% vegetales, sin hueso) agregada en `app/page.tsx` dentro del bloque de "Así funciona", verificada a 375px. `tsc`/`build` limpios — sin subir todavía (se sube junto con los testimonios, o antes si el usuario lo pide). **Pendiente, bloqueado por el usuario**: el bloque de testimonios no se publica hasta tener las frases+fotos reales — se crearon 2 cuentas de prueba con 7 días de acceso para conseguirlas (Claudia Sanclemente `laclausanclemente@hotmail.com`, Karen Marín Vargas `kmarinvargas@outlook.com`, trial hasta el 14 de octubre) — un tercer testimonio vendrá de alguien que ya usa la app (sin cuenta nueva). Siguiente paso exacto: esperar que el usuario entregue frase+nombre+nombre del perro+foto de cada una, guardar las fotos en `public/testimonios/` optimizadas a webp, y armar el bloque nuevo (sin modificar `Solucion.tsx` ni `Oferta.tsx`, componente nuevo propio) antes de `<Oferta>`.
 
