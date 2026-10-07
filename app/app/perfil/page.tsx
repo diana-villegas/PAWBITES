@@ -6,7 +6,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { Check, Dog, LogOut, Pencil, ShieldCheck, Weight, X } from 'lucide-react';
+import { Check, CreditCard, Dog, LifeBuoy, LogOut, Pencil, ShieldCheck, Weight, X } from 'lucide-react';
 import { loadAppState, guardarAppState, type AppState } from '@/lib/appData';
 import {
   calcularPlato,
@@ -59,9 +59,24 @@ function SelectorChips<T extends string | number>({
   );
 }
 
+/** Nombres en palabras simples — nunca el valor crudo de la base de datos. */
+const ETIQUETA_PLAN: Record<string, string> = {
+  trial: 'Prueba gratis',
+  mensual: 'Mensual',
+  anual: 'Anual',
+  cancelado: 'Cancelado',
+};
+
+const FORMATO_FECHA: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+
 export default function PerfilPage() {
   const [estado, setEstado] = useState<AppState | null>(null);
   const [saliendo, setSaliendo] = useState(false);
+  // Solo lectura: email + plan + fecha vienen directo de la cuenta real
+  // (tabla `profiles`, protegida por su propia regla de seguridad — cada
+  // cuenta solo puede leer su propia fila). Esta pantalla NUNCA escribe
+  // en `plan` ni `trial_ends_at` — cambiar de plan se hace en Hotmart.
+  const [cuenta, setCuenta] = useState<{ email: string; plan: string; trialEndsAt: string | null } | null>(null);
   const [editando, setEditando] = useState(false);
   const [guardando, setGuardando] = useState(false);
   // Copia de trabajo del formulario — solo se aplica al estado real al Guardar
@@ -101,6 +116,23 @@ export default function PerfilPage() {
 
   useEffect(() => {
     setEstado(loadAppState());
+  }, []);
+
+  useEffect(() => {
+    let activo = true;
+    (async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('profiles')
+        .select('email, plan, trial_ends_at')
+        .single();
+      if (activo && data) {
+        setCuenta({ email: data.email, plan: data.plan, trialEndsAt: data.trial_ends_at });
+      }
+    })();
+    return () => {
+      activo = false;
+    };
   }, []);
 
   function abrirEdicion() {
@@ -221,6 +253,53 @@ export default function PerfilPage() {
             Guía general para perros sanos — no reemplaza a tu veterinario.
           </p>
         </motion.div>
+
+        {cuenta && (
+          <motion.div
+            variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
+            className="rounded-[var(--radius-card)] bg-[var(--surface)] p-4 shadow-[var(--shadow-1)]"
+          >
+            <h2 className="text-sm font-semibold text-[var(--text-primary)]">Mi cuenta</h2>
+
+            <div className="mt-3 flex items-center justify-between gap-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)] py-2.5">
+              <span className="text-sm text-[var(--text-secondary)]">Correo</span>
+              <span className="truncate text-sm font-semibold text-[var(--text-primary)]">{cuenta.email}</span>
+            </div>
+            <div className="flex items-center justify-between gap-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)] py-2.5">
+              <span className="text-sm text-[var(--text-secondary)]">Plan</span>
+              <span className="text-sm font-semibold text-[var(--text-primary)]">
+                {ETIQUETA_PLAN[cuenta.plan] ?? cuenta.plan}
+              </span>
+            </div>
+            {cuenta.plan === 'trial' && cuenta.trialEndsAt && (
+              <div className="flex items-center justify-between gap-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)] py-2.5">
+                <span className="text-sm text-[var(--text-secondary)]">Tu prueba termina</span>
+                <span className="text-sm font-semibold text-[var(--text-primary)]">
+                  {new Date(cuenta.trialEndsAt).toLocaleDateString('es-CO', FORMATO_FECHA)}
+                </span>
+              </div>
+            )}
+
+            <a
+              href="https://consumer.hotmart.com"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 flex h-12 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--chip-bg)] text-sm font-semibold text-[var(--accent)] [touch-action:manipulation]"
+            >
+              <CreditCard size={16} aria-hidden="true" /> Gestionar o cancelar mi suscripción
+            </a>
+            <p className="mt-2 text-center text-xs text-[var(--text-tertiary)]">
+              Hotmart procesa tu pago — ahí mismo cancelas o cambias tu suscripción cuando quieras.
+            </p>
+
+            <a
+              href="mailto:hola@paw-bites.com"
+              className="mt-3 flex items-center justify-center gap-1.5 text-xs font-semibold text-[var(--text-secondary)] [touch-action:manipulation]"
+            >
+              <LifeBuoy size={14} aria-hidden="true" /> ¿Necesitas ayuda? Escríbenos
+            </a>
+          </motion.div>
+        )}
 
         <motion.button
           variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}

@@ -1,5 +1,26 @@
 # ESTADO — PawBites
-Última actualización: 2026-09-29 | Sesión actual: 6
+Última actualización: 2026-10-07 | Sesión actual: 6
+
+✅ CONFIRMADO (2026-10-07) — **Bloque "Mi cuenta" agregado en Perfil + copy de cancelación honesto
+en el paywall**. `app/app/perfil/page.tsx`: nueva tarjeta "Mi cuenta" bajo los datos del perro, con
+correo, plan en palabras simples (Prueba gratis/Mensual/Anual/Cancelado) y fecha de fin de prueba —
+todo de **solo lectura**, leído con un `select` directo a `profiles` (la regla de seguridad
+`select_own` ya existente limita cada cuenta a su propia fila; esta pantalla no agrega NINGÚN
+camino para escribir `plan` ni `trial_ends_at`). Botón "Gestionar o cancelar mi suscripción" →
+`https://consumer.hotmart.com` en pestaña nueva (única pasarela mencionada, como pidió el usuario)
+y enlace "¿Necesitas ayuda? Escríbenos" → `mailto:hola@paw-bites.com`. En
+`components/onboarding/Paywall.tsx` se cambió "cancela en 1 tap" (promesa falsa, no existe ese
+botón) por "cancela cuando quieras desde tu cuenta de Hotmart". **Verificado en vivo con Playwright**
+(no solo leyendo el código): entré con la cuenta real de auditoría (`auditoriasrentas@gmail.com`) y
+Perfil mostró su correo real, "Prueba gratis" y "14 de octubre de 2026" tal cual está en la base de
+datos; el botón de Hotmart apunta a la URL correcta; completé el cuestionario de punta a punta y en
+la pantalla final de precios ya se lee "cancela cuando quieras desde tu cuenta de Hotmart". `tsc`/
+`build` limpios. Capturas: `.playwright-mcp/perfil-mi-cuenta-375-full.png` y
+`.playwright-mcp/paywall-texto-cancelacion.png`. Pantalla secundaria (Perfil) — sin revisor-visual,
+solo medición + checklist, según la política del SO. Sin subir todavía — pendiente del "sí, súbelo"
+del usuario.
+
+⏸️ CHECKPOINT (2026-10-07, testimonios) — **Prueba social: en curso.** Pidió agregar testimonios ("Tutores que ya lo probaron") + la fórmula real del cálculo en "Así funciona", antes de la sección de precios. **Hecho ya**: la línea de la fórmula (sacada del código, `lib/plato.ts`: 1.8-4% del peso/día según edad y actividad; BARF 70% carne·10% hueso·10% vísceras·10% vegetales; cocinada 75% carne·10% vísceras·15% vegetales, sin hueso) agregada en `app/page.tsx` dentro del bloque de "Así funciona", verificada a 375px. `tsc`/`build` limpios — sin subir todavía (se sube junto con los testimonios, o antes si el usuario lo pide). **Pendiente, bloqueado por el usuario**: el bloque de testimonios no se publica hasta tener las frases+fotos reales — se crearon 2 cuentas de prueba con 7 días de acceso para conseguirlas (Claudia Sanclemente `laclausanclemente@hotmail.com`, Karen Marín Vargas `kmarinvargas@outlook.com`, trial hasta el 14 de octubre) — un tercer testimonio vendrá de alguien que ya usa la app (sin cuenta nueva). Siguiente paso exacto: esperar que el usuario entregue frase+nombre+nombre del perro+foto de cada una, guardar las fotos en `public/testimonios/` optimizadas a webp, y armar el bloque nuevo (sin modificar `Solucion.tsx` ni `Oferta.tsx`, componente nuevo propio) antes de `<Oferta>`.
 
 ✅ CONFIRMADO (2026-10-06) — **Los registros diarios (digestión + "Ya lo preparé") ya se guardan en la cuenta real, no solo en el navegador** — primera vez que "Hoy"/"Plan" tocan Supabase de verdad (antes solo vivían en `localStorage`, aunque /entrar ya prometía "cualquier dispositivo"). Tabla nueva `checkins` (migración `0011`) ligada a `dogs` — mismo patrón de RLS ya aprobado que `shopping_list_items` (pertenencia vía `dog_id`, sin policy directa por user_id), 0 alertas nuevas de seguridad. Rutas `GET`/`POST /api/checkins` (mismo patrón que `/api/onboarding/migrate`: el `user_id` sale siempre de la sesión, nunca del cuerpo de la petición). Al abrir "Hoy" o "Plan", se trae lo real de la cuenta (la base de datos manda); si la cuenta está vacía pero el navegador tenía registros viejos, se suben una sola vez para no perderlos. "Ya lo preparé" pasó de ser un `useState` que se perdía al cambiar de pestaña (bug real encontrado) a vivir en `AppState.preparados`, guardado igual que el resto. **Regla nueva de negocio**: si un día se registra "Diarrea", el porcentaje de comida real del día siguiente NO sube de tramo — se queda igual que el día de la diarrea hasta que haya un día sin diarrea (`diaParaPorcentaje`, `lib/plato.ts`; los números/etiquetas "Día N de 14" del calendario de Plan siguen siendo literales, solo el % de comida real de Hoy usa este día "efectivo"). Mensaje inmediato al registrar en Plan: diarrea explica que mañana no sube de tramo; blandas da un aviso corto de seguimiento. **Seguridad verificada con DOS cuentas reales de prueba** (contraseña temporal puesta y quitada solo para esta prueba): registré el día 1 de Luna como "Bien formadas", cerré sesión de verdad y volví a entrar — seguía ahí; entré con la cuenta de Yudi (perro distinto) y `GET /api/checkins` devolvió `checkins: []` — cero acceso a los datos de Luna, confirmado directo contra la respuesta de la API, no solo mirando la pantalla. Probada también la regla de diarrea en vivo: con el día 3 marcado diarrea, el día 4 calendario siguió mostrando 25% (no subió a 50%). `tsc`/`build` limpios.
 

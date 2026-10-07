@@ -107,6 +107,13 @@ export default function LandingPawBites() {
       {/* Coda visual de la sección 4 — repite el dispositivo ownable de la ficha (satélites) */}
       <SectionShell elevacion="base" flush="top" compacta ariaLabel="Grupos del plato">
         <IngredientesBand titulo="Los 4 grupos que arma el Plato Exacto" />
+        {/* La fórmula real que usa el cálculo — los mismos porcentajes de lib/plato.ts, sin inventar nada. */}
+        <p className="mx-auto mt-6 max-w-xl text-center text-sm leading-relaxed text-[var(--text-secondary)]">
+          La fórmula: entre <strong className="text-[var(--text-primary)]">1.8% y 4% del peso</strong> de tu
+          perro al día (según su edad y actividad), repartido en <strong className="text-[var(--text-primary)]">70%
+          carne · 10% hueso · 10% vísceras · 10% vegetales</strong> en dieta cruda — o sin hueso crudo
+          (75% carne · 10% vísceras · 15% vegetales) en dieta cocinada.
+        </p>
       </SectionShell>
 
       {/* 5. LA APP POR DENTRO (placeholders honestos — app interna en Sesión 5) */}

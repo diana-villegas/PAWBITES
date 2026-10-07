@@ -339,7 +339,7 @@ export function Paywall({ nombrePerro, raza, pesoKg, edad, actividad, dieta, pla
           {PLANES[plan].ctaLabel}
         </motion.a>
         <p className="mt-2 text-center text-xs text-[var(--text-secondary)]">
-          Hoy no pagas nada · te avisamos antes del cobro · cancela en 1 tap
+          Hoy no pagas nada · te avisamos antes del cobro · cancela cuando quieras desde tu cuenta de Hotmart
         </p>
         <p className="mt-1 text-center text-xs text-[var(--text-tertiary)]">
           Hotmart te mostrará el monto en tu moneda local
