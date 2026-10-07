@@ -1,6 +1,49 @@
 # ESTADO — PawBites
 Última actualización: 2026-10-07 | Sesión actual: 6
 
+✅ CONFIRMADO (2026-10-07) — **Bug real encontrado y corregido: una cuenta sin perro guardado veía
+el ejemplo de muestra ("Luna") como si fuera su propio perro, sin ningún aviso.** Lo reportó el
+usuario: Claudia y Karen (las 2 cuentas de prueba para testimonios) entraban a "Hoy" y veían a Luna
+en vez del cuestionario — confirmado en la base de datos: ninguna de las dos tenía fila en `dogs`
+(sus cuentas se crearon a mano en Supabase, sin pasar por `/onboarding`). La app nunca comprobaba
+del lado del servidor si la cuenta tenía un perro de verdad — confiaba ciegamente en lo que hubiera
+en el navegador, y si no había nada, `lib/appData.ts` arma una muestra de ejemplo (nombrada "Luna"
+por coincidencia, no es la Luna real de la cuenta de auditoría — son perros distintos en cuentas
+distintas) para que la pantalla nunca se vea vacía. **Corregido en `app/app/layout.tsx`**: al entrar
+a cualquier pantalla de `/app`, además de migrar el cuestionario del navegador (si lo hay), ahora
+también confirma contra el servidor (`GET /api/checkins`) que la cuenta tiene un perro guardado — si
+no lo tiene, manda derecho al cuestionario real en vez de dejar ver el ejemplo. **Verificado en
+vivo** con la cuenta real de Karen (contraseña temporal puesta y quitada solo para la prueba): entré
+a `/app` y la redirigió sola a "¿Cómo se llama tu perro?" — ya no se ve ningún dato ajeno. `tsc`/
+`build` limpios.
+⚠️ **Pendiente de que Claudia y Karen hagan el cuestionario de verdad** para que sus testimonios
+sean reales — con este arreglo ya no necesitan que nadie les explique nada: al entrar a
+`www.paw-bites.com/entrar` con su correo, la app las lleva sola al cuestionario.
+
+✅ CONFIRMADO (2026-10-07) — **Nueva pregunta en el cuestionario: "¿Ya le das esto, o vas a empezar
+ahora?"** — para quien YA le da comida real a su perro (lo cocinaba, usó ChatGPT para los
+porcentajes, etc.) y no necesita el plan de transición de 14 días desde el concentrado. Pregunta
+nueva justo después de "¿Cruda o cocinada?" en `app/onboarding/page.tsx`, con 2 opciones ("Ya se lo
+doy" / "Voy a empezar ahora"). Técnicamente reaprovecha TODA la lógica existente en vez de duplicarla:
+cuando la respuesta es "Ya se lo doy", el inicio de su plan (`transition_started_at`) se guarda
+adelantado 14 días — así arranca directo en el tramo de 100% comida real y Hoy/Lista/los correos del
+cron lo tratan exactamente igual que a cualquier cuenta que ya terminó su transición, sin código
+nuevo en esas partes. Columna nueva `dogs.already_real_food` (migración `0013`, 0 alertas nuevas) —
+solo la usa "Plan" para mostrar un mensaje ("[Perro] no necesita transición") en vez del mapa de 14
+días (que si no, mostraría 13 días "sin registrar" pidiendo algo que nunca pasó). En "Hoy" se oculta
+el badge "Día X de 14", la línea de % y la tarjeta de progreso de transición cuando aplica. El bullet
+del paywall también cambia ("Gramos exactos desde hoy, sin transición — ya lo logró" en vez de
+"Plan de transición de 14 días"). El enlace de "envíame el plato por correo" (`/onboarding/retomar`,
+de antes de este cambio) no guarda esta respuesta — se asume `false` (comportamiento de siempre, sin
+regresión). **Verificado end-to-end con 2 cuentas reales** (contraseña temporal puesta y quitada
+solo para la prueba): cuestionario completo con "Ya se lo doy" → el bullet del paywall cambió → tras
+"migrar" a la cuenta real, `dogs.already_real_food=true` y `transition_started_at` quedó 14 días en
+el pasado exacto → "Hoy" mostró "Hoy · 15 kg" (sin Día X de 14) y 375g al 100% sin la tarjeta de
+transición → "Plan" mostró el mensaje nuevo en vez del mapa. Repetido con "Voy a empezar ahora" en
+otra cuenta: comportamiento IDÉNTICO al de siempre (Día 1 de 14, 25% comida real, tarjeta de
+transición visible) — sin regresión. `tsc`/`build` limpios. Datos de prueba (los 2 perros, las 2
+contraseñas temporales) borrados tras verificar. Sin subir todavía.
+
 ✅ CONFIRMADO (2026-10-07) — **Recordatorios automáticos por correo + aviso de cobro con fecha y
 monto exactos**. Nuevos trabajos en el cron diario (`app/api/cron/emails`, ya corría a la 1pm hora
 Colombia): (1) recordatorio diario del plan de transición (días 1-14, con el % de comida real de

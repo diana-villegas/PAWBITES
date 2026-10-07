@@ -8,7 +8,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { PawPrint, Dog, Moon, Footprints, Zap, Drumstick, Package, Boxes, Sparkles, ChefHat, Weight } from 'lucide-react';
+import { PawPrint, Dog, Moon, Footprints, Zap, Drumstick, Package, Boxes, Sparkles, ChefHat, Weight, Rabbit, Rocket } from 'lucide-react';
 import { FunnelHeader, PantallaFunnel, ChipOpcion, CtaFunnel, VARIANTES_PASO } from '@/components/onboarding/ui';
 import {
   calcularPlato,
@@ -31,6 +31,7 @@ type Paso =
   | 'reconocimiento'
   | 'actividad'
   | 'dieta'
+  | 'transicion'
   | 'frecuencia'
   | 'loading'
   | 'paywall';
@@ -125,9 +126,9 @@ function PerfilAcumulado({
   );
 }
 
-const ORDEN: Paso[] =['nombre', 'peso', 'edad', 'reconocimiento', 'actividad', 'dieta', 'frecuencia', 'loading', 'paywall'];
+const ORDEN: Paso[] =['nombre', 'peso', 'edad', 'reconocimiento', 'actividad', 'dieta', 'transicion', 'frecuencia', 'loading', 'paywall'];
 // El progreso solo cuenta los pasos con pregunta real (el reconocimiento y el loading no son "preguntas")
-const PASOS_CON_PROGRESO: Paso[] = ['nombre', 'peso', 'edad', 'actividad', 'dieta', 'frecuencia'];
+const PASOS_CON_PROGRESO: Paso[] = ['nombre', 'peso', 'edad', 'actividad', 'dieta', 'transicion', 'frecuencia'];
 
 export default function OnboardingPage() {
   const [pasoIdx, setPasoIdx] = useState(0);
@@ -140,6 +141,7 @@ export default function OnboardingPage() {
   const [edad, setEdad] = useState<Edad | null>(null);
   const [actividad, setActividad] = useState<Actividad | null>(null);
   const [dieta, setDieta] = useState<Dieta | null>(null);
+  const [yaComeReal, setYaComeReal] = useState<boolean | null>(null);
   const [frecuencia, setFrecuencia] = useState<Frecuencia | null>(null);
 
   const paso = ORDEN[pasoIdx];
@@ -437,6 +439,42 @@ export default function OnboardingPage() {
             </PantallaFunnel>
           )}
 
+          {paso === 'transicion' && (
+            <PantallaFunnel>
+              <div className="flex flex-1 flex-col gap-6 pt-8 pb-6">
+                <div>
+                  <h1 className="text-balance text-3xl font-bold leading-[1.1] text-[var(--text-primary)] [font-family:var(--font-display)]">
+                    ¿Ya le das esto, o vas a empezar ahora?
+                  </h1>
+                  <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                    Si viene del concentrado, le armamos un plan de transición de 14 días para que su
+                    estómago se adapte sin sustos.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <ChipOpcion
+                    index={0}
+                    icon={<Rabbit size={20} color="var(--text-secondary)" aria-hidden="true" />}
+                    label="Ya se lo doy"
+                    seleccionado={yaComeReal === true}
+                    deshabilitado={seleccionando}
+                    onClick={() => elegirYAvanzar(setYaComeReal, true)}
+                  />
+                  <ChipOpcion
+                    index={1}
+                    icon={<Rocket size={20} color="var(--text-secondary)" aria-hidden="true" />}
+                    label="Voy a empezar ahora (viene del concentrado)"
+                    seleccionado={yaComeReal === false}
+                    deshabilitado={seleccionando}
+                    onClick={() => elegirYAvanzar(setYaComeReal, false)}
+                  />
+                </div>
+                <p className="text-center text-xs text-[var(--text-tertiary)]">Toca una opción para continuar</p>
+                <PerfilAcumulado nombrePerro={nombrePerro} pesoKg={pesoKg} edad={edad} actividad={actividad} dieta={dieta} />
+              </div>
+            </PantallaFunnel>
+          )}
+
           {paso === 'frecuencia' && (
             <PantallaFunnel>
               <div className="flex flex-1 flex-col gap-6 pt-8 pb-6">
@@ -491,12 +529,13 @@ export default function OnboardingPage() {
               dieta={dieta}
               plato={plato}
               frecuencia={frecuencia ?? 7}
+              yaComeReal={yaComeReal ?? false}
             />
           )}
         </motion.div>
       </AnimatePresence>
 
-      {(paso === 'nombre' || paso === 'peso' || paso === 'edad' || paso === 'actividad' || paso === 'dieta' || paso === 'frecuencia') && (
+      {(paso === 'nombre' || paso === 'peso' || paso === 'edad' || paso === 'actividad' || paso === 'dieta' || paso === 'transicion' || paso === 'frecuencia') && (
         <p className="pb-4 text-center text-xs text-[var(--text-tertiary)]">
           <Sparkles size={11} className="mr-1 inline" aria-hidden="true" />
           Guía general para perros sanos — no reemplaza a tu veterinario

@@ -43,6 +43,9 @@ interface Props {
   dieta: Dieta;
   plato: Plato;
   frecuencia: Frecuencia;
+  /** true = el perro YA come comida real (lo cocinaba la persona, ChatGPT, etc.) —
+   * arranca en 100% comida real desde el día 1, sin plan de transición. */
+  yaComeReal: boolean;
 }
 
 type PlanId = 'anual' | 'mensual';
@@ -156,7 +159,7 @@ function CategoriaChip({
   );
 }
 
-export function Paywall({ nombrePerro, raza, pesoKg, edad, actividad, dieta, plato, frecuencia }: Props) {
+export function Paywall({ nombrePerro, raza, pesoKg, edad, actividad, dieta, plato, frecuencia, yaComeReal }: Props) {
   const categorias = CATEGORIAS(plato);
   const [plan, setPlan] = useState<PlanId>('anual');
   const { contenedor, item } = useEntrada();
@@ -189,6 +192,7 @@ export function Paywall({ nombrePerro, raza, pesoKg, edad, actividad, dieta, pla
           dieta,
           plato,
           frecuencia,
+          yaComeReal,
           plan,
           fecha: new Date().toISOString(),
         })
@@ -196,7 +200,7 @@ export function Paywall({ nombrePerro, raza, pesoKg, edad, actividad, dieta, pla
     } catch {
       // localStorage puede fallar (modo privado) — no bloquea el flujo
     }
-  }, [nombrePerro, raza, pesoKg, edad, actividad, dieta, plato, frecuencia, plan]);
+  }, [nombrePerro, raza, pesoKg, edad, actividad, dieta, plato, frecuencia, yaComeReal, plan]);
 
   return (
     <div className="flex flex-1 flex-col px-4 pb-8">
@@ -241,7 +245,9 @@ export function Paywall({ nombrePerro, raza, pesoKg, edad, actividad, dieta, pla
       {/* Value stack — máx 3 beneficios en lenguaje de resultado */}
       <motion.ul variants={item} className="mt-3 flex flex-col gap-2.5">
         {[
-          'Plan de transición de 14 días, sin diarreas por ir muy rápido',
+          yaComeReal
+            ? 'Gramos exactos desde hoy, sin transición — ya lo logró'
+            : 'Plan de transición de 14 días, sin diarreas por ir muy rápido',
           `Lista del súper cada ${frecuencia} días, lista para marcar`,
           'Sustituto de ingredientes si algo no lo consigues',
         ].map((f) => (

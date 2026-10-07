@@ -17,7 +17,12 @@ const payloadSchema = z.object({
   actividad: z.enum(['bajo', 'moderado', 'alto']),
   dieta: z.enum(['barf', 'cocinada']),
   frecuencia: z.union([z.literal(7), z.literal(15)]),
+  // Si el perro YA come comida real (no viene del concentrado), arranca
+  // directo en 100% — ver comentario en el insert, más abajo.
+  yaComeReal: z.boolean().optional().default(false),
 });
+
+const DIA_MS = 24 * 60 * 60 * 1000;
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -53,6 +58,12 @@ export async function POST(request: Request) {
       activity_level: r.actividad,
       diet_type: r.dieta,
       prep_frequency_days: r.frecuencia,
+      already_real_food: r.yaComeReal,
+      // Si ya come comida real, se "adelanta" el inicio de su transición 14
+      // días — así arranca directo en el tramo de 100% comida real y toda la
+      // lógica existente (Hoy, Plan, los correos del cron) lo trata igual que
+      // a cualquier cuenta que ya terminó su transición, sin código nuevo ahí.
+      ...(r.yaComeReal ? { transition_started_at: new Date(Date.now() - 14 * DIA_MS).toISOString() } : {}),
     })
     .select('id')
     .single();

@@ -8,7 +8,8 @@
 
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
-import { Award, Check, AlertTriangle, CircleAlert, Lock, Sparkles, X } from 'lucide-react';
+import Link from 'next/link';
+import { Award, Check, AlertTriangle, CircleAlert, Lock, PartyPopper, Sparkles, X } from 'lucide-react';
 import Confetti from '@/components/app/Confetti';
 import { useCountUp } from '@/components/landing/PlatoMockup';
 import {
@@ -475,6 +476,38 @@ export default function PlanPage() {
         <div className="animate-pulse rounded-[var(--radius-card)] bg-[var(--surface)] p-5">
           <div className="h-3 w-40 rounded-full bg-[var(--bg)]" />
           <div className="mt-4 h-64 rounded-[var(--radius-card)] bg-[var(--bg)]" />
+        </div>
+      </div>
+    );
+  }
+
+  // Ya comía comida real antes de PawBites — no hay transición que registrar
+  // (los 14 días quedarían vacíos pidiendo algo que nunca pasó). Mensaje
+  // honesto en vez del mapa — ver lib/appData.ts, yaComeComidaReal.
+  if (estado.yaComeComidaReal) {
+    return (
+      <div className="mx-auto w-full max-w-sm px-4 pt-6">
+        <div className="flex flex-col items-center gap-3 rounded-[var(--radius-card)] bg-[var(--surface)] p-6 text-center shadow-[var(--shadow-1)]">
+          <span
+            className="flex size-14 items-center justify-center rounded-2xl"
+            style={{ background: 'var(--chip-bg)' }}
+            aria-hidden="true"
+          >
+            <PartyPopper size={26} color="var(--accent)" aria-hidden="true" />
+          </span>
+          <h1 className="text-xl font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
+            {estado.nombrePerro} no necesita transición
+          </h1>
+          <p className="max-w-xs text-sm text-[var(--text-secondary)]">
+            Ya comía comida real — su plato arranca directo en el 100%, sin tramos de concentrado que
+            registrar.
+          </p>
+          <Link
+            href="/app"
+            className="mt-2 flex h-12 w-full items-center justify-center rounded-[var(--radius-button)] bg-[var(--chip-bg)] text-sm font-semibold text-[var(--accent)] [touch-action:manipulation]"
+          >
+            Ver el plato de hoy
+          </Link>
         </div>
       </div>
     );

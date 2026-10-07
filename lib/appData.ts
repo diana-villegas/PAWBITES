@@ -51,6 +51,13 @@ export interface AppState {
    * para no insistir más de una vez por mes. Opcional: estados guardados antes
    * de este cambio no lo tienen (se trata como "nunca cerrado"). */
   pesoAvisoDescartadoMes?: string;
+  /** true = el perro YA comía comida real antes de PawBites (lo cocinaba la
+   * persona, usó ChatGPT para los porcentajes, etc.) — no necesita plan de
+   * transición. `transitionStartedAt` ya viene "adelantado" 14 días para
+   * estos casos (ver construirEstadoInicial), así que Hoy/Lista/los correos
+   * funcionan igual que para cualquiera que ya terminó su transición; este
+   * campo solo lo usa Plan para mostrar un mensaje en vez del mapa de 14 días. */
+  yaComeComidaReal?: boolean;
 }
 
 const KEY = 'pawbites_app_state';
@@ -88,8 +95,11 @@ const SEMILLA_DEMO: Omit<AppState, 'plato' | 'transitionStartedAt' | 'streakWeek
   frecuencia: 15,
 };
 
+const UN_DIA_MS = 1000 * 60 * 60 * 24;
+
 function construirEstadoInicial(): AppState {
   let base = SEMILLA_DEMO;
+  let yaComeComidaReal = false;
   try {
     const raw = localStorage.getItem(KEY_ONBOARDING);
     if (raw) {
@@ -106,6 +116,7 @@ function construirEstadoInicial(): AppState {
         dieta: o.dieta || SEMILLA_DEMO.dieta,
         frecuencia: o.frecuencia || SEMILLA_DEMO.frecuencia,
       };
+      yaComeComidaReal = !!o.yaComeReal;
     }
   } catch {
     // localStorage inaccesible (modo privado) — sigue con la semilla demo
@@ -114,13 +125,17 @@ function construirEstadoInicial(): AppState {
   return {
     ...base,
     plato,
-    transitionStartedAt: new Date().toISOString(),
+    // Si ya come comida real, se "adelanta" el inicio 14 días — arranca
+    // directo en el tramo de 100% comida real sin tocar ninguna otra lógica
+    // (mismo truco que /api/onboarding/migrate aplica en la cuenta real).
+    transitionStartedAt: new Date(Date.now() - (yaComeComidaReal ? 14 * UN_DIA_MS : 0)).toISOString(),
     streakWeeks: 2,
     listaComprada: [],
     listaCompradaTanda: 0,
     checkins: {},
     preparados: {},
     ingredientes: INGREDIENTES_POR_DEFECTO,
+    yaComeComidaReal,
   };
 }
 

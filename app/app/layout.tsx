@@ -4,7 +4,7 @@
 // 1 protagonista por sección). Nav inferior siempre visible, shell a pantalla completa real.
 
 import { type ReactNode, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { CalendarDays, House, ShoppingBasket, PawPrint } from 'lucide-react';
 
@@ -12,46 +12,67 @@ import { CalendarDays, House, ShoppingBasket, PawPrint } from 'lucide-react';
  * primera vez que alguien entra a /app ya logueado — 26-AUTH-MODERNO.md
  * § "USUARIO ANÓNIMO → CUENTA". Solo limpia localStorage si el servidor
  * confirma que guardó (o que ya existía) — si falla, se reintenta la próxima
- * vez que entre a la app. */
+ * vez que entre a la app. Después (con o sin migración) confirma que la
+ * cuenta YA tiene un perro de verdad guardado — si no (cuenta creada a mano,
+ * sin pasar por el cuestionario, como pasó con los 2 perfiles de prueba de
+ * testimonios), manda al cuestionario en vez de dejar ver el ejemplo de
+ * muestra sin que la persona sepa que no es su perro real. */
 function useMigracionOnboarding() {
-  useEffect(() => {
-    const raw = (() => {
-      try {
-        return localStorage.getItem('pawbites_onboarding');
-      } catch {
-        return null;
-      }
-    })();
-    if (!raw) return;
+  const router = useRouter();
 
+  useEffect(() => {
     let cancelado = false;
+
     (async () => {
+      const raw = (() => {
+        try {
+          return localStorage.getItem('pawbites_onboarding');
+        } catch {
+          return null;
+        }
+      })();
+
+      if (raw) {
+        try {
+          const o = JSON.parse(raw);
+          const res = await fetch('/api/onboarding/migrate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              nombrePerro: o.nombrePerro,
+              pesoKg: o.pesoKg,
+              edad: o.edad,
+              actividad: o.actividad,
+              dieta: o.dieta,
+              frecuencia: o.frecuencia,
+              yaComeReal: !!o.yaComeReal,
+            }),
+          });
+          if (res.ok && !cancelado) {
+            localStorage.removeItem('pawbites_onboarding');
+          }
+        } catch {
+          // Sin conexión — se reintenta en la próxima visita, sigue abajo
+          // con la verificación igual (puede que ya tuviera perro de antes).
+        }
+      }
+
+      if (cancelado) return;
       try {
-        const o = JSON.parse(raw);
-        const res = await fetch('/api/onboarding/migrate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            nombrePerro: o.nombrePerro,
-            pesoKg: o.pesoKg,
-            edad: o.edad,
-            actividad: o.actividad,
-            dieta: o.dieta,
-            frecuencia: o.frecuencia,
-          }),
-        });
-        if (res.ok && !cancelado) {
-          localStorage.removeItem('pawbites_onboarding');
+        const chequeo = await fetch('/api/checkins');
+        if (chequeo.status === 404 && !cancelado) {
+          router.replace('/onboarding');
         }
       } catch {
-        // Sin conexión o sin sesión todavía — se reintenta en la próxima visita.
+        // Sin conexión — no se puede confirmar; se deja la pantalla seguir
+        // con lo que ya tenga en el navegador en vez de bloquear por esto.
       }
     })();
 
     return () => {
       cancelado = true;
     };
-  }, []);
+  }, [router]);
 }
 
 const DESTINOS = [

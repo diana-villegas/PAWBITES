@@ -255,16 +255,18 @@ export default function HoyPage() {
             style={{ background: 'linear-gradient(155deg, color-mix(in oklab, var(--accent) 78%, white), var(--accent))' }}
           >
             <p className="text-xs font-semibold uppercase tracking-wide text-white/85">
-              Día {dia} de 14 · {estado.pesoKg} kg
+              {estado.yaComeComidaReal ? `Hoy · ${estado.pesoKg} kg` : `Día ${dia} de 14 · ${estado.pesoKg} kg`}
             </p>
             <p className="mt-1 text-4xl font-bold tabular-nums leading-none [font-family:var(--font-display)]">
               {total}
               <span className="ml-1 text-sm font-semibold text-white/80">g de comida real</span>
             </p>
-            <p className="mt-2 text-xs font-semibold text-white/85">
-              {pct.real}% comida real · {pct.concentrado}% concentrado hoy
-              {pct.concentrado > 0 && ' — completa el resto con su concentrado habitual'}
-            </p>
+            {!estado.yaComeComidaReal && (
+              <p className="mt-2 text-xs font-semibold text-white/85">
+                {pct.real}% comida real · {pct.concentrado}% concentrado hoy
+                {pct.concentrado > 0 && ' — completa el resto con su concentrado habitual'}
+              </p>
+            )}
             {ajustado ? (
               <p className="mt-2 rounded-xl bg-[var(--surface)] px-2.5 py-1.5 text-xs font-semibold text-[var(--accent)]">
                 Ajustamos su plato hoy — ayer registraste heces {calidadAyer === 'diarrea' ? 'con diarrea' : 'blandas'}. No
@@ -344,32 +346,34 @@ export default function HoyPage() {
             carga cognitiva de la primera vista). */}
         <motion.div variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
         <Hairline surface="surface" className="shadow-[var(--shadow-1)]">
-          <div className="p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-[var(--text-primary)]">Tu plan de transición</p>
-              <Link
-                href="/app/plan"
-                className="flex items-center gap-0.5 text-xs font-semibold text-[var(--accent)] [touch-action:manipulation]"
-              >
-                Ver calendario <ChevronRight size={14} aria-hidden="true" />
-              </Link>
+          {!estado.yaComeComidaReal && (
+            <div className="p-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-[var(--text-primary)]">Tu plan de transición</p>
+                <Link
+                  href="/app/plan"
+                  className="flex items-center gap-0.5 text-xs font-semibold text-[var(--accent)] [touch-action:manipulation]"
+                >
+                  Ver calendario <ChevronRight size={14} aria-hidden="true" />
+                </Link>
+              </div>
+              <div className="mt-3 flex h-2 w-full overflow-hidden rounded-full bg-[var(--bg)]">
+                <motion.div
+                  className="h-full rounded-full bg-[var(--accent)]"
+                  initial={{ width: '0%' }}
+                  animate={{ width: `${(dia / 14) * 100}%` }}
+                  transition={{ duration: reduce ? 0 : 0.8, ease: [0.16, 1, 0.3, 1] }}
+                />
+              </div>
+              <p className="mt-2 text-xs text-[var(--text-tertiary)]">
+                Día {dia} de 14 — {dia >= 14 ? 'transición completa' : `faltan ${14 - dia} días para comida 100% real`}
+              </p>
             </div>
-            <div className="mt-3 flex h-2 w-full overflow-hidden rounded-full bg-[var(--bg)]">
-              <motion.div
-                className="h-full rounded-full bg-[var(--accent)]"
-                initial={{ width: '0%' }}
-                animate={{ width: `${(dia / 14) * 100}%` }}
-                transition={{ duration: reduce ? 0 : 0.8, ease: [0.16, 1, 0.3, 1] }}
-              />
-            </div>
-            <p className="mt-2 text-xs text-[var(--text-tertiary)]">
-              Día {dia} de 14 — {dia >= 14 ? 'transición completa' : `faltan ${14 - dia} días para comida 100% real`}
-            </p>
-          </div>
+          )}
 
           <Link
             href="/app/lista"
-            className="flex items-center gap-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)] p-4 [touch-action:manipulation]"
+            className={`flex items-center gap-3 p-4 [touch-action:manipulation] ${estado.yaComeComidaReal ? '' : 'border-t border-[color-mix(in_oklab,var(--text-tertiary)_10%,transparent)]'}`}
           >
             <span
               className="flex size-10 shrink-0 items-center justify-center rounded-xl"

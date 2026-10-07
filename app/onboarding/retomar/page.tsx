@@ -42,6 +42,10 @@ export default async function RetomarPage({
         dieta={lead.dieta as Dieta}
         plato={lead.plato as Plato}
         frecuencia={lead.frecuencia as Frecuencia}
+        // Este lead es de ANTES de la pregunta de transición (no se guarda en
+        // leads_plato) — se asume que sí la necesita, el caso más común y el
+        // mismo comportamiento que ya tenía esta pantalla.
+        yaComeReal={false}
       />
     </main>
   );
