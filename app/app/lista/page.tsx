@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { Bone, Check, ChevronRight, Drumstick, HeartPulse, Leaf } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { loadAppState, guardarAppState, guardarIngrediente, tandaActual, type AppState } from '@/lib/appData';
+import { loadAppState, guardarAppState, guardarIngrediente, sincronizarPerroConServidor, tandaActual, type AppState } from '@/lib/appData';
 import { sumarTandaConTransicion, type Plato } from '@/lib/plato';
 import { ETIQUETA_GRUPO, nombreIngrediente, type GrupoIngrediente, type Ingredientes } from '@/lib/sustitutos';
 import { SustitutorSheet } from '@/components/app/SustitutorSheet';
@@ -59,7 +59,14 @@ export default function ListaPage() {
   const reduce = useReducedMotion();
 
   useEffect(() => {
-    setEstado(loadAppState());
+    const local = loadAppState();
+    setEstado(local);
+    // Trae el perro real de la cuenta (no solo lo que haya en este navegador)
+    // — la base de datos manda sobre el localStorage.
+    sincronizarPerroConServidor(local).then((sincronizado) => {
+      setEstado(sincronizado);
+      guardarAppState(sincronizado);
+    });
   }, []);
 
   if (!estado) {

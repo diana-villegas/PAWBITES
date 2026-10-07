@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { Check, CreditCard, Dog, LifeBuoy, LogOut, Pencil, ShieldCheck, Weight, X } from 'lucide-react';
-import { loadAppState, guardarAppState, type AppState } from '@/lib/appData';
+import { loadAppState, guardarAppState, sincronizarPerroConServidor, type AppState } from '@/lib/appData';
 import {
   calcularPlato,
   ETIQUETA_ACTIVIDAD,
@@ -117,7 +117,14 @@ export default function PerfilPage() {
   }
 
   useEffect(() => {
-    setEstado(loadAppState());
+    const local = loadAppState();
+    setEstado(local);
+    // Trae el perro real de la cuenta (no solo lo que haya en este navegador)
+    // — la base de datos manda sobre el localStorage.
+    sincronizarPerroConServidor(local).then((sincronizado) => {
+      setEstado(sincronizado);
+      guardarAppState(sincronizado);
+    });
   }, []);
 
   useEffect(() => {

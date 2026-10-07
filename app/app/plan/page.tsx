@@ -19,6 +19,7 @@ import {
   quitarCheckin,
   calcularRachaDias,
   diaDeTransicion,
+  sincronizarPerroConServidor,
   sincronizarCheckinsConServidor,
   guardarCheckinEnServidor,
   HITOS_RACHA,
@@ -462,12 +463,14 @@ export default function PlanPage() {
   useEffect(() => {
     const local = loadAppState();
     setEstado(local);
-    // Trae los registros reales de la cuenta (ligados al perro, no al
-    // navegador) — la base de datos manda sobre lo que había en localStorage.
-    sincronizarCheckinsConServidor(local).then((sincronizado) => {
+    // Trae el perro y los registros reales de la cuenta (no solo lo que haya
+    // en este navegador) — la base de datos manda sobre el localStorage.
+    (async () => {
+      const conPerro = await sincronizarPerroConServidor(local);
+      const sincronizado = await sincronizarCheckinsConServidor(conPerro);
       setEstado(sincronizado);
       guardarAppState(sincronizado);
-    });
+    })();
   }, []);
 
   if (!estado) {

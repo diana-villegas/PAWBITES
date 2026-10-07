@@ -1,6 +1,28 @@
 # ESTADO — PawBites
 Última actualización: 2026-10-07 | Sesión actual: 6
 
+✅ CONFIRMADO (2026-10-07) — **Bug real corregido: Hoy/Plan/Lista/Perfil ya traen el perro real de
+la cuenta desde el servidor, no solo del navegador.** Lo reportó el usuario: Karen (perro real
+"Apolo", 30 kg, ya guardado en `dogs` desde que hizo el cuestionario) seguía viendo a "Luna" en su
+celular, en el navegador interno de Outlook — confirmado que Apolo SÍ estaba bien guardado en la
+base de datos; el problema era que esas 4 pantallas solo leían el perro de `localStorage`, nunca de
+la cuenta real, así que cualquier navegador sin ese caché (el de Outlook es un navegador embebido
+que no siempre conserva su memoria entre aperturas) mostraba el ejemplo de muestra en vez del perro
+verdadero, con todo y datos de "Mi cuenta" (correo/plan) mezclados con el perro falso — confuso y
+con pinta de cuenta equivocada. **Corregido**: nueva ruta `/api/dogs/mio` + función
+`sincronizarPerroConServidor` (`lib/appData.ts`), conectada en las 4 pantallas — al abrir cualquiera,
+ahora SIEMPRE se trae el perro real de la cuenta (nombre, peso, edad, actividad, dieta, frecuencia,
+si ya comía real) y se recalcula el plato con esos datos, sin importar qué navegador o dispositivo
+sea. Es la pieza que le faltó al arreglo del `(2026-10-07)` anterior (ese solo cubría "la cuenta no
+tiene NINGÚN perro guardado" → mandar al cuestionario; este cubre "el perro SÍ existe pero este
+navegador nunca lo vio"). **Verificado de punta a punta** con la cuenta real de Karen, desde un
+navegador totalmente limpio (sin nada en localStorage, simulando exactamente su caso): Hoy mostró
+"El plato de Apolo" (30 kg, 540g) con el bullet correcto de "ya come comida real"; Perfil mostró sus
+datos reales (Senior, Activo, Cocinada, cada 7 días) junto con su correo/plan reales; Lista dijo
+"Cantidades para Apolo"; Plan mostró el mensaje de "no necesita transición" (ella respondió "ya se
+lo doy" en su cuestionario). `tsc`/`build` limpios. Contraseña temporal usada solo para la prueba,
+quitada al terminar.
+
 ✅ CONFIRMADO (2026-10-07) — **Los 4 arreglos de seguridad cerrados y verificados.** (1) vista
 previa al compartir, (2) robots.txt/sitemap.xml/manifest.json reales, (3) cabeceras de seguridad —
 ver detalle en el checkpoint de abajo, ya resuelto. (4) **Registro público cerrado en el panel de

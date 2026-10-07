@@ -258,6 +258,50 @@ interface CheckinDB {
   preparado: boolean;
 }
 
+interface PerroDB {
+  nombrePerro: string;
+  raza?: string;
+  pesoKg: number;
+  edad: Edad;
+  actividad: Actividad;
+  dieta: Dieta;
+  frecuencia: Frecuencia;
+  transitionStartedAt: string;
+  yaComeComidaReal: boolean;
+}
+
+/** Trae los datos reales del perro de la cuenta (nombre, peso, edad, dieta,
+ * frecuencia, día de transición) y los aplica sobre el estado local — la
+ * cuenta real manda. Sin esto, un dispositivo distinto al que hizo el
+ * cuestionario (o un navegador sin ese localStorage) seguía mostrando el
+ * ejemplo de muestra aunque la cuenta YA tuviera un perro guardado (bug real,
+ * ver ESTADO.md 2026-10-07). Si no hay sesión, no hay perro todavía, o falla
+ * la red, se sigue con lo que había en el navegador (no bloquea la pantalla). */
+export async function sincronizarPerroConServidor(estado: AppState): Promise<AppState> {
+  try {
+    const res = await fetch('/api/dogs/mio');
+    if (!res.ok) return estado;
+    const data = (await res.json()) as { perro: PerroDB | null };
+    if (!data.perro) return estado;
+    const p = data.perro;
+    const base: AppState = {
+      ...estado,
+      nombrePerro: p.nombrePerro,
+      raza: p.raza,
+      pesoKg: p.pesoKg,
+      edad: p.edad,
+      actividad: p.actividad,
+      dieta: p.dieta,
+      frecuencia: p.frecuencia,
+      transitionStartedAt: p.transitionStartedAt,
+      yaComeComidaReal: p.yaComeComidaReal,
+    };
+    return { ...base, plato: calcularPlato(base) };
+  } catch {
+    return estado;
+  }
+}
+
 /** Trae los registros reales de la cuenta (ligados al perro, no al navegador —
  * ver migración 0011 y /api/checkins) y los mezcla con el estado local: la
  * base de datos manda. Si la cuenta todavía no tiene NINGÚN registro pero el
